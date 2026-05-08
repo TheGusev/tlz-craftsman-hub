@@ -175,7 +175,7 @@ export function Header() {
           </a>
           <Button
             asChild
-            className="bg-urgent text-urgent-foreground hover:bg-urgent/90"
+            className="hidden md:inline-flex bg-[linear-gradient(110deg,var(--urgent),var(--accent),var(--urgent))] bg-[length:200%_auto] animate-shimmer text-urgent-foreground shadow-lg shadow-urgent/30 hover:opacity-90"
           >
             <a href="tel:+78005551234">Срочный выезд</a>
           </Button>
