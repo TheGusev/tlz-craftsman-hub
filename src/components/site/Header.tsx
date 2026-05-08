@@ -27,10 +27,7 @@ export function Header() {
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85">
       <div className="container mx-auto flex h-16 items-center justify-between gap-4 px-4">
         <Link to="/" className="flex items-center gap-2 font-display">
-          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground font-bold">
-            СР
-          </span>
-          <span className="hidden flex-col leading-tight sm:flex">
+          <span className="flex flex-col leading-tight">
             <span className="text-sm font-bold text-foreground">Санитарные Решения</span>
             <span className="text-xs text-muted-foreground">РФ · Аварийная служба 24/7</span>
           </span>
