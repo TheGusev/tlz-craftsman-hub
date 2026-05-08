@@ -113,6 +113,12 @@ function HomePage() {
         </div>
       </section>
 
+      <section className="md:hidden border-b border-border bg-surface">
+        <div className="container mx-auto px-4 py-6">
+          <MobileQuickLead />
+        </div>
+      </section>
+
       <section className="container mx-auto px-4 py-16 md:py-24">
         <div className="flex items-end justify-between gap-4">
           <div>
