@@ -22,6 +22,12 @@ export const Route = createFileRoute("/services/$serviceSlug")({
       { name: "description", content: loaderData.service.metaDescription },
       { property: "og:title", content: loaderData.service.metaTitle },
       { property: "og:description", content: loaderData.service.metaDescription },
+      ...(getServiceImage(loaderData.service.slug)
+        ? [
+            { property: "og:image", content: getServiceImage(loaderData.service.slug)! },
+            { name: "twitter:image", content: getServiceImage(loaderData.service.slug)! },
+          ]
+        : []),
     ],
     links: [{ rel: "canonical", href: `/services/${loaderData.service.slug}` }],
   }) : { meta: [] },
