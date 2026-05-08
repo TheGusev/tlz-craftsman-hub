@@ -20,6 +20,30 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "Аварийная санобработка по ЮФО и Крыму. Выезд бригады в течение 1–3 часов." },
     ],
     links: [{ rel: "canonical", href: "/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          name: "Санитарные Решения РФ",
+          description:
+            "Аварийная санитарная служба 24/7: дезинфекция, удаление плесени, фумигация, очистка после ЧС.",
+          telephone: "+7-800-555-12-34",
+          areaServed: [
+            "Краснодар",
+            "Сочи",
+            "Ростов-на-Дону",
+            "Симферополь",
+            "Севастополь",
+            "Ялта",
+            "Евпатория",
+            "Керчь",
+          ],
+          openingHours: "Mo-Su 00:00-23:59",
+        }),
+      },
+    ],
   }),
   component: HomePage,
 });
