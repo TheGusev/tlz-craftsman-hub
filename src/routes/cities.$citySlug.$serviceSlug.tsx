@@ -97,7 +97,7 @@ function ServiceInCityPage() {
           <section>
             <h2 className="font-display text-2xl font-bold">FAQ по {service.shortName.toLowerCase()} {city.nameLocative}</h2>
             <Accordion type="single" collapsible className="mt-4">
-              {[...sc.faq, ...service.faq.slice(0, 2)].map((f, i) => (
+              {[...sc.faq, ...service.faq.slice(0, 2)].map((f: Service["faq"][number], i: number) => (
                 <AccordionItem key={i} value={`f-${i}`}>
                   <AccordionTrigger className="text-left font-semibold">{f.q}</AccordionTrigger>
                   <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
