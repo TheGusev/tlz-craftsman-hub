@@ -75,8 +75,6 @@ function HomePage() {
             className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${index === activeHero ? "opacity-100" : "opacity-0"}`}
           />
         ))}
-        <div className="absolute inset-0 bg-foreground/70" aria-hidden />
-        <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/45 to-transparent" aria-hidden />
         <div className="container relative mx-auto flex min-h-[calc(100svh-76px)] items-center px-4 py-14 md:py-20">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-urgent px-3 py-1 text-xs font-semibold text-urgent-foreground shadow-lg shadow-urgent/30">
