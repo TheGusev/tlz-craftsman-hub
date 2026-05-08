@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { getService, services } from "@/data/services";
+import { getService, services, type Service } from "@/data/services";
 import { cities } from "@/data/cities";
 import { cases } from "@/data/cases";
 import { getServiceInCityByService } from "@/data/serviceInCity";
@@ -10,7 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Check, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/services/$serviceSlug")({
-  loader: ({ params }) => {
+  loader: ({ params }): { service: Service } => {
     const service = getService(params.serviceSlug);
     if (!service) throw notFound();
     return { service };
