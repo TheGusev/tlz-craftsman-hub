@@ -11,6 +11,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Phone, Clock, ShieldCheck, MapPin, ArrowRight } from "lucide-react";
 import { getServiceImage } from "@/lib/serviceImages";
 import { getCaseImage } from "@/lib/caseImages";
+import { MobileQuickLead } from "@/components/site/MobileQuickLead";
 import geographyImg from "@/assets/geography.jpg";
 import heroCrimeaMountain from "@/assets/hero-crimea-mountain.png";
 
@@ -109,6 +110,12 @@ function HomePage() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="md:hidden border-b border-border bg-surface">
+        <div className="container mx-auto px-4 py-6">
+          <MobileQuickLead />
         </div>
       </section>
 
