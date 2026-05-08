@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { services } from "@/data/services";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { Card } from "@/components/ui/card";
@@ -19,6 +19,10 @@ export const Route = createFileRoute("/services")({
 });
 
 function ServicesIndex() {
+  const { pathname } = useLocation();
+  if (pathname.replace(/\/$/, "") !== "/services") {
+    return <Outlet />;
+  }
   const clusters = Array.from(new Set(services.map((s) => s.cluster)));
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
