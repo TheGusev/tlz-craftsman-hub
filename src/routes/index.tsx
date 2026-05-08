@@ -87,7 +87,7 @@ function HomePage() {
               Уборка после пожара и потопа, дезинфекция, удаление плесени, фумигация. Выезд бригады в течение 1–3 часов. Лицензия, сертифицированные препараты, гарантия результата.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Button asChild size="lg" className="bg-urgent text-urgent-foreground hover:bg-urgent/90 shadow-lg shadow-urgent/30">
+              <Button asChild size="lg" className="bg-[linear-gradient(110deg,var(--urgent),var(--accent),var(--urgent))] bg-[length:200%_auto] animate-shimmer text-urgent-foreground shadow-lg shadow-urgent/40 hover:opacity-90">
                 <a href="tel:+78005551234"><Phone className="mr-2 h-4 w-4" />Срочный выезд</a>
               </Button>
               <Button asChild size="lg" variant="outline" className="border-primary-foreground/40 bg-background/10 text-primary-foreground hover:bg-primary-foreground/15 hover:text-primary-foreground">
