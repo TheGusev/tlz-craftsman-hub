@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { getCity } from "@/data/cities";
-import { getService } from "@/data/services";
-import { getServiceInCity } from "@/data/serviceInCity";
+import { getCity, type City } from "@/data/cities";
+import { getService, type Service } from "@/data/services";
+import { getServiceInCity, type ServiceInCity } from "@/data/serviceInCity";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Card } from "@/components/ui/card";
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
 });
 
 function ServiceInCityPage() {
-  const { city, service, sc } = Route.useLoaderData();
+  const { city, service, sc }: { city: City; service: Service; sc: ServiceInCity } = Route.useLoaderData();
   return (
     <article>
       <header className="bg-primary text-primary-foreground">
