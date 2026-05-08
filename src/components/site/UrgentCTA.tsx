@@ -73,7 +73,9 @@ export function UrgentCTA() {
         aria-label={open ? "Закрыть меню связи" : "Открыть меню связи"}
         aria-expanded={open}
         className={`flex h-14 w-14 items-center justify-center rounded-full shadow-xl transition-all duration-300 ${
-          open ? "bg-primary text-primary-foreground rotate-90" : "bg-[#25D366] text-white hover:scale-105"
+          open
+            ? "bg-primary text-primary-foreground rotate-90"
+            : "bg-[linear-gradient(110deg,#25D366,#0fb89a,#25D366)] bg-[length:200%_auto] animate-shimmer text-white hover:scale-105"
         }`}
       >
         {open ? <X className="h-6 w-6" /> : <Phone className="h-6 w-6" />}
