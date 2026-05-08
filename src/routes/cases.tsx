@@ -4,6 +4,7 @@ import { getCity } from "@/data/cities";
 import { getService } from "@/data/services";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { Card } from "@/components/ui/card";
+import { getCaseImage } from "@/lib/caseImages";
 
 export const Route = createFileRoute("/cases")({
   head: () => ({
@@ -28,20 +29,24 @@ function CasesPage() {
         {cases.map((c) => {
           const city = getCity(c.city);
           const service = getService(c.service);
+          const image = getCaseImage(c.slug);
           return (
-            <Card key={c.slug} className="p-6">
-              <div className="flex flex-wrap gap-2 text-xs">
-                {service && <Link to="/services/$serviceSlug" params={{ serviceSlug: service.slug }} className="rounded-full bg-accent/10 px-3 py-1 text-accent">{service.shortName}</Link>}
-                {city && <Link to="/cities/$citySlug" params={{ citySlug: city.slug }} className="rounded-full bg-secondary/10 px-3 py-1 text-secondary">{city.name}</Link>}
+            <Card key={c.slug} className="overflow-hidden p-0">
+              {image && <img src={image} alt={c.title} loading="lazy" className="aspect-[16/10] w-full object-cover" />}
+              <div className="p-6">
+                <div className="flex flex-wrap gap-2 text-xs">
+                  {service && <Link to="/services/$serviceSlug" params={{ serviceSlug: service.slug }} className="rounded-full bg-accent/10 px-3 py-1 text-accent">{service.shortName}</Link>}
+                  {city && <Link to="/cities/$citySlug" params={{ citySlug: city.slug }} className="rounded-full bg-secondary/10 px-3 py-1 text-secondary">{city.name}</Link>}
+                </div>
+                <h2 className="mt-3 font-display text-lg font-bold">{c.title}</h2>
+                <div className="mt-1 text-xs text-muted-foreground">{c.objectType}</div>
+                <p className="mt-3 text-sm"><span className="font-semibold">Проблема:</span> {c.problem}</p>
+                <ul className="mt-3 space-y-1 text-sm">
+                  {c.works.map((w, i) => <li key={i}>— {w}</li>)}
+                </ul>
+                <div className="mt-3 text-xs text-muted-foreground">Срок: {c.duration}</div>
+                <p className="mt-3 text-sm"><span className="font-semibold">Результат:</span> {c.result}</p>
               </div>
-              <h2 className="mt-3 font-display text-lg font-bold">{c.title}</h2>
-              <div className="mt-1 text-xs text-muted-foreground">{c.objectType}</div>
-              <p className="mt-3 text-sm"><span className="font-semibold">Проблема:</span> {c.problem}</p>
-              <ul className="mt-3 space-y-1 text-sm">
-                {c.works.map((w, i) => <li key={i}>— {w}</li>)}
-              </ul>
-              <div className="mt-3 text-xs text-muted-foreground">Срок: {c.duration}</div>
-              <p className="mt-3 text-sm"><span className="font-semibold">Результат:</span> {c.result}</p>
             </Card>
           );
         })}

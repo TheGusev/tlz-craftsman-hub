@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Check, AlertTriangle } from "lucide-react";
 import { getServiceImage } from "@/lib/serviceImages";
+import { getCaseImage } from "@/lib/caseImages";
 
 export const Route = createFileRoute("/services/$serviceSlug")({
   loader: ({ params }): { service: Service } => {
@@ -181,13 +182,19 @@ function ServicePage() {
             <section>
               <h2 className="font-display text-2xl font-bold">Кейсы по услуге</h2>
               <div className="mt-4 grid gap-3 md:grid-cols-2">
-                {serviceCases.slice(0, 4).map((c) => (
-                  <Card key={c.slug} className="p-5">
-                    <div className="text-xs text-accent">{c.objectType}</div>
-                    <h3 className="mt-1 font-display text-base font-bold">{c.title}</h3>
-                    <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{c.problem}</p>
-                  </Card>
-                ))}
+                {serviceCases.slice(0, 4).map((c) => {
+                  const image = getCaseImage(c.slug);
+                  return (
+                    <Card key={c.slug} className="overflow-hidden p-0">
+                      {image && <img src={image} alt={c.title} loading="lazy" className="aspect-[16/10] w-full object-cover" />}
+                      <div className="p-5">
+                        <div className="text-xs text-accent">{c.objectType}</div>
+                        <h3 className="mt-1 font-display text-base font-bold">{c.title}</h3>
+                        <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{c.problem}</p>
+                      </div>
+                    </Card>
+                  );
+                })}
               </div>
             </section>
           )}
