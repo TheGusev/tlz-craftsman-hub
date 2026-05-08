@@ -54,9 +54,11 @@ export function Footer() {
           <ul className="mt-4 space-y-2 text-sm opacity-80">
             <li><Link to="/about" className="hover:text-accent">О компании</Link></li>
             <li><Link to="/cases" className="hover:text-accent">Кейсы</Link></li>
+            <li><Link to="/blog" className="hover:text-accent">Блог</Link></li>
             <li><Link to="/faq" className="hover:text-accent">FAQ</Link></li>
             <li><Link to="/prices" className="hover:text-accent">Цены</Link></li>
             <li><Link to="/contacts" className="hover:text-accent">Контакты</Link></li>
+            <li><Link to="/privacy" className="hover:text-accent">Политика конфиденциальности</Link></li>
           </ul>
         </div>
       </div>
