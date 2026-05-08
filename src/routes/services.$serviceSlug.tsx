@@ -8,6 +8,7 @@ import { LeadForm } from "@/components/site/LeadForm";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Check, AlertTriangle } from "lucide-react";
+import { getServiceImage } from "@/lib/serviceImages";
 
 export const Route = createFileRoute("/services/$serviceSlug")({
   loader: ({ params }): { service: Service } => {
