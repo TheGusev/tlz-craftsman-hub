@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { services } from "@/data/services";
 import { cities } from "@/data/cities";
 import { cases } from "@/data/cases";
@@ -9,7 +10,9 @@ import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Phone, Clock, ShieldCheck, MapPin, ArrowRight } from "lucide-react";
 import { getServiceImage } from "@/lib/serviceImages";
+import { getCaseImage } from "@/lib/caseImages";
 import geographyImg from "@/assets/geography.jpg";
+import heroCrimeaMountain from "@/assets/hero-crimea-mountain.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -49,15 +52,28 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
+  const heroImages = [geographyImg, heroCrimeaMountain];
+  const [activeHero, setActiveHero] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActiveHero((current) => (current + 1) % heroImages.length);
+    }, 3000);
+
+    return () => window.clearInterval(timer);
+  }, [heroImages.length]);
+
   return (
     <>
-      {/* Hero */}
       <section className="relative min-h-[calc(100svh-76px)] overflow-hidden text-primary-foreground">
-        <img
-          src={geographyImg}
-          alt="ЮФО и Крым с высоты"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+        {heroImages.map((image, index) => (
+          <img
+            key={image}
+            src={image}
+            alt="ЮФО и Крым с высоты"
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${index === activeHero ? "opacity-100" : "opacity-0"}`}
+          />
+        ))}
         <div className="absolute inset-0 bg-foreground/70" aria-hidden />
         <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/45 to-transparent" aria-hidden />
         <div className="container relative mx-auto flex min-h-[calc(100svh-76px)] items-center px-4 py-14 md:py-20">
@@ -96,7 +112,6 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Services */}
       <section className="container mx-auto px-4 py-16 md:py-24">
         <div className="flex items-end justify-between gap-4">
           <div>
@@ -132,7 +147,6 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Geography */}
       <section className="relative overflow-hidden bg-surface py-16 md:py-24">
         <div className="container mx-auto grid gap-10 px-4 md:grid-cols-2 md:items-center">
           <div className="relative order-2 overflow-hidden rounded-2xl shadow-2xl md:order-1">
@@ -164,7 +178,6 @@ function HomePage() {
         </div>
       </section>
 
-      {/* When called */}
       <section className="container mx-auto px-4 py-16 md:py-24">
         <h2 className="font-display text-3xl font-bold md:text-4xl">Когда обращаются к нам</h2>
         <div className="mt-10 grid gap-4 md:grid-cols-3">
@@ -184,7 +197,6 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Steps */}
       <section className="bg-surface py-16 text-foreground md:py-24">
         <div className="container mx-auto px-4">
           <h2 className="font-display text-3xl font-bold md:text-4xl">Этапы работы</h2>
@@ -205,25 +217,29 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Cases */}
       <section className="container mx-auto px-4 py-16 md:py-24">
         <div className="flex items-end justify-between">
           <h2 className="font-display text-3xl font-bold md:text-4xl">Реальные кейсы</h2>
           <Link to="/cases" className="hidden text-sm font-semibold text-accent hover:underline md:inline">Все кейсы →</Link>
         </div>
         <div className="mt-10 grid gap-4 md:grid-cols-3">
-          {cases.slice(0, 6).map((c) => (
-            <Card key={c.slug} className="p-6">
-              <div className="text-xs font-semibold uppercase tracking-wider text-accent">{c.objectType}</div>
-              <h3 className="mt-2 font-display text-base font-bold">{c.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{c.problem}</p>
-              <div className="mt-4 text-xs text-muted-foreground">Срок: {c.duration}</div>
-            </Card>
-          ))}
+          {cases.slice(0, 6).map((c) => {
+            const image = getCaseImage(c.slug);
+            return (
+              <Card key={c.slug} className="overflow-hidden p-0">
+                {image && <img src={image} alt={c.title} loading="lazy" className="aspect-[16/10] w-full object-cover" />}
+                <div className="p-6">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-accent">{c.objectType}</div>
+                  <h3 className="mt-2 font-display text-base font-bold">{c.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{c.problem}</p>
+                  <div className="mt-4 text-xs text-muted-foreground">Срок: {c.duration}</div>
+                </div>
+              </Card>
+            );
+          })}
         </div>
       </section>
 
-      {/* FAQ */}
       <section className="bg-surface py-16 md:py-24">
         <div className="container mx-auto max-w-3xl px-4">
           <h2 className="font-display text-3xl font-bold md:text-4xl">Частые вопросы</h2>
@@ -238,7 +254,6 @@ function HomePage() {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="container mx-auto px-4 py-16 md:py-24">
         <div className="grid gap-10 rounded-3xl border border-border bg-surface p-8 text-foreground md:grid-cols-2 md:p-14">
           <div>

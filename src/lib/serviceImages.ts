@@ -4,6 +4,7 @@ import disinfection from "@/assets/service-disinfection.jpg";
 import odor from "@/assets/service-odor.jpg";
 import fumigation from "@/assets/service-fumigation.jpg";
 import afterDeath from "@/assets/hero-main.jpg";
+import mold from "@/assets/service-mold.png";
 
 export const serviceImages: Record<string, string> = {
   "posle-potopa": flood,
@@ -12,6 +13,7 @@ export const serviceImages: Record<string, string> = {
   "dezinfekciya-posle-smerti": afterDeath,
   "udalenie-trupnogo-zapaha": odor,
   "fumigaciya": fumigation,
+  "udalenie-pleseni": mold,
 };
 
 export const getServiceImage = (slug: string): string | undefined => serviceImages[slug];
