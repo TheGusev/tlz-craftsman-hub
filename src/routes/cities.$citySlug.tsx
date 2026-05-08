@@ -30,7 +30,7 @@ export const Route = createFileRoute("/cities/$citySlug")({
 });
 
 function CityPage() {
-  const { city } = Route.useLoaderData();
+  const { city }: { city: City } = Route.useLoaderData();
   const popular = city.popularServices.map(getService).filter(Boolean);
   const cityLinks = getServiceInCityByCity(city.slug);
   const cityCases = cases.filter((c) => c.city === city.slug);

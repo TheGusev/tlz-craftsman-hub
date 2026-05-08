@@ -29,7 +29,7 @@ export const Route = createFileRoute("/services/$serviceSlug")({
 });
 
 function ServicePage() {
-  const { service } = Route.useLoaderData();
+  const { service }: { service: Service } = Route.useLoaderData();
   const cityLinks = getServiceInCityByService(service.slug);
   const serviceCases = cases.filter((c) => c.service === service.slug);
 
