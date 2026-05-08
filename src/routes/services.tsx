@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { services } from "@/data/services";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { Card } from "@/components/ui/card";
+import { getServiceImage } from "@/lib/serviceImages";
+import { ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/services")({
   head: () => ({
@@ -19,21 +21,36 @@ export const Route = createFileRoute("/services")({
 function ServicesIndex() {
   const clusters = Array.from(new Set(services.map((s) => s.cluster)));
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-10 md:py-12">
       <Breadcrumbs items={[{ label: "Услуги" }]} />
-      <h1 className="mt-4 font-display text-4xl font-bold md:text-5xl">Все санитарные услуги</h1>
+      <h1 className="mt-4 font-display text-3xl font-bold sm:text-4xl md:text-5xl">Все санитарные услуги</h1>
       <p className="mt-4 max-w-3xl text-muted-foreground">8 направлений работ — от аварийной уборки после ЧС до плановой дезинфекции и фумигации объектов любого масштаба.</p>
       {clusters.map((cluster) => (
-        <div key={cluster} className="mt-12">
+        <div key={cluster} className="mt-10 md:mt-12">
           <h2 className="font-display text-2xl font-bold">{cluster}</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {services.filter((s) => s.cluster === cluster).map((s) => (
-              <Card key={s.slug} className="flex flex-col gap-3 p-6 transition hover:border-accent">
-                <h3 className="font-display text-lg font-bold">{s.name}</h3>
-                <p className="line-clamp-3 text-sm text-muted-foreground">{s.intro}</p>
-                <Link to="/services/$serviceSlug" params={{ serviceSlug: s.slug }} className="mt-auto text-sm font-semibold text-accent hover:underline">Подробнее →</Link>
-              </Card>
-            ))}
+            {services.filter((s) => s.cluster === cluster).map((s) => {
+              const img = getServiceImage(s.slug);
+              return (
+                <Card key={s.slug} className="group flex flex-col overflow-hidden p-0 transition hover:border-accent hover:shadow-lg">
+                  <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+                    {img ? (
+                      <img src={img} alt={s.shortName} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent" />
+                  </div>
+                  <div className="flex flex-1 flex-col gap-3 p-5">
+                    <h3 className="font-display text-lg font-bold">{s.name}</h3>
+                    <p className="line-clamp-3 text-sm text-muted-foreground">{s.intro}</p>
+                    <Link to="/services/$serviceSlug" params={{ serviceSlug: s.slug }} className="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline">
+                      Подробнее <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                </Card>
+              );
+            })}
           </div>
         </div>
       ))}

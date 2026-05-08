@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Phone, Clock, ShieldCheck, MapPin, ArrowRight } from "lucide-react";
+import { getServiceImage } from "@/lib/serviceImages";
+import heroMain from "@/assets/hero-main.jpg";
+import geographyImg from "@/assets/geography.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,20 +30,26 @@ function HomePage() {
     <>
       {/* Hero */}
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-40 md:opacity-30"
+          style={{ backgroundImage: `url(${heroMain})` }}
+          aria-hidden
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/85 to-primary md:bg-gradient-to-r md:from-primary md:via-primary/85 md:to-primary/40" aria-hidden />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--color-accent),_transparent_60%)] opacity-20" />
-        <div className="container relative mx-auto grid gap-10 px-4 py-16 md:grid-cols-2 md:py-24">
+        <div className="container relative mx-auto grid gap-10 px-4 py-14 md:grid-cols-2 md:py-24">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-urgent px-3 py-1 text-xs font-semibold text-urgent-foreground">
+            <div className="inline-flex items-center gap-2 rounded-full bg-urgent px-3 py-1 text-xs font-semibold text-urgent-foreground shadow-lg shadow-urgent/30">
               <span className="h-2 w-2 animate-pulse rounded-full bg-white" /> Аварийная служба 24/7
             </div>
-            <h1 className="mt-6 font-display text-4xl font-bold leading-tight md:text-6xl">
+            <h1 className="mt-6 font-display text-[2rem] font-bold leading-[1.1] sm:text-4xl md:text-6xl">
               Срочные санитарные работы по ЮФО и Крыму
             </h1>
             <p className="mt-5 max-w-xl text-base opacity-90 md:text-lg">
               Уборка после пожара и потопа, дезинфекция, удаление плесени, фумигация. Выезд бригады в течение 1–3 часов. Лицензия, сертифицированные препараты, гарантия результата.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg" className="bg-urgent text-urgent-foreground hover:bg-urgent/90">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Button asChild size="lg" className="bg-urgent text-urgent-foreground hover:bg-urgent/90 shadow-lg shadow-urgent/30">
                 <a href="tel:+78005551234"><Phone className="mr-2 h-4 w-4" />Срочный выезд</a>
               </Button>
               <Button asChild size="lg" variant="outline" className="border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white">
@@ -55,13 +64,13 @@ function HomePage() {
               ].map((b, i) => (
                 <div key={i} className="flex flex-col gap-1">
                   <b.icon className="h-5 w-5 text-accent" />
-                  <div className="font-display text-lg font-bold">{b.t}</div>
-                  <div className="text-xs opacity-70">{b.s}</div>
+                  <div className="font-display text-base font-bold sm:text-lg">{b.t}</div>
+                  <div className="text-[11px] opacity-70 sm:text-xs">{b.s}</div>
                 </div>
               ))}
             </div>
           </div>
-          <div>
+          <div className="rounded-2xl bg-background/95 p-1 shadow-2xl backdrop-blur md:bg-transparent md:p-0 md:shadow-none">
             <LeadForm />
           </div>
         </div>
@@ -77,32 +86,60 @@ function HomePage() {
           <Link to="/services" className="hidden text-sm font-semibold text-accent hover:underline md:inline">Все услуги →</Link>
         </div>
         <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {services.map((s) => (
-            <Card key={s.slug} className="group flex flex-col gap-3 p-6 transition hover:border-accent">
-              <div className="text-xs font-semibold uppercase tracking-wider text-accent">{s.cluster}</div>
-              <h3 className="font-display text-lg font-bold">{s.shortName}</h3>
-              <p className="line-clamp-3 text-sm text-muted-foreground">{s.intro}</p>
-              <Link to="/services/$serviceSlug" params={{ serviceSlug: s.slug }} className="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-secondary group-hover:text-accent">
-                Подробнее <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Card>
-          ))}
+          {services.map((s) => {
+            const img = getServiceImage(s.slug);
+            return (
+              <Card key={s.slug} className="group flex flex-col overflow-hidden p-0 transition hover:border-accent hover:shadow-lg">
+                <div className="relative aspect-[4/3] overflow-hidden bg-muted sm:aspect-[16/10]">
+                  {img ? (
+                    <img src={img} alt={s.shortName} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-secondary" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent" />
+                  <div className="absolute left-3 top-3 rounded-full bg-background/95 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-accent">{s.cluster}</div>
+                </div>
+                <div className="flex flex-1 flex-col gap-3 p-5">
+                  <h3 className="font-display text-lg font-bold">{s.shortName}</h3>
+                  <p className="line-clamp-3 text-sm text-muted-foreground">{s.intro}</p>
+                  <Link to="/services/$serviceSlug" params={{ serviceSlug: s.slug }} className="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-secondary group-hover:text-accent">
+                    Подробнее <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </Card>
+            );
+          })}
         </div>
       </section>
 
       {/* Geography */}
-      <section className="bg-surface py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <h2 className="font-display text-3xl font-bold md:text-4xl">География присутствия</h2>
-          <p className="mt-3 max-w-2xl text-muted-foreground">Дежурные бригады в Краснодаре, Сочи, Ростове-на-Дону. Региональный хаб по Крыму с выездом в Симферополь, Севастополь, Ялту, Евпаторию и Керчь.</p>
-          <div className="mt-10 grid gap-3 md:grid-cols-4">
-            {cities.map((c) => (
-              <Link key={c.slug} to="/cities/$citySlug" params={{ citySlug: c.slug }} className="rounded-xl border border-border bg-card p-5 transition hover:border-accent">
-                <div className="font-display text-lg font-bold">{c.name}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{c.region}</div>
-                <div className="mt-3 text-xs text-accent">Выезд: {c.arrivalTime}</div>
-              </Link>
-            ))}
+      <section className="relative overflow-hidden bg-surface py-16 md:py-24">
+        <div className="container mx-auto grid gap-10 px-4 md:grid-cols-2 md:items-center">
+          <div className="relative order-2 overflow-hidden rounded-2xl shadow-2xl md:order-1">
+            <img src={geographyImg} alt="Побережье ЮФО и Крыма с воздуха" loading="lazy" className="aspect-[4/3] w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-primary/70 via-transparent" />
+            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-primary-foreground">
+              <div>
+                <div className="font-display text-xl font-bold">8 городов</div>
+                <div className="text-xs opacity-80">Дежурные бригады 24/7</div>
+              </div>
+              <div className="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">ЮФО + Крым</div>
+            </div>
+          </div>
+          <div className="order-1 md:order-2">
+            <h2 className="font-display text-3xl font-bold md:text-4xl">География присутствия</h2>
+            <p className="mt-3 text-muted-foreground">Дежурные бригады в Краснодаре, Сочи, Ростове-на-Дону. Региональный хаб по Крыму с выездом в Симферополь, Севастополь, Ялту, Евпаторию и Керчь.</p>
+            <div className="mt-6 grid gap-2 sm:grid-cols-2">
+              {cities.map((c) => (
+                <Link key={c.slug} to="/cities/$citySlug" params={{ citySlug: c.slug }} className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3 transition hover:border-accent active:scale-[0.99]">
+                  <div>
+                    <div className="font-display text-sm font-bold">{c.name}</div>
+                    <div className="text-[11px] text-muted-foreground">{c.region}</div>
+                  </div>
+                  <div className="text-[11px] font-semibold text-accent">{c.arrivalTime}</div>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </section>

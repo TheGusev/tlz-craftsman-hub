@@ -8,6 +8,7 @@ import { LeadForm } from "@/components/site/LeadForm";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Check, AlertTriangle } from "lucide-react";
+import { getServiceImage } from "@/lib/serviceImages";
 
 export const Route = createFileRoute("/services/$serviceSlug")({
   loader: ({ params }): { service: Service } => {
@@ -21,6 +22,12 @@ export const Route = createFileRoute("/services/$serviceSlug")({
       { name: "description", content: loaderData.service.metaDescription },
       { property: "og:title", content: loaderData.service.metaTitle },
       { property: "og:description", content: loaderData.service.metaDescription },
+      ...(getServiceImage(loaderData.service.slug)
+        ? [
+            { property: "og:image", content: getServiceImage(loaderData.service.slug)! },
+            { name: "twitter:image", content: getServiceImage(loaderData.service.slug)! },
+          ]
+        : []),
     ],
     links: [{ rel: "canonical", href: `/services/${loaderData.service.slug}` }],
   }) : { meta: [] },
@@ -33,14 +40,25 @@ function ServicePage() {
   const cityLinks = getServiceInCityByService(service.slug);
   const serviceCases = cases.filter((c) => c.service === service.slug);
 
+  const cover = getServiceImage(service.slug);
   return (
     <article>
-      <header className="bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 py-12 md:py-16">
+      <header className="relative overflow-hidden bg-primary text-primary-foreground">
+        {cover && (
+          <>
+            <div
+              className="absolute inset-0 bg-cover bg-center opacity-35 md:opacity-25"
+              style={{ backgroundImage: `url(${cover})` }}
+              aria-hidden
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/85 to-primary md:bg-gradient-to-r md:from-primary md:via-primary/80 md:to-primary/30" aria-hidden />
+          </>
+        )}
+        <div className="container relative mx-auto px-4 py-10 md:py-16">
           <Breadcrumbs items={[{ label: "Услуги", to: "/services" }, { label: service.shortName }]} />
           <div className="mt-4 text-xs font-semibold uppercase tracking-wider text-accent">{service.cluster}</div>
-          <h1 className="mt-2 font-display text-3xl font-bold md:text-5xl">{service.h1}</h1>
-          <p className="mt-4 max-w-3xl opacity-90">{service.intro}</p>
+          <h1 className="mt-2 font-display text-[1.75rem] font-bold leading-tight sm:text-3xl md:text-5xl">{service.h1}</h1>
+          <p className="mt-4 max-w-3xl text-sm opacity-90 md:text-base">{service.intro}</p>
         </div>
       </header>
 
