@@ -16,21 +16,60 @@ export const Route = createFileRoute("/services/$serviceSlug")({
     if (!service) throw notFound();
     return { service };
   },
-  head: ({ loaderData }) => loaderData ? ({
-    meta: [
-      { title: loaderData.service.metaTitle },
-      { name: "description", content: loaderData.service.metaDescription },
-      { property: "og:title", content: loaderData.service.metaTitle },
-      { property: "og:description", content: loaderData.service.metaDescription },
-      ...(getServiceImage(loaderData.service.slug)
-        ? [
-            { property: "og:image", content: getServiceImage(loaderData.service.slug)! },
-            { name: "twitter:image", content: getServiceImage(loaderData.service.slug)! },
-          ]
-        : []),
-    ],
-    links: [{ rel: "canonical", href: `/services/${loaderData.service.slug}` }],
-  }) : { meta: [] },
+  head: ({ loaderData }) => {
+    if (!loaderData) return { meta: [] };
+    const s = loaderData.service;
+    const img = getServiceImage(s.slug);
+    return {
+      meta: [
+        { title: s.metaTitle },
+        { name: "description", content: s.metaDescription },
+        { property: "og:title", content: s.metaTitle },
+        { property: "og:description", content: s.metaDescription },
+        ...(img
+          ? [
+              { property: "og:image", content: img },
+              { name: "twitter:image", content: img },
+            ]
+          : []),
+      ],
+      links: [{ rel: "canonical", href: `/services/${s.slug}` }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: s.name,
+            description: s.metaDescription,
+            serviceType: s.cluster,
+            provider: {
+              "@type": "LocalBusiness",
+              name: "Санитарные Решения РФ",
+              telephone: "+7-800-555-12-34",
+            },
+            areaServed: "ЮФО и Республика Крым",
+          }),
+        },
+        ...(s.faq.length > 0
+          ? [
+              {
+                type: "application/ld+json",
+                children: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "FAQPage",
+                  mainEntity: s.faq.map((f: { q: string; a: string }) => ({
+                    "@type": "Question",
+                    name: f.q,
+                    acceptedAnswer: { "@type": "Answer", text: f.a },
+                  })),
+                }),
+              },
+            ]
+          : []),
+      ],
+    };
+  },
   notFoundComponent: () => <div className="container py-20 text-center">Услуга не найдена</div>,
   component: ServicePage,
 });

@@ -9,22 +9,42 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as RegionsRouteImport } from './routes/regions'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricesRouteImport } from './routes/prices'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactsRouteImport } from './routes/contacts'
 import { Route as CitiesRouteImport } from './routes/cities'
 import { Route as CasesRouteImport } from './routes/cases'
+import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ServicesServiceSlugRouteImport } from './routes/services.$serviceSlug'
 import { Route as RegionsKrymRouteImport } from './routes/regions.krym'
 import { Route as CitiesCitySlugRouteImport } from './routes/cities.$citySlug'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as CitiesCitySlugServiceSlugRouteImport } from './routes/cities.$citySlug.$serviceSlug'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegionsRoute = RegionsRouteImport.update({
+  id: '/regions',
+  path: '/regions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PricesRoute = PricesRouteImport.update({
@@ -52,6 +72,11 @@ const CasesRoute = CasesRouteImport.update({
   path: '/cases',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -68,14 +93,19 @@ const ServicesServiceSlugRoute = ServicesServiceSlugRouteImport.update({
   getParentRoute: () => ServicesRoute,
 } as any)
 const RegionsKrymRoute = RegionsKrymRouteImport.update({
-  id: '/regions/krym',
-  path: '/regions/krym',
-  getParentRoute: () => rootRouteImport,
+  id: '/krym',
+  path: '/krym',
+  getParentRoute: () => RegionsRoute,
 } as any)
 const CitiesCitySlugRoute = CitiesCitySlugRouteImport.update({
   id: '/$citySlug',
   path: '/$citySlug',
   getParentRoute: () => CitiesRoute,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BlogRoute,
 } as any)
 const CitiesCitySlugServiceSlugRoute =
   CitiesCitySlugServiceSlugRouteImport.update({
@@ -87,12 +117,17 @@ const CitiesCitySlugServiceSlugRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/blog': typeof BlogRouteWithChildren
   '/cases': typeof CasesRoute
   '/cities': typeof CitiesRouteWithChildren
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
   '/prices': typeof PricesRoute
+  '/privacy': typeof PrivacyRoute
+  '/regions': typeof RegionsRouteWithChildren
   '/services': typeof ServicesRouteWithChildren
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
   '/regions/krym': typeof RegionsKrymRoute
   '/services/$serviceSlug': typeof ServicesServiceSlugRoute
@@ -101,12 +136,17 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/blog': typeof BlogRouteWithChildren
   '/cases': typeof CasesRoute
   '/cities': typeof CitiesRouteWithChildren
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
   '/prices': typeof PricesRoute
+  '/privacy': typeof PrivacyRoute
+  '/regions': typeof RegionsRouteWithChildren
   '/services': typeof ServicesRouteWithChildren
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
   '/regions/krym': typeof RegionsKrymRoute
   '/services/$serviceSlug': typeof ServicesServiceSlugRoute
@@ -116,12 +156,17 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/blog': typeof BlogRouteWithChildren
   '/cases': typeof CasesRoute
   '/cities': typeof CitiesRouteWithChildren
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
   '/prices': typeof PricesRoute
+  '/privacy': typeof PrivacyRoute
+  '/regions': typeof RegionsRouteWithChildren
   '/services': typeof ServicesRouteWithChildren
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
   '/regions/krym': typeof RegionsKrymRoute
   '/services/$serviceSlug': typeof ServicesServiceSlugRoute
@@ -132,12 +177,17 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/blog'
     | '/cases'
     | '/cities'
     | '/contacts'
     | '/faq'
     | '/prices'
+    | '/privacy'
+    | '/regions'
     | '/services'
+    | '/sitemap.xml'
+    | '/blog/$slug'
     | '/cities/$citySlug'
     | '/regions/krym'
     | '/services/$serviceSlug'
@@ -146,12 +196,17 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/blog'
     | '/cases'
     | '/cities'
     | '/contacts'
     | '/faq'
     | '/prices'
+    | '/privacy'
+    | '/regions'
     | '/services'
+    | '/sitemap.xml'
+    | '/blog/$slug'
     | '/cities/$citySlug'
     | '/regions/krym'
     | '/services/$serviceSlug'
@@ -160,12 +215,17 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/blog'
     | '/cases'
     | '/cities'
     | '/contacts'
     | '/faq'
     | '/prices'
+    | '/privacy'
+    | '/regions'
     | '/services'
+    | '/sitemap.xml'
+    | '/blog/$slug'
     | '/cities/$citySlug'
     | '/regions/krym'
     | '/services/$serviceSlug'
@@ -175,22 +235,46 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  BlogRoute: typeof BlogRouteWithChildren
   CasesRoute: typeof CasesRoute
   CitiesRoute: typeof CitiesRouteWithChildren
   ContactsRoute: typeof ContactsRoute
   FaqRoute: typeof FaqRoute
   PricesRoute: typeof PricesRoute
+  PrivacyRoute: typeof PrivacyRoute
+  RegionsRoute: typeof RegionsRouteWithChildren
   ServicesRoute: typeof ServicesRouteWithChildren
-  RegionsKrymRoute: typeof RegionsKrymRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services': {
       id: '/services'
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/regions': {
+      id: '/regions'
+      path: '/regions'
+      fullPath: '/regions'
+      preLoaderRoute: typeof RegionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/prices': {
@@ -228,6 +312,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CasesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -251,10 +342,10 @@ declare module '@tanstack/react-router' {
     }
     '/regions/krym': {
       id: '/regions/krym'
-      path: '/regions/krym'
+      path: '/krym'
       fullPath: '/regions/krym'
       preLoaderRoute: typeof RegionsKrymRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof RegionsRoute
     }
     '/cities/$citySlug': {
       id: '/cities/$citySlug'
@@ -262,6 +353,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/cities/$citySlug'
       preLoaderRoute: typeof CitiesCitySlugRouteImport
       parentRoute: typeof CitiesRoute
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof BlogRoute
     }
     '/cities/$citySlug/$serviceSlug': {
       id: '/cities/$citySlug/$serviceSlug'
@@ -272,6 +370,16 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface BlogRouteChildren {
+  BlogSlugRoute: typeof BlogSlugRoute
+}
+
+const BlogRouteChildren: BlogRouteChildren = {
+  BlogSlugRoute: BlogSlugRoute,
+}
+
+const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
 interface CitiesCitySlugRouteChildren {
   CitiesCitySlugServiceSlugRoute: typeof CitiesCitySlugServiceSlugRoute
@@ -296,6 +404,17 @@ const CitiesRouteChildren: CitiesRouteChildren = {
 const CitiesRouteWithChildren =
   CitiesRoute._addFileChildren(CitiesRouteChildren)
 
+interface RegionsRouteChildren {
+  RegionsKrymRoute: typeof RegionsKrymRoute
+}
+
+const RegionsRouteChildren: RegionsRouteChildren = {
+  RegionsKrymRoute: RegionsKrymRoute,
+}
+
+const RegionsRouteWithChildren =
+  RegionsRoute._addFileChildren(RegionsRouteChildren)
+
 interface ServicesRouteChildren {
   ServicesServiceSlugRoute: typeof ServicesServiceSlugRoute
 }
@@ -311,13 +430,16 @@ const ServicesRouteWithChildren = ServicesRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  BlogRoute: BlogRouteWithChildren,
   CasesRoute: CasesRoute,
   CitiesRoute: CitiesRouteWithChildren,
   ContactsRoute: ContactsRoute,
   FaqRoute: FaqRoute,
   PricesRoute: PricesRoute,
+  PrivacyRoute: PrivacyRoute,
+  RegionsRoute: RegionsRouteWithChildren,
   ServicesRoute: ServicesRouteWithChildren,
-  RegionsKrymRoute: RegionsKrymRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

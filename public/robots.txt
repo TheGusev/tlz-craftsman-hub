@@ -1,8 +1,10 @@
 User-agent: *
 Allow: /
+
 Disallow: /landing/
 Disallow: /account/
 Disallow: /quiz/
 Disallow: /thank-you/
+Disallow: /calculator/
 
 Sitemap: /sitemap.xml

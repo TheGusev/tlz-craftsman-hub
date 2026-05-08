@@ -134,6 +134,13 @@ export function Header() {
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
+                <Link to="/blog" className="inline-flex h-10 items-center px-3 text-sm font-medium hover:text-accent">
+                  Блог
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
                 <Link to="/prices" className="inline-flex h-10 items-center px-3 text-sm font-medium hover:text-accent">
                   Цены
                 </Link>
@@ -251,6 +258,7 @@ function MobileNav({ onNavigate }: { onNavigate: () => void }) {
       {[
         { to: "/cases" as const, label: "Кейсы" },
         { to: "/faq" as const, label: "FAQ" },
+        { to: "/blog" as const, label: "Блог" },
         { to: "/prices" as const, label: "Цены" },
         { to: "/about" as const, label: "О компании" },
         { to: "/contacts" as const, label: "Контакты" },

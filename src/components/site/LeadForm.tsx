@@ -70,8 +70,24 @@ export function LeadForm({ defaultCity, defaultProblem }: { defaultCity?: string
         </Select>
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="comment">Комментарий или ссылка на фото</Label>
-        <Textarea id="comment" name="comment" rows={3} placeholder="Опишите ситуацию или приложите ссылку на фото" />
+        <Label htmlFor="comment">Комментарий</Label>
+        <Textarea id="comment" name="comment" rows={3} placeholder="Опишите ситуацию подробнее" />
+      </div>
+      <div className="grid gap-2">
+        <Label htmlFor="files">Фото или видео объекта</Label>
+        <Input id="files" name="files" type="file" multiple accept="image/*,video/*" className="cursor-pointer file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-1 file:text-sm file:font-medium" />
+        <p className="text-xs text-muted-foreground">
+          Можно сразу прислать фото в{" "}
+          <a
+            href="https://wa.me/78005551234?text=Здравствуйте,%20отправляю%20фото%20объекта"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent hover:underline"
+          >
+            WhatsApp
+          </a>
+          .
+        </p>
       </div>
       <Button type="submit" disabled={loading} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
         {loading ? "Отправка..." : "Получить расчёт стоимости"}
