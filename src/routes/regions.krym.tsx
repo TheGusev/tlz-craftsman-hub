@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { cities } from "@/data/cities";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { Card } from "@/components/ui/card";
+import geographyImg from "@/assets/geography.jpg";
 
 export const Route = createFileRoute("/regions/krym")({
   head: () => ({
@@ -10,6 +11,7 @@ export const Route = createFileRoute("/regions/krym")({
       { name: "description", content: "Санитарная служба по всему Крыму: Симферополь, Севастополь, Ялта, Евпатория, Керчь. Дежурные бригады, выезд 24/7." },
       { property: "og:title", content: "Санитарные услуги в Крыму" },
       { property: "og:description", content: "Региональный хаб с выездом по всему полуострову." },
+      { property: "og:image", content: geographyImg },
     ],
     links: [{ rel: "canonical", href: "/regions/krym" }],
   }),
@@ -19,21 +21,33 @@ export const Route = createFileRoute("/regions/krym")({
 function KrymPage() {
   const krym = cities.filter((c) => c.region === "Республика Крым");
   return (
-    <div className="container mx-auto px-4 py-12">
-      <Breadcrumbs items={[{ label: "Регионы" }, { label: "Крым" }]} />
-      <h1 className="mt-4 font-display text-4xl font-bold md:text-5xl">Санитарные услуги в Крыму</h1>
-      <p className="mt-4 max-w-3xl text-muted-foreground">Симферополь — наш региональный хаб. Из него оперативно выезжаем по всему полуострову. Дежурная бригада 24/7. Работаем с частными лицами, УК, гостиничным сектором и промышленностью.</p>
-      <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {krym.map((c) => (
-          <Link key={c.slug} to="/cities/$citySlug" params={{ citySlug: c.slug }}>
-            <Card className="p-6 transition hover:border-accent">
-              <h2 className="font-display text-xl font-bold">{c.name}</h2>
-              <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{c.intro}</p>
-              <div className="mt-3 text-xs text-accent">Выезд: {c.arrivalTime}</div>
-            </Card>
-          </Link>
-        ))}
+    <article>
+      <header className="relative overflow-hidden bg-primary text-primary-foreground">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-50 md:opacity-40"
+          style={{ backgroundImage: `url(${geographyImg})` }}
+          aria-hidden
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/80 to-primary md:bg-gradient-to-r md:from-primary md:via-primary/85 md:to-primary/30" aria-hidden />
+        <div className="container relative mx-auto px-4 py-12 md:py-20">
+          <Breadcrumbs items={[{ label: "Регионы" }, { label: "Крым" }]} />
+          <h1 className="mt-4 font-display text-3xl font-bold sm:text-4xl md:text-5xl">Санитарные услуги в Крыму</h1>
+          <p className="mt-4 max-w-3xl text-sm opacity-90 md:text-base">Симферополь — наш региональный хаб. Из него оперативно выезжаем по всему полуострову. Дежурная бригада 24/7. Работаем с частными лицами, УК, гостиничным сектором и промышленностью.</p>
+        </div>
+      </header>
+      <div className="container mx-auto px-4 py-10 md:py-12">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {krym.map((c) => (
+            <Link key={c.slug} to="/cities/$citySlug" params={{ citySlug: c.slug }}>
+              <Card className="h-full p-6 transition hover:border-accent hover:shadow-lg">
+                <h2 className="font-display text-xl font-bold">{c.name}</h2>
+                <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{c.intro}</p>
+                <div className="mt-3 text-xs text-accent">Выезд: {c.arrivalTime}</div>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </div>
-    </div>
+    </article>
   );
 }
