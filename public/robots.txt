@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /landing/
+Disallow: /account/
+Disallow: /quiz/
+Disallow: /thank-you/
+
+Sitemap: /sitemap.xml
