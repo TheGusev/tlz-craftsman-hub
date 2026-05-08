@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { blogPosts, getBlogPost, type BlogPost } from "@/data/blog";
+import { getBlogPost, type BlogPost } from "@/data/blog";
 import { getService } from "@/data/services";
+import type { Service } from "@/data/services";
 import { Card } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 
@@ -61,9 +62,9 @@ export const Route = createFileRoute("/blog/$slug")({
 
 function BlogPostPage() {
   const { post } = Route.useLoaderData();
-  const related = post.relatedServiceSlugs
-    .map((s) => getService(s))
-    .filter((s): s is NonNullable<ReturnType<typeof getService>> => Boolean(s));
+  const related: Service[] = post.relatedServiceSlugs
+    .map((s: string) => getService(s))
+    .filter((s): s is Service => Boolean(s));
 
   return (
     <main className="container mx-auto max-w-3xl px-4 py-10 md:py-16">
@@ -88,14 +89,14 @@ function BlogPostPage() {
         <p className="mt-4 text-lg text-muted-foreground">{post.excerpt}</p>
 
         <div className="prose prose-neutral mt-8 max-w-none dark:prose-invert">
-          {post.body.map((section, i) => (
+          {post.body.map((section: BlogPost["body"][number], i: number) => (
             <section key={i} className="mt-6">
               {section.heading && (
                 <h2 className="font-display text-xl font-bold md:text-2xl">
                   {section.heading}
                 </h2>
               )}
-              {section.paragraphs.map((p, j) => (
+              {section.paragraphs.map((p: string, j: number) => (
                 <p key={j} className="mt-3 text-base leading-relaxed">
                   {p}
                 </p>
@@ -108,7 +109,7 @@ function BlogPostPage() {
           <aside className="mt-12">
             <h2 className="font-display text-xl font-bold">По теме</h2>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {related.map((s) => (
+              {related.map((s: Service) => (
                 <Card key={s.slug} className="p-5">
                   <div className="text-xs font-semibold uppercase tracking-wider text-accent">
                     {s.cluster}
@@ -138,6 +139,3 @@ function BlogPostPage() {
     </main>
   );
 }
-
-// silence unused-import warning when blogPosts is referenced for type narrowing only
-void blogPosts;
