@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getCity, type City } from "@/data/cities";
-import { services, getService } from "@/data/services";
+import { services, getService, type Service } from "@/data/services";
 import { cases } from "@/data/cases";
 import { getServiceInCityByCity } from "@/data/serviceInCity";
 import { generalFaq } from "@/data/faq";
@@ -68,7 +68,7 @@ function CityPage() {
             <h2 className="font-display text-2xl font-bold">Популярные услуги {city.nameLocative}</h2>
             <p className="mt-2 text-sm text-muted-foreground">{city.localContext}</p>
             <div className="mt-4 grid gap-3 md:grid-cols-2">
-              {popular.map((s) => s && (
+              {popular.map((s: Service | undefined) => s && (
                 <Link key={s.slug} to="/cities/$citySlug/$serviceSlug" params={{ citySlug: city.slug, serviceSlug: s.slug }} className="rounded-xl border border-accent/40 bg-accent/5 p-4 hover:border-accent">
                   <div className="font-display text-base font-bold">{s.shortName} {city.nameLocative}</div>
                   <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">{s.intro}</div>
@@ -80,7 +80,7 @@ function CityPage() {
           <section>
             <h2 className="font-display text-2xl font-bold">Районы и зоны выезда</h2>
             <div className="mt-4 flex flex-wrap gap-2">
-              {city.districts.map((d) => (
+              {city.districts.map((d: string) => (
                 <span key={d} className="rounded-full border border-border bg-card px-3 py-1 text-sm">{d}</span>
               ))}
             </div>

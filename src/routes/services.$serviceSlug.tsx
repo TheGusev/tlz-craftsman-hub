@@ -49,7 +49,7 @@ function ServicePage() {
           <section>
             <h2 className="font-display text-2xl font-bold">Что входит в работу</h2>
             <ul className="mt-4 grid gap-2 md:grid-cols-2">
-              {service.includes.map((it, i) => (
+              {service.includes.map((it: string, i: number) => (
                 <li key={i} className="flex items-start gap-2 text-sm"><Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" />{it}</li>
               ))}
             </ul>
@@ -58,7 +58,7 @@ function ServicePage() {
           <section>
             <h2 className="font-display text-2xl font-bold">Для каких объектов подходит</h2>
             <ul className="mt-4 grid gap-2 md:grid-cols-2">
-              {service.objects.map((it, i) => (
+              {service.objects.map((it: string, i: number) => (
                 <li key={i} className="rounded-md border border-border bg-card px-3 py-2 text-sm">{it}</li>
               ))}
             </ul>
@@ -67,14 +67,14 @@ function ServicePage() {
           <section className="rounded-2xl border border-urgent/30 bg-urgent/5 p-6">
             <h2 className="flex items-center gap-2 font-display text-2xl font-bold text-urgent"><AlertTriangle className="h-6 w-6" />Чем опасно промедление</h2>
             <ul className="mt-4 space-y-2">
-              {service.dangers.map((it, i) => <li key={i} className="text-sm text-foreground/80">— {it}</li>)}
+              {service.dangers.map((it: string, i: number) => <li key={i} className="text-sm text-foreground/80">— {it}</li>)}
             </ul>
           </section>
 
           <section>
             <h2 className="font-display text-2xl font-bold">Этапы работ</h2>
             <ol className="mt-4 space-y-4">
-              {service.steps.map((step, i) => (
+              {service.steps.map((step: Service["steps"][number], i: number) => (
                 <li key={i} className="flex gap-4 rounded-xl border border-border bg-card p-4">
                   <div className="font-display text-2xl font-bold text-accent">{String(i + 1).padStart(2, "0")}</div>
                   <div>
@@ -89,7 +89,7 @@ function ServicePage() {
           <section>
             <h2 className="font-display text-2xl font-bold">Оборудование и методы</h2>
             <ul className="mt-4 grid gap-2 md:grid-cols-2">
-              {service.equipment.map((it, i) => (
+              {service.equipment.map((it: string, i: number) => (
                 <li key={i} className="flex items-start gap-2 text-sm"><Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" />{it}</li>
               ))}
             </ul>
@@ -98,7 +98,7 @@ function ServicePage() {
           <section>
             <h2 className="font-display text-2xl font-bold">От чего зависит цена</h2>
             <ul className="mt-4 space-y-2">
-              {service.priceFactors.map((it, i) => <li key={i} className="text-sm">— {it}</li>)}
+              {service.priceFactors.map((it: string, i: number) => <li key={i} className="text-sm">— {it}</li>)}
             </ul>
           </section>
 
@@ -138,7 +138,7 @@ function ServicePage() {
           <section>
             <h2 className="font-display text-2xl font-bold">FAQ по услуге</h2>
             <Accordion type="single" collapsible className="mt-4">
-              {service.faq.map((f, i) => (
+              {service.faq.map((f: Service["faq"][number], i: number) => (
                 <AccordionItem key={i} value={`f-${i}`}>
                   <AccordionTrigger className="text-left font-semibold">{f.q}</AccordionTrigger>
                   <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>

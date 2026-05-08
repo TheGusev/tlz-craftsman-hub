@@ -50,7 +50,7 @@ function ServiceInCityPage() {
           <section>
             <h2 className="font-display text-2xl font-bold">Когда вызывают {city.nameLocative}</h2>
             <ul className="mt-4 space-y-2">
-              {sc.whenCalled.map((it, i) => (
+              {sc.whenCalled.map((it: string, i: number) => (
                 <li key={i} className="flex items-start gap-2 text-sm"><Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" />{it}</li>
               ))}
             </ul>
@@ -59,7 +59,7 @@ function ServiceInCityPage() {
           <section>
             <h2 className="font-display text-2xl font-bold">Этапы работ</h2>
             <ol className="mt-4 space-y-3">
-              {service.steps.map((step, i) => (
+              {service.steps.map((step: Service["steps"][number], i: number) => (
                 <li key={i} className="rounded-xl border border-border bg-card p-4">
                   <div className="font-display text-sm font-bold text-accent">Этап {i + 1}</div>
                   <div className="mt-1 font-semibold">{step.title}</div>
@@ -73,14 +73,14 @@ function ServiceInCityPage() {
             <h2 className="font-display text-2xl font-bold">Что влияет на цену {city.nameLocative}</h2>
             <p className="mt-3 text-sm text-muted-foreground">{sc.priceContext}</p>
             <ul className="mt-3 space-y-1">
-              {service.priceFactors.map((it, i) => <li key={i} className="text-sm">— {it}</li>)}
+              {service.priceFactors.map((it: string, i: number) => <li key={i} className="text-sm">— {it}</li>)}
             </ul>
           </section>
 
           <section>
             <h2 className="font-display text-2xl font-bold">Районы выезда</h2>
             <div className="mt-4 flex flex-wrap gap-2">
-              {city.districts.map((d) => (
+              {city.districts.map((d: string) => (
                 <span key={d} className="rounded-full border border-border bg-card px-3 py-1 text-sm">{d}</span>
               ))}
             </div>
@@ -97,7 +97,7 @@ function ServiceInCityPage() {
           <section>
             <h2 className="font-display text-2xl font-bold">FAQ по {service.shortName.toLowerCase()} {city.nameLocative}</h2>
             <Accordion type="single" collapsible className="mt-4">
-              {[...sc.faq, ...service.faq.slice(0, 2)].map((f, i) => (
+              {[...sc.faq, ...service.faq.slice(0, 2)].map((f: Service["faq"][number], i: number) => (
                 <AccordionItem key={i} value={`f-${i}`}>
                   <AccordionTrigger className="text-left font-semibold">{f.q}</AccordionTrigger>
                   <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
