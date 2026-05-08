@@ -86,16 +86,29 @@ function HomePage() {
           <Link to="/services" className="hidden text-sm font-semibold text-accent hover:underline md:inline">Все услуги →</Link>
         </div>
         <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {services.map((s) => (
-            <Card key={s.slug} className="group flex flex-col gap-3 p-6 transition hover:border-accent">
-              <div className="text-xs font-semibold uppercase tracking-wider text-accent">{s.cluster}</div>
-              <h3 className="font-display text-lg font-bold">{s.shortName}</h3>
-              <p className="line-clamp-3 text-sm text-muted-foreground">{s.intro}</p>
-              <Link to="/services/$serviceSlug" params={{ serviceSlug: s.slug }} className="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-secondary group-hover:text-accent">
-                Подробнее <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Card>
-          ))}
+          {services.map((s) => {
+            const img = getServiceImage(s.slug);
+            return (
+              <Card key={s.slug} className="group flex flex-col overflow-hidden p-0 transition hover:border-accent hover:shadow-lg">
+                <div className="relative aspect-[4/3] overflow-hidden bg-muted sm:aspect-[16/10]">
+                  {img ? (
+                    <img src={img} alt={s.shortName} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-secondary" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent" />
+                  <div className="absolute left-3 top-3 rounded-full bg-background/95 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-accent">{s.cluster}</div>
+                </div>
+                <div className="flex flex-1 flex-col gap-3 p-5">
+                  <h3 className="font-display text-lg font-bold">{s.shortName}</h3>
+                  <p className="line-clamp-3 text-sm text-muted-foreground">{s.intro}</p>
+                  <Link to="/services/$serviceSlug" params={{ serviceSlug: s.slug }} className="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-secondary group-hover:text-accent">
+                    Подробнее <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </Card>
+            );
+          })}
         </div>
       </section>
 
