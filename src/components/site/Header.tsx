@@ -29,7 +29,9 @@ export function Header() {
         <Link to="/" className="flex items-center gap-2 font-display">
           <span className="flex flex-col leading-tight">
             <span className="text-sm font-bold text-foreground">Санитарные Решения</span>
-            <span className="text-xs text-muted-foreground">РФ · Аварийная служба 24/7</span>
+            <span className="bg-[linear-gradient(110deg,var(--accent),var(--urgent),var(--accent))] bg-clip-text text-xs font-semibold text-transparent animate-shimmer">
+              РФ · Аварийная служба 24/7
+            </span>
           </span>
         </Link>
 
