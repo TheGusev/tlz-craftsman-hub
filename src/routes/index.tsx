@@ -30,20 +30,26 @@ function HomePage() {
     <>
       {/* Hero */}
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-40 md:opacity-30"
+          style={{ backgroundImage: `url(${heroMain})` }}
+          aria-hidden
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/85 to-primary md:bg-gradient-to-r md:from-primary md:via-primary/85 md:to-primary/40" aria-hidden />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--color-accent),_transparent_60%)] opacity-20" />
-        <div className="container relative mx-auto grid gap-10 px-4 py-16 md:grid-cols-2 md:py-24">
+        <div className="container relative mx-auto grid gap-10 px-4 py-14 md:grid-cols-2 md:py-24">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-urgent px-3 py-1 text-xs font-semibold text-urgent-foreground">
+            <div className="inline-flex items-center gap-2 rounded-full bg-urgent px-3 py-1 text-xs font-semibold text-urgent-foreground shadow-lg shadow-urgent/30">
               <span className="h-2 w-2 animate-pulse rounded-full bg-white" /> Аварийная служба 24/7
             </div>
-            <h1 className="mt-6 font-display text-4xl font-bold leading-tight md:text-6xl">
+            <h1 className="mt-6 font-display text-[2rem] font-bold leading-[1.1] sm:text-4xl md:text-6xl">
               Срочные санитарные работы по ЮФО и Крыму
             </h1>
             <p className="mt-5 max-w-xl text-base opacity-90 md:text-lg">
               Уборка после пожара и потопа, дезинфекция, удаление плесени, фумигация. Выезд бригады в течение 1–3 часов. Лицензия, сертифицированные препараты, гарантия результата.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg" className="bg-urgent text-urgent-foreground hover:bg-urgent/90">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Button asChild size="lg" className="bg-urgent text-urgent-foreground hover:bg-urgent/90 shadow-lg shadow-urgent/30">
                 <a href="tel:+78005551234"><Phone className="mr-2 h-4 w-4" />Срочный выезд</a>
               </Button>
               <Button asChild size="lg" variant="outline" className="border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white">
@@ -58,13 +64,13 @@ function HomePage() {
               ].map((b, i) => (
                 <div key={i} className="flex flex-col gap-1">
                   <b.icon className="h-5 w-5 text-accent" />
-                  <div className="font-display text-lg font-bold">{b.t}</div>
-                  <div className="text-xs opacity-70">{b.s}</div>
+                  <div className="font-display text-base font-bold sm:text-lg">{b.t}</div>
+                  <div className="text-[11px] opacity-70 sm:text-xs">{b.s}</div>
                 </div>
               ))}
             </div>
           </div>
-          <div>
+          <div className="rounded-2xl bg-background/95 p-1 shadow-2xl backdrop-blur md:bg-transparent md:p-0 md:shadow-none">
             <LeadForm />
           </div>
         </div>
