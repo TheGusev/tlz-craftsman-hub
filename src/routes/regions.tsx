@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import geographyImg from "@/assets/geography.jpg";
@@ -39,6 +39,10 @@ const regions = [
 ];
 
 function RegionsHub() {
+  const { pathname } = useLocation();
+  if (pathname.replace(/\/$/, "") !== "/regions") {
+    return <Outlet />;
+  }
   return (
     <main>
       <section className="relative overflow-hidden bg-primary text-primary-foreground">

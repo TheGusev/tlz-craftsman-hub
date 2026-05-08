@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { blogPosts } from "@/data/blog";
 import { Card } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
@@ -25,6 +25,10 @@ export const Route = createFileRoute("/blog")({
 });
 
 function BlogIndex() {
+  const { pathname } = useLocation();
+  if (pathname.replace(/\/$/, "") !== "/blog") {
+    return <Outlet />;
+  }
   return (
     <main className="container mx-auto px-4 py-12 md:py-20">
       <header>

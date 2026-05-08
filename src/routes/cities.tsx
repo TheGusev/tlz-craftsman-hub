@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { cities } from "@/data/cities";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { Card } from "@/components/ui/card";
@@ -17,6 +17,10 @@ export const Route = createFileRoute("/cities")({
 });
 
 function CitiesIndex() {
+  const { pathname } = useLocation();
+  if (pathname.replace(/\/$/, "") !== "/cities") {
+    return <Outlet />;
+  }
   return (
     <div className="container mx-auto px-4 py-12">
       <Breadcrumbs items={[{ label: "Города" }]} />

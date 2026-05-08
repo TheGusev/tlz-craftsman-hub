@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, notFound, useLocation } from "@tanstack/react-router";
 import { getCity, type City } from "@/data/cities";
 import { services, getService, type Service } from "@/data/services";
 import { cases } from "@/data/cases";
@@ -31,6 +31,10 @@ export const Route = createFileRoute("/cities/$citySlug")({
 
 function CityPage() {
   const { city }: { city: City } = Route.useLoaderData();
+  const { pathname } = useLocation();
+  if (pathname.replace(/\/$/, "") !== `/cities/${city.slug}`) {
+    return <Outlet />;
+  }
   const popular = city.popularServices.map(getService).filter(Boolean);
   const cityLinks = getServiceInCityByCity(city.slug);
   const cityCases = cases.filter((c) => c.city === city.slug);
