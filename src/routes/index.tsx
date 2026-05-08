@@ -9,7 +9,6 @@ import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Phone, Clock, ShieldCheck, MapPin, ArrowRight } from "lucide-react";
 import { getServiceImage } from "@/lib/serviceImages";
-import heroMain from "@/assets/hero-main.jpg";
 import geographyImg from "@/assets/geography.jpg";
 
 export const Route = createFileRoute("/")({
@@ -30,12 +29,7 @@ function HomePage() {
     <>
       {/* Hero */}
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-40 md:opacity-30"
-          style={{ backgroundImage: `url(${heroMain})` }}
-          aria-hidden
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/85 to-primary md:bg-gradient-to-r md:from-primary md:via-primary/85 md:to-primary/40" aria-hidden />
+        <div className="absolute inset-0 bg-gradient-to-b from-primary via-primary to-primary/90" aria-hidden />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--color-accent),_transparent_60%)] opacity-20" />
         <div className="container relative mx-auto grid gap-10 px-4 py-14 md:grid-cols-2 md:py-24">
           <div>
