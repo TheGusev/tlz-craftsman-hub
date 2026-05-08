@@ -9,38 +9,232 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ServicesRouteImport } from './routes/services'
+import { Route as PricesRouteImport } from './routes/prices'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as ContactsRouteImport } from './routes/contacts'
+import { Route as CitiesRouteImport } from './routes/cities'
+import { Route as CasesRouteImport } from './routes/cases'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ServicesServiceSlugRouteImport } from './routes/services.$serviceSlug'
+import { Route as RegionsKrymRouteImport } from './routes/regions.krym'
+import { Route as CitiesCitySlugRouteImport } from './routes/cities.$citySlug'
+import { Route as CitiesCitySlugServiceSlugRouteImport } from './routes/cities.$citySlug.$serviceSlug'
 
+const ServicesRoute = ServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricesRoute = PricesRouteImport.update({
+  id: '/prices',
+  path: '/prices',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactsRoute = ContactsRouteImport.update({
+  id: '/contacts',
+  path: '/contacts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CitiesRoute = CitiesRouteImport.update({
+  id: '/cities',
+  path: '/cities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CasesRoute = CasesRouteImport.update({
+  id: '/cases',
+  path: '/cases',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ServicesServiceSlugRoute = ServicesServiceSlugRouteImport.update({
+  id: '/$serviceSlug',
+  path: '/$serviceSlug',
+  getParentRoute: () => ServicesRoute,
+} as any)
+const RegionsKrymRoute = RegionsKrymRouteImport.update({
+  id: '/regions/krym',
+  path: '/regions/krym',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CitiesCitySlugRoute = CitiesCitySlugRouteImport.update({
+  id: '/$citySlug',
+  path: '/$citySlug',
+  getParentRoute: () => CitiesRoute,
+} as any)
+const CitiesCitySlugServiceSlugRoute =
+  CitiesCitySlugServiceSlugRouteImport.update({
+    id: '/$serviceSlug',
+    path: '/$serviceSlug',
+    getParentRoute: () => CitiesCitySlugRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/cases': typeof CasesRoute
+  '/cities': typeof CitiesRouteWithChildren
+  '/contacts': typeof ContactsRoute
+  '/faq': typeof FaqRoute
+  '/prices': typeof PricesRoute
+  '/services': typeof ServicesRouteWithChildren
+  '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
+  '/regions/krym': typeof RegionsKrymRoute
+  '/services/$serviceSlug': typeof ServicesServiceSlugRoute
+  '/cities/$citySlug/$serviceSlug': typeof CitiesCitySlugServiceSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/cases': typeof CasesRoute
+  '/cities': typeof CitiesRouteWithChildren
+  '/contacts': typeof ContactsRoute
+  '/faq': typeof FaqRoute
+  '/prices': typeof PricesRoute
+  '/services': typeof ServicesRouteWithChildren
+  '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
+  '/regions/krym': typeof RegionsKrymRoute
+  '/services/$serviceSlug': typeof ServicesServiceSlugRoute
+  '/cities/$citySlug/$serviceSlug': typeof CitiesCitySlugServiceSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/cases': typeof CasesRoute
+  '/cities': typeof CitiesRouteWithChildren
+  '/contacts': typeof ContactsRoute
+  '/faq': typeof FaqRoute
+  '/prices': typeof PricesRoute
+  '/services': typeof ServicesRouteWithChildren
+  '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
+  '/regions/krym': typeof RegionsKrymRoute
+  '/services/$serviceSlug': typeof ServicesServiceSlugRoute
+  '/cities/$citySlug/$serviceSlug': typeof CitiesCitySlugServiceSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/cases'
+    | '/cities'
+    | '/contacts'
+    | '/faq'
+    | '/prices'
+    | '/services'
+    | '/cities/$citySlug'
+    | '/regions/krym'
+    | '/services/$serviceSlug'
+    | '/cities/$citySlug/$serviceSlug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/cases'
+    | '/cities'
+    | '/contacts'
+    | '/faq'
+    | '/prices'
+    | '/services'
+    | '/cities/$citySlug'
+    | '/regions/krym'
+    | '/services/$serviceSlug'
+    | '/cities/$citySlug/$serviceSlug'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/cases'
+    | '/cities'
+    | '/contacts'
+    | '/faq'
+    | '/prices'
+    | '/services'
+    | '/cities/$citySlug'
+    | '/regions/krym'
+    | '/services/$serviceSlug'
+    | '/cities/$citySlug/$serviceSlug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  CasesRoute: typeof CasesRoute
+  CitiesRoute: typeof CitiesRouteWithChildren
+  ContactsRoute: typeof ContactsRoute
+  FaqRoute: typeof FaqRoute
+  PricesRoute: typeof PricesRoute
+  ServicesRoute: typeof ServicesRouteWithChildren
+  RegionsKrymRoute: typeof RegionsKrymRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/services': {
+      id: '/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/prices': {
+      id: '/prices'
+      path: '/prices'
+      fullPath: '/prices'
+      preLoaderRoute: typeof PricesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contacts': {
+      id: '/contacts'
+      path: '/contacts'
+      fullPath: '/contacts'
+      preLoaderRoute: typeof ContactsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cities': {
+      id: '/cities'
+      path: '/cities'
+      fullPath: '/cities'
+      preLoaderRoute: typeof CitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cases': {
+      id: '/cases'
+      path: '/cases'
+      fullPath: '/cases'
+      preLoaderRoute: typeof CasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +242,82 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/services/$serviceSlug': {
+      id: '/services/$serviceSlug'
+      path: '/$serviceSlug'
+      fullPath: '/services/$serviceSlug'
+      preLoaderRoute: typeof ServicesServiceSlugRouteImport
+      parentRoute: typeof ServicesRoute
+    }
+    '/regions/krym': {
+      id: '/regions/krym'
+      path: '/regions/krym'
+      fullPath: '/regions/krym'
+      preLoaderRoute: typeof RegionsKrymRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cities/$citySlug': {
+      id: '/cities/$citySlug'
+      path: '/$citySlug'
+      fullPath: '/cities/$citySlug'
+      preLoaderRoute: typeof CitiesCitySlugRouteImport
+      parentRoute: typeof CitiesRoute
+    }
+    '/cities/$citySlug/$serviceSlug': {
+      id: '/cities/$citySlug/$serviceSlug'
+      path: '/$serviceSlug'
+      fullPath: '/cities/$citySlug/$serviceSlug'
+      preLoaderRoute: typeof CitiesCitySlugServiceSlugRouteImport
+      parentRoute: typeof CitiesCitySlugRoute
+    }
   }
 }
 
+interface CitiesCitySlugRouteChildren {
+  CitiesCitySlugServiceSlugRoute: typeof CitiesCitySlugServiceSlugRoute
+}
+
+const CitiesCitySlugRouteChildren: CitiesCitySlugRouteChildren = {
+  CitiesCitySlugServiceSlugRoute: CitiesCitySlugServiceSlugRoute,
+}
+
+const CitiesCitySlugRouteWithChildren = CitiesCitySlugRoute._addFileChildren(
+  CitiesCitySlugRouteChildren,
+)
+
+interface CitiesRouteChildren {
+  CitiesCitySlugRoute: typeof CitiesCitySlugRouteWithChildren
+}
+
+const CitiesRouteChildren: CitiesRouteChildren = {
+  CitiesCitySlugRoute: CitiesCitySlugRouteWithChildren,
+}
+
+const CitiesRouteWithChildren =
+  CitiesRoute._addFileChildren(CitiesRouteChildren)
+
+interface ServicesRouteChildren {
+  ServicesServiceSlugRoute: typeof ServicesServiceSlugRoute
+}
+
+const ServicesRouteChildren: ServicesRouteChildren = {
+  ServicesServiceSlugRoute: ServicesServiceSlugRoute,
+}
+
+const ServicesRouteWithChildren = ServicesRoute._addFileChildren(
+  ServicesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  CasesRoute: CasesRoute,
+  CitiesRoute: CitiesRouteWithChildren,
+  ContactsRoute: ContactsRoute,
+  FaqRoute: FaqRoute,
+  PricesRoute: PricesRoute,
+  ServicesRoute: ServicesRouteWithChildren,
+  RegionsKrymRoute: RegionsKrymRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
