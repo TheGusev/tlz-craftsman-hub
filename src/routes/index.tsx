@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Phone, Clock, ShieldCheck, MapPin, ArrowRight } from "lucide-react";
+import { getServiceImage } from "@/lib/serviceImages";
+import heroMain from "@/assets/hero-main.jpg";
+import geographyImg from "@/assets/geography.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
