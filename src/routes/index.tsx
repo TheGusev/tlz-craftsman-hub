@@ -11,6 +11,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Phone, Clock, ShieldCheck, MapPin, ArrowRight } from "lucide-react";
 import { getServiceImage } from "@/lib/serviceImages";
 import { getCaseImage } from "@/lib/caseImages";
+import { MobileQuickLead } from "@/components/site/MobileQuickLead";
 import geographyImg from "@/assets/geography.jpg";
 import heroCrimeaMountain from "@/assets/hero-crimea-mountain.png";
 
