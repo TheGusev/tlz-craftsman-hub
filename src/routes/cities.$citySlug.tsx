@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getCity, type City } from "@/data/cities";
-import { services, getService } from "@/data/services";
+import { services, getService, type Service } from "@/data/services";
 import { cases } from "@/data/cases";
 import { getServiceInCityByCity } from "@/data/serviceInCity";
 import { generalFaq } from "@/data/faq";
