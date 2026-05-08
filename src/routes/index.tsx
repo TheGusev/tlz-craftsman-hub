@@ -113,18 +113,33 @@ function HomePage() {
       </section>
 
       {/* Geography */}
-      <section className="bg-surface py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <h2 className="font-display text-3xl font-bold md:text-4xl">География присутствия</h2>
-          <p className="mt-3 max-w-2xl text-muted-foreground">Дежурные бригады в Краснодаре, Сочи, Ростове-на-Дону. Региональный хаб по Крыму с выездом в Симферополь, Севастополь, Ялту, Евпаторию и Керчь.</p>
-          <div className="mt-10 grid gap-3 md:grid-cols-4">
-            {cities.map((c) => (
-              <Link key={c.slug} to="/cities/$citySlug" params={{ citySlug: c.slug }} className="rounded-xl border border-border bg-card p-5 transition hover:border-accent">
-                <div className="font-display text-lg font-bold">{c.name}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{c.region}</div>
-                <div className="mt-3 text-xs text-accent">Выезд: {c.arrivalTime}</div>
-              </Link>
-            ))}
+      <section className="relative overflow-hidden bg-surface py-16 md:py-24">
+        <div className="container mx-auto grid gap-10 px-4 md:grid-cols-2 md:items-center">
+          <div className="relative order-2 overflow-hidden rounded-2xl shadow-2xl md:order-1">
+            <img src={geographyImg} alt="Побережье ЮФО и Крыма с воздуха" loading="lazy" className="aspect-[4/3] w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-primary/70 via-transparent" />
+            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-primary-foreground">
+              <div>
+                <div className="font-display text-xl font-bold">8 городов</div>
+                <div className="text-xs opacity-80">Дежурные бригады 24/7</div>
+              </div>
+              <div className="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">ЮФО + Крым</div>
+            </div>
+          </div>
+          <div className="order-1 md:order-2">
+            <h2 className="font-display text-3xl font-bold md:text-4xl">География присутствия</h2>
+            <p className="mt-3 text-muted-foreground">Дежурные бригады в Краснодаре, Сочи, Ростове-на-Дону. Региональный хаб по Крыму с выездом в Симферополь, Севастополь, Ялту, Евпаторию и Керчь.</p>
+            <div className="mt-6 grid gap-2 sm:grid-cols-2">
+              {cities.map((c) => (
+                <Link key={c.slug} to="/cities/$citySlug" params={{ citySlug: c.slug }} className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3 transition hover:border-accent active:scale-[0.99]">
+                  <div>
+                    <div className="font-display text-sm font-bold">{c.name}</div>
+                    <div className="text-[11px] text-muted-foreground">{c.region}</div>
+                  </div>
+                  <div className="text-[11px] font-semibold text-accent">{c.arrivalTime}</div>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </section>
