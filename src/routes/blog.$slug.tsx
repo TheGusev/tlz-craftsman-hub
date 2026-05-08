@@ -64,7 +64,7 @@ function BlogPostPage() {
   const { post } = Route.useLoaderData();
   const related: Service[] = post.relatedServiceSlugs
     .map((s: string) => getService(s))
-    .filter((s): s is Service => Boolean(s));
+    .filter((s: Service | undefined): s is Service => Boolean(s));
 
   return (
     <main className="container mx-auto max-w-3xl px-4 py-10 md:py-16">
