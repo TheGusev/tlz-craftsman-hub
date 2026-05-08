@@ -86,6 +86,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:site_name", content: "Санитарные Решения РФ" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "Санитарные Решения РФ — аварийная санитарная служба 24/7" },
+      { name: "twitter:title", content: "Санитарные Решения РФ — аварийная санитарная служба 24/7" },
+      { name: "description", content: "Профессиональная санитарная обработка. Ликвидация последствий пожаров и затоплений, удаление запахов, дезинфекция после смерти, вывоз мусора. Выезд 24/7" },
+      { property: "og:description", content: "Профессиональная санитарная обработка. Ликвидация последствий пожаров и затоплений, удаление запахов, дезинфекция после смерти, вывоз мусора. Выезд 24/7" },
+      { name: "twitter:description", content: "Профессиональная санитарная обработка. Ликвидация последствий пожаров и затоплений, удаление запахов, дезинфекция после смерти, вывоз мусора. Выезд 24/7" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e13e54c1-0dc1-4ab4-a66c-89bf0ef108da" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e13e54c1-0dc1-4ab4-a66c-89bf0ef108da" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
