@@ -52,13 +52,18 @@ function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-primary text-primary-foreground">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary via-primary to-primary/90" aria-hidden />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--color-accent),_transparent_60%)] opacity-20" />
-        <div className="container relative mx-auto grid gap-10 px-4 py-14 md:grid-cols-2 md:py-24">
-          <div>
+      <section className="relative min-h-[calc(100svh-76px)] overflow-hidden text-primary-foreground">
+        <img
+          src={geographyImg}
+          alt="ЮФО и Крым с высоты"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-foreground/70" aria-hidden />
+        <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/45 to-transparent" aria-hidden />
+        <div className="container relative mx-auto flex min-h-[calc(100svh-76px)] items-center px-4 py-14 md:py-20">
+          <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-urgent px-3 py-1 text-xs font-semibold text-urgent-foreground shadow-lg shadow-urgent/30">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-white" /> Аварийная служба 24/7
+              <span className="h-2 w-2 animate-pulse rounded-full bg-primary-foreground" /> Аварийная служба 24/7
             </div>
             <h1 className="mt-6 font-display text-[2rem] font-bold leading-[1.1] sm:text-4xl md:text-6xl">
               Срочные санитарные работы по ЮФО и Крыму
@@ -70,11 +75,11 @@ function HomePage() {
               <Button asChild size="lg" className="bg-urgent text-urgent-foreground hover:bg-urgent/90 shadow-lg shadow-urgent/30">
                 <a href="tel:+78005551234"><Phone className="mr-2 h-4 w-4" />Срочный выезд</a>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white">
+              <Button asChild size="lg" variant="outline" className="border-primary-foreground/40 bg-background/10 text-primary-foreground hover:bg-primary-foreground/15 hover:text-primary-foreground">
                 <Link to="/services">Все услуги</Link>
               </Button>
             </div>
-            <div className="mt-10 grid grid-cols-3 gap-4">
+            <div className="mt-10 grid max-w-2xl grid-cols-3 gap-4">
               {[
                 { icon: Clock, t: "1–3 часа", s: "до приезда бригады" },
                 { icon: ShieldCheck, t: "Гарантия", s: "до 12 месяцев" },
@@ -87,9 +92,6 @@ function HomePage() {
                 </div>
               ))}
             </div>
-          </div>
-          <div className="rounded-2xl bg-background/95 p-1 shadow-2xl backdrop-blur md:bg-transparent md:p-0 md:shadow-none">
-            <LeadForm />
           </div>
         </div>
       </section>
@@ -183,7 +185,7 @@ function HomePage() {
       </section>
 
       {/* Steps */}
-      <section className="bg-primary py-16 text-primary-foreground md:py-24">
+      <section className="bg-surface py-16 text-foreground md:py-24">
         <div className="container mx-auto px-4">
           <h2 className="font-display text-3xl font-bold md:text-4xl">Этапы работы</h2>
           <div className="mt-10 grid gap-6 md:grid-cols-4">
@@ -196,7 +198,7 @@ function HomePage() {
               <div key={s.n}>
                 <div className="font-display text-5xl font-bold text-accent">{s.n}</div>
                 <h3 className="mt-3 font-display text-lg font-bold">{s.t}</h3>
-                <p className="mt-1 text-sm opacity-80">{s.d}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{s.d}</p>
               </div>
             ))}
           </div>
@@ -238,10 +240,10 @@ function HomePage() {
 
       {/* CTA */}
       <section className="container mx-auto px-4 py-16 md:py-24">
-        <div className="grid gap-10 rounded-3xl bg-primary p-8 text-primary-foreground md:grid-cols-2 md:p-14">
+        <div className="grid gap-10 rounded-3xl border border-border bg-surface p-8 text-foreground md:grid-cols-2 md:p-14">
           <div>
             <h2 className="font-display text-3xl font-bold md:text-4xl">Нужен срочный выезд?</h2>
-            <p className="mt-4 opacity-90">Звоните в любое время — дежурная бригада на линии 24/7. Перезвоним за 15 минут после заявки.</p>
+            <p className="mt-4 text-muted-foreground">Звоните в любое время — дежурная бригада на линии 24/7. Перезвоним за 15 минут после заявки.</p>
             <a href="tel:+78005551234" className="mt-6 inline-block font-display text-3xl font-bold text-accent">+7 (800) 555-12-34</a>
           </div>
           <LeadForm />
