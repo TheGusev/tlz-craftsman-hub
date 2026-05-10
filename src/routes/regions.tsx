@@ -47,19 +47,20 @@ function RegionsHub() {
     <main>
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-30"
+          className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${geographyImg})` }}
           aria-hidden
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/85 to-primary" />
         <div className="container relative mx-auto px-4 py-14 md:py-20">
-          <h1 className="font-display text-3xl font-bold md:text-5xl">
-            Регионы присутствия
-          </h1>
-          <p className="mt-4 max-w-2xl text-base opacity-90 md:text-lg">
-            Работаем по ЮФО и Крыму. Региональные хабы с дежурными бригадами,
-            выезд 24/7, единый стандарт обслуживания.
-          </p>
+          <div className="max-w-2xl rounded-2xl bg-primary/70 p-5 backdrop-blur-sm md:p-8">
+            <h1 className="font-display text-3xl font-bold md:text-5xl">
+              Регионы присутствия
+            </h1>
+            <p className="mt-4 text-base opacity-95 md:text-lg">
+              Работаем по ЮФО и Крыму. Региональные хабы с дежурными бригадами,
+              выезд 24/7, единый стандарт обслуживания.
+            </p>
+          </div>
         </div>
       </section>
 

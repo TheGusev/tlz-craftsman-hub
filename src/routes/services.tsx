@@ -43,7 +43,6 @@ function ServicesIndex() {
                     ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary" />
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent" />
                   </div>
                   <div className="flex flex-1 flex-col gap-3 p-5">
                     <h3 className="font-display text-lg font-bold">{s.name}</h3>
