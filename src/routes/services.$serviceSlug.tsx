@@ -87,18 +87,19 @@ function ServicePage() {
         {cover && (
           <>
             <div
-              className="absolute inset-0 bg-cover bg-center opacity-35 md:opacity-25"
+              className="absolute inset-0 bg-cover bg-center"
               style={{ backgroundImage: `url(${cover})` }}
               aria-hidden
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/85 to-primary md:bg-gradient-to-r md:from-primary md:via-primary/80 md:to-primary/30" aria-hidden />
           </>
         )}
         <div className="container relative mx-auto px-4 py-10 md:py-16">
-          <Breadcrumbs items={[{ label: "Услуги", to: "/services" }, { label: service.shortName }]} />
-          <div className="mt-4 text-xs font-semibold uppercase tracking-wider text-accent">{service.cluster}</div>
-          <h1 className="mt-2 font-display text-[1.75rem] font-bold leading-tight sm:text-3xl md:text-5xl">{service.h1}</h1>
-          <p className="mt-4 max-w-3xl text-sm opacity-90 md:text-base">{service.intro}</p>
+          <div className="max-w-3xl rounded-2xl bg-primary/70 p-5 backdrop-blur-sm md:p-8">
+            <Breadcrumbs items={[{ label: "Услуги", to: "/services" }, { label: service.shortName }]} />
+            <div className="mt-4 text-xs font-semibold uppercase tracking-wider text-accent">{service.cluster}</div>
+            <h1 className="mt-2 font-display text-[1.75rem] font-bold leading-tight sm:text-3xl md:text-5xl">{service.h1}</h1>
+            <p className="mt-4 text-sm opacity-95 md:text-base">{service.intro}</p>
+          </div>
         </div>
       </header>
 

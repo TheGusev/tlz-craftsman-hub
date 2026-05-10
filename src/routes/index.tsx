@@ -136,7 +136,6 @@ function HomePage() {
                   ) : (
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-secondary" />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent" />
                   <div className="absolute left-3 top-3 rounded-full bg-background/95 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-accent">{s.cluster}</div>
                 </div>
                 <div className="flex flex-1 flex-col gap-3 p-5">
@@ -156,13 +155,12 @@ function HomePage() {
         <div className="container mx-auto grid gap-10 px-4 md:grid-cols-2 md:items-center">
           <div className="relative order-2 overflow-hidden rounded-2xl shadow-2xl md:order-1">
             <img src={geographyImg} alt="Побережье ЮФО и Крыма с воздуха" loading="lazy" className="aspect-[4/3] w-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-primary/70 via-transparent" />
-            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-primary-foreground">
-              <div>
+            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+              <div className="rounded-xl bg-background/95 px-3 py-2 text-foreground shadow-lg">
                 <div className="font-display text-xl font-bold">8 городов</div>
-                <div className="text-xs opacity-80">Дежурные бригады 24/7</div>
+                <div className="text-xs text-muted-foreground">Дежурные бригады 24/7</div>
               </div>
-              <div className="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">ЮФО + Крым</div>
+              <div className="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground shadow-lg">ЮФО + Крым</div>
             </div>
           </div>
           <div className="order-1 md:order-2">
