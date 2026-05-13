@@ -53,6 +53,7 @@ export function UrgentCTA() {
               target={a.external ? "_blank" : undefined}
               rel={a.external ? "noopener noreferrer" : undefined}
               aria-label={a.label}
+              onClick={() => trackGoal(a.goal, { source: "urgent_cta" })}
               tabIndex={open ? 0 : -1}
               style={{ transitionDelay: open ? `${i * 50}ms` : "0ms" }}
               className={`flex items-center gap-3 rounded-full pl-5 pr-2 py-2 shadow-lg transition-all duration-300 ${a.bg} ${
