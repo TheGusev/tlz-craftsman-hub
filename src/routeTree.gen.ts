@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VyezdRouteImport } from './routes/vyezd'
 import { Route as ThankYouRouteImport } from './routes/thank-you'
+import { Route as SoglasieRouteImport } from './routes/soglasie'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as RegionsRouteImport } from './routes/regions'
@@ -44,6 +45,11 @@ const VyezdRoute = VyezdRouteImport.update({
 const ThankYouRoute = ThankYouRouteImport.update({
   id: '/thank-you',
   path: '/thank-you',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SoglasieRoute = SoglasieRouteImport.update({
+  id: '/soglasie',
+  path: '/soglasie',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -186,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/regions': typeof RegionsRouteWithChildren
   '/services': typeof ServicesRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/soglasie': typeof SoglasieRoute
   '/thank-you': typeof ThankYouRoute
   '/vyezd': typeof VyezdRoute
   '/api/leads': typeof ApiLeadsRoute
@@ -214,6 +221,7 @@ export interface FileRoutesByTo {
   '/regions': typeof RegionsRouteWithChildren
   '/services': typeof ServicesRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/soglasie': typeof SoglasieRoute
   '/thank-you': typeof ThankYouRoute
   '/vyezd': typeof VyezdRoute
   '/api/leads': typeof ApiLeadsRoute
@@ -243,6 +251,7 @@ export interface FileRoutesById {
   '/regions': typeof RegionsRouteWithChildren
   '/services': typeof ServicesRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/soglasie': typeof SoglasieRoute
   '/thank-you': typeof ThankYouRoute
   '/vyezd': typeof VyezdRoute
   '/api/leads': typeof ApiLeadsRoute
@@ -273,6 +282,7 @@ export interface FileRouteTypes {
     | '/regions'
     | '/services'
     | '/sitemap.xml'
+    | '/soglasie'
     | '/thank-you'
     | '/vyezd'
     | '/api/leads'
@@ -301,6 +311,7 @@ export interface FileRouteTypes {
     | '/regions'
     | '/services'
     | '/sitemap.xml'
+    | '/soglasie'
     | '/thank-you'
     | '/vyezd'
     | '/api/leads'
@@ -329,6 +340,7 @@ export interface FileRouteTypes {
     | '/regions'
     | '/services'
     | '/sitemap.xml'
+    | '/soglasie'
     | '/thank-you'
     | '/vyezd'
     | '/api/leads'
@@ -358,6 +370,7 @@ export interface RootRouteChildren {
   RegionsRoute: typeof RegionsRouteWithChildren
   ServicesRoute: typeof ServicesRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SoglasieRoute: typeof SoglasieRoute
   ThankYouRoute: typeof ThankYouRoute
   VyezdRoute: typeof VyezdRoute
   ApiLeadsRoute: typeof ApiLeadsRoute
@@ -378,6 +391,13 @@ declare module '@tanstack/react-router' {
       path: '/thank-you'
       fullPath: '/thank-you'
       preLoaderRoute: typeof ThankYouRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/soglasie': {
+      id: '/soglasie'
+      path: '/soglasie'
+      fullPath: '/soglasie'
+      preLoaderRoute: typeof SoglasieRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -625,6 +645,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegionsRoute: RegionsRouteWithChildren,
   ServicesRoute: ServicesRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SoglasieRoute: SoglasieRoute,
   ThankYouRoute: ThankYouRoute,
   VyezdRoute: VyezdRoute,
   ApiLeadsRoute: ApiLeadsRoute,
