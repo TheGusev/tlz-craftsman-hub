@@ -73,7 +73,12 @@ export function UrgentCTA() {
 
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          setOpen((v) => {
+            if (!v) trackGoal("quick_lead_open", { source: "urgent_cta" });
+            return !v;
+          });
+        }}
         aria-label={open ? "Закрыть меню связи" : "Открыть меню связи"}
         aria-expanded={open}
         className={`flex h-14 w-14 items-center justify-center rounded-full shadow-xl transition-all duration-300 ${
