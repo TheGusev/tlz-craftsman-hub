@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { cities } from "@/data/cities";
-import { Breadcrumbs } from "@/components/site/Breadcrumbs";
+import { PageHero } from "@/components/site/PageHero";
 import { Card } from "@/components/ui/card";
 
 export const Route = createFileRoute("/cities")({
@@ -22,11 +22,14 @@ function CitiesIndex() {
     return <Outlet />;
   }
   return (
-    <div className="container mx-auto px-4 py-12">
-      <Breadcrumbs items={[{ label: "Города" }]} />
-      <h1 className="mt-4 font-display text-4xl font-bold md:text-5xl">Города присутствия</h1>
-      <p className="mt-4 max-w-3xl text-muted-foreground">Дежурные бригады в Краснодарском крае, Ростовской области и Республике Крым. Региональный хаб по Крыму обеспечивает выезд во все ключевые города полуострова.</p>
-      <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <>
+    <PageHero
+      breadcrumbs={[{ label: "Города" }]}
+      title="Города присутствия"
+      description="Дежурные бригады в Краснодарском крае, Ростовской области и Республике Крым. Региональный хаб по Крыму обеспечивает выезд во все ключевые города полуострова."
+    />
+    <div className="container mx-auto px-4 py-10 md:py-12">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {cities.map((c) => (
           <Link key={c.slug} to="/cities/$citySlug" params={{ citySlug: c.slug }}>
             <Card className="p-6 transition hover:border-accent">
