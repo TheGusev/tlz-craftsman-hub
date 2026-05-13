@@ -13,6 +13,11 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { UrgentCTA } from "@/components/site/UrgentCTA";
 import { Toaster } from "@/components/ui/sonner";
+import {
+  buildGraphHead,
+  buildOrganizationSchema,
+  buildWebSiteSchema,
+} from "@/lib/jsonld";
 
 function NotFoundComponent() {
   return (
