@@ -4,7 +4,7 @@ import { services, getService, type Service } from "@/data/services";
 import { cases } from "@/data/cases";
 import { getServiceInCityByCity } from "@/data/serviceInCity";
 import { generalFaq } from "@/data/faq";
-import { Breadcrumbs } from "@/components/site/Breadcrumbs";
+import { PageHero } from "@/components/site/PageHero";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -41,18 +41,18 @@ function CityPage() {
 
   return (
     <article>
-      <header className="bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 py-12 md:py-16">
-          <Breadcrumbs items={[{ label: "Города", to: "/cities" }, { label: city.name }]} />
-          <div className="mt-4 text-xs font-semibold uppercase tracking-wider text-accent">{city.region}</div>
-          <h1 className="mt-2 font-display text-3xl font-bold md:text-5xl">Санитарные услуги {city.nameLocative}</h1>
-          <p className="mt-4 max-w-3xl opacity-90">{city.intro}</p>
-          <div className="mt-6 flex flex-wrap gap-6 text-sm">
+      <PageHero
+        breadcrumbs={[{ label: "Города", to: "/cities" }, { label: city.name }]}
+        eyebrow={city.region}
+        title={`Санитарные услуги ${city.nameLocative}`}
+        description={city.intro}
+        meta={
+          <>
             <span className="flex items-center gap-2"><Clock className="h-4 w-4 text-accent" />{city.arrivalTime}</span>
             <span className="flex items-center gap-2"><MapPin className="h-4 w-4 text-accent" />{city.districts.length} районов выезда</span>
-          </div>
-        </div>
-      </header>
+          </>
+        }
+      />
 
       <div className="container mx-auto grid gap-10 px-4 py-12 lg:grid-cols-[2fr_1fr]">
         <div className="space-y-12">
