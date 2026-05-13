@@ -1,6 +1,7 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
+import { PageHero } from "@/components/site/PageHero";
 import geographyImg from "@/assets/geography.jpg";
 
 export const Route = createFileRoute("/regions")({
@@ -45,24 +46,11 @@ function RegionsHub() {
   }
   return (
     <main>
-      <section className="relative overflow-hidden bg-primary text-primary-foreground">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${geographyImg})` }}
-          aria-hidden
-        />
-        <div className="container relative mx-auto px-4 py-14 md:py-20">
-          <div className="max-w-2xl rounded-2xl bg-primary/70 p-5 backdrop-blur-sm md:p-8">
-            <h1 className="font-display text-3xl font-bold md:text-5xl">
-              Регионы присутствия
-            </h1>
-            <p className="mt-4 text-base opacity-95 md:text-lg">
-              Работаем по ЮФО и Крыму. Региональные хабы с дежурными бригадами,
-              выезд 24/7, единый стандарт обслуживания.
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        backgroundImage={geographyImg}
+        title="Регионы присутствия"
+        description="Работаем по ЮФО и Крыму. Региональные хабы с дежурными бригадами, выезд 24/7, единый стандарт обслуживания."
+      />
 
       <section className="container mx-auto px-4 py-12 md:py-16">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { services } from "@/data/services";
-import { Breadcrumbs } from "@/components/site/Breadcrumbs";
+import { PageHero } from "@/components/site/PageHero";
 import { Card } from "@/components/ui/card";
 import { getServiceImage } from "@/lib/serviceImages";
 import { ArrowRight } from "lucide-react";
@@ -25,12 +25,15 @@ function ServicesIndex() {
   }
   const clusters = Array.from(new Set(services.map((s) => s.cluster)));
   return (
+    <>
+    <PageHero
+      breadcrumbs={[{ label: "Услуги" }]}
+      title="Все санитарные услуги"
+      description="8 направлений работ — от аварийной уборки после ЧС до плановой дезинфекции и фумигации объектов любого масштаба."
+    />
     <div className="container mx-auto px-4 py-10 md:py-12">
-      <Breadcrumbs items={[{ label: "Услуги" }]} />
-      <h1 className="mt-4 font-display text-3xl font-bold sm:text-4xl md:text-5xl">Все санитарные услуги</h1>
-      <p className="mt-4 max-w-3xl text-muted-foreground">8 направлений работ — от аварийной уборки после ЧС до плановой дезинфекции и фумигации объектов любого масштаба.</p>
       {clusters.map((cluster) => (
-        <div key={cluster} className="mt-10 md:mt-12">
+        <div key={cluster} className="mt-10 md:mt-12 first:mt-0">
           <h2 className="font-display text-2xl font-bold">{cluster}</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {services.filter((s) => s.cluster === cluster).map((s) => {
@@ -58,5 +61,6 @@ function ServicesIndex() {
         </div>
       ))}
     </div>
+    </>
   );
 }

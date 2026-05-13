@@ -3,7 +3,7 @@ import { getService, services, type Service } from "@/data/services";
 import { cities } from "@/data/cities";
 import { cases } from "@/data/cases";
 import { getServiceInCityByService } from "@/data/serviceInCity";
-import { Breadcrumbs } from "@/components/site/Breadcrumbs";
+import { PageHero } from "@/components/site/PageHero";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -83,25 +83,13 @@ function ServicePage() {
   const cover = getServiceImage(service.slug);
   return (
     <article>
-      <header className="relative overflow-hidden bg-primary text-primary-foreground">
-        {cover && (
-          <>
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${cover})` }}
-              aria-hidden
-            />
-          </>
-        )}
-        <div className="container relative mx-auto px-4 py-10 md:py-16">
-          <div className="max-w-3xl rounded-2xl bg-primary/70 p-5 backdrop-blur-sm md:p-8">
-            <Breadcrumbs items={[{ label: "Услуги", to: "/services" }, { label: service.shortName }]} />
-            <div className="mt-4 text-xs font-semibold uppercase tracking-wider text-accent">{service.cluster}</div>
-            <h1 className="mt-2 font-display text-[1.75rem] font-bold leading-tight sm:text-3xl md:text-5xl">{service.h1}</h1>
-            <p className="mt-4 text-sm opacity-95 md:text-base">{service.intro}</p>
-          </div>
-        </div>
-      </header>
+      <PageHero
+        backgroundImage={cover ?? undefined}
+        breadcrumbs={[{ label: "Услуги", to: "/services" }, { label: service.shortName }]}
+        eyebrow={service.cluster}
+        title={service.h1}
+        description={service.intro}
+      />
 
       <div className="container mx-auto grid gap-10 px-4 py-12 lg:grid-cols-[2fr_1fr]">
         <div className="space-y-12">

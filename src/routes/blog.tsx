@@ -2,6 +2,7 @@ import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-rout
 import { blogPosts } from "@/data/blog";
 import { Card } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
+import { PageHero } from "@/components/site/PageHero";
 
 export const Route = createFileRoute("/blog")({
   head: () => ({
@@ -30,16 +31,13 @@ function BlogIndex() {
     return <Outlet />;
   }
   return (
-    <main className="container mx-auto px-4 py-12 md:py-20">
-      <header>
-        <h1 className="font-display text-3xl font-bold md:text-5xl">Блог</h1>
-        <p className="mt-4 max-w-2xl text-muted-foreground">
-          Разбираем, как правильно действовать после ЧС, чем опасна плесень и
-          трупный запах, когда нужна фумигация и как не переплачивать за
-          санитарные работы.
-        </p>
-      </header>
-      <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <main>
+      <PageHero
+        title="Блог"
+        description="Разбираем, как правильно действовать после ЧС, чем опасна плесень и трупный запах, когда нужна фумигация и как не переплачивать за санитарные работы."
+      />
+      <div className="container mx-auto px-4 py-10 md:py-12">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {blogPosts.map((p) => (
           <Card key={p.slug} className="flex flex-col p-6">
             <time className="text-xs font-semibold uppercase tracking-wider text-accent">
@@ -62,6 +60,7 @@ function BlogIndex() {
             </Link>
           </Card>
         ))}
+      </div>
       </div>
     </main>
   );
