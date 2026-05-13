@@ -344,6 +344,61 @@ export const serviceInCity: ServiceInCity[] = [
   },
 ];
 
+// Авто-генерация SIC для топ-комбинаций «город × новая услуга».
+// Контент собирается из данных города и услуги; пометка isReady=true.
+import { cities as _allCities } from "./cities";
+import { services as _allServices } from "./services";
+
+const TOP_SIC_CITIES = ["krasnodar", "sochi", "rostov-na-donu", "simferopol", "sevastopol"];
+const TOP_SIC_SERVICES = [
+  "dezinfekciya-pomeshcheniy",
+  "dezinsekciya",
+  "deratizaciya",
+  "unichtozhenie-tarakanov",
+  "unichtozhenie-klopov",
+];
+
+for (const citySlug of TOP_SIC_CITIES) {
+  const city = _allCities.find((c) => c.slug === citySlug);
+  if (!city) continue;
+  for (const serviceSlug of TOP_SIC_SERVICES) {
+    if (serviceInCity.some((s) => s.citySlug === citySlug && s.serviceSlug === serviceSlug)) continue;
+    const service = _allServices.find((s) => s.slug === serviceSlug);
+    if (!service) continue;
+    const cityNameLoc = city.nameLocative;
+    const serviceName = service.shortName.toLowerCase();
+    serviceInCity.push({
+      citySlug,
+      serviceSlug,
+      h1: `${service.h1} ${cityNameLoc}`,
+      metaTitle: `${service.shortName} ${cityNameLoc} — ${city.arrivalTime.split(",")[0]}, акт`,
+      metaDescription: `${service.shortName} ${cityNameLoc}: выезд бригады ${city.arrivalTime.split(",")[0]}, сертифицированные препараты, акт о проведении. Работаем с частными лицами и УК.`,
+      introAnswer: `${service.shortName} ${cityNameLoc} — ${service.intro} Выезд по городу: ${city.arrivalTime}. Работаем с частным сектором, УК и коммерческими объектами.`,
+      localOffer: `Выезд по ${city.name}у — ${city.arrivalTime}. ${service.intro} Полный пакет с актом о проведённой обработке.`,
+      whenCalled: [
+        `Заявки от жильцов многоквартирных домов ${cityNameLoc}`,
+        `Запросы от УК и ТСЖ по плановой санобработке`,
+        `Обращения от кафе, магазинов и офисов`,
+        `Срочные выезды в частный сектор`,
+      ],
+      priceContext: service.priceFrom
+        ? `Стоимость ${service.nameGenitive ?? service.shortName.toLowerCase()} ${cityNameLoc} — от ${service.priceFrom.toLocaleString("ru-RU")} ₽. Точная цена зависит от площади и типа объекта.`
+        : `Цена ${cityNameLoc} рассчитывается по площади объекта и типу обработки.`,
+      caseScenario: {
+        title: `${service.shortName} ${cityNameLoc} — типовой выезд`,
+        description: `Бригада прибывает в течение ${city.arrivalTime.split(",")[0]}, проводит обработку по технологии и выдаёт акт. ${service.intro}`,
+      },
+      faq: [
+        { q: `Сколько стоит ${service.nameGenitive ?? service.shortName.toLowerCase()} ${cityNameLoc}?`, a: service.priceFrom ? `От ${service.priceFrom.toLocaleString("ru-RU")} ₽. Точная стоимость — после осмотра.` : "Цена зависит от площади и типа обработки." },
+        { q: "Как быстро приедет бригада?", a: city.arrivalTime },
+        { q: "Выдаёте акт?", a: "Да, акт о проведённой обработке с указанием препаратов." },
+      ],
+      popularDistricts: city.districts.slice(0, 3),
+      isReady: true,
+    });
+  }
+}
+
 export const getServiceInCity = (citySlug: string, serviceSlug: string) =>
   serviceInCity.find((s) => s.citySlug === citySlug && s.serviceSlug === serviceSlug);
 
