@@ -25,6 +25,7 @@ import { Route as ServicesServiceSlugRouteImport } from './routes/services.$serv
 import { Route as RegionsKrymRouteImport } from './routes/regions.krym'
 import { Route as CitiesCitySlugRouteImport } from './routes/cities.$citySlug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as ApiLeadsRouteImport } from './routes/api.leads'
 import { Route as LpCitySlugServiceSlugRouteImport } from './routes/lp.$citySlug.$serviceSlug'
 import { Route as CitiesCitySlugServiceSlugRouteImport } from './routes/cities.$citySlug.$serviceSlug'
 
@@ -108,6 +109,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => BlogRoute,
 } as any)
+const ApiLeadsRoute = ApiLeadsRouteImport.update({
+  id: '/api/leads',
+  path: '/api/leads',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LpCitySlugServiceSlugRoute = LpCitySlugServiceSlugRouteImport.update({
   id: '/lp/$citySlug/$serviceSlug',
   path: '/lp/$citySlug/$serviceSlug',
@@ -133,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/regions': typeof RegionsRouteWithChildren
   '/services': typeof ServicesRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/leads': typeof ApiLeadsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
   '/regions/krym': typeof RegionsKrymRoute
@@ -153,6 +160,7 @@ export interface FileRoutesByTo {
   '/regions': typeof RegionsRouteWithChildren
   '/services': typeof ServicesRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/leads': typeof ApiLeadsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
   '/regions/krym': typeof RegionsKrymRoute
@@ -174,6 +182,7 @@ export interface FileRoutesById {
   '/regions': typeof RegionsRouteWithChildren
   '/services': typeof ServicesRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/leads': typeof ApiLeadsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
   '/regions/krym': typeof RegionsKrymRoute
@@ -196,6 +205,7 @@ export interface FileRouteTypes {
     | '/regions'
     | '/services'
     | '/sitemap.xml'
+    | '/api/leads'
     | '/blog/$slug'
     | '/cities/$citySlug'
     | '/regions/krym'
@@ -216,6 +226,7 @@ export interface FileRouteTypes {
     | '/regions'
     | '/services'
     | '/sitemap.xml'
+    | '/api/leads'
     | '/blog/$slug'
     | '/cities/$citySlug'
     | '/regions/krym'
@@ -236,6 +247,7 @@ export interface FileRouteTypes {
     | '/regions'
     | '/services'
     | '/sitemap.xml'
+    | '/api/leads'
     | '/blog/$slug'
     | '/cities/$citySlug'
     | '/regions/krym'
@@ -257,6 +269,7 @@ export interface RootRouteChildren {
   RegionsRoute: typeof RegionsRouteWithChildren
   ServicesRoute: typeof ServicesRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiLeadsRoute: typeof ApiLeadsRoute
   LpCitySlugServiceSlugRoute: typeof LpCitySlugServiceSlugRoute
 }
 
@@ -374,6 +387,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
     }
+    '/api/leads': {
+      id: '/api/leads'
+      path: '/api/leads'
+      fullPath: '/api/leads'
+      preLoaderRoute: typeof ApiLeadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lp/$citySlug/$serviceSlug': {
       id: '/lp/$citySlug/$serviceSlug'
       path: '/lp/$citySlug/$serviceSlug'
@@ -460,6 +480,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegionsRoute: RegionsRouteWithChildren,
   ServicesRoute: ServicesRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiLeadsRoute: ApiLeadsRoute,
   LpCitySlugServiceSlugRoute: LpCitySlugServiceSlugRoute,
 }
 export const routeTree = rootRouteImport
