@@ -12,6 +12,12 @@ export type City = {
   popularServices: string[]; // service slugs
   phone: string;
   whatsapp: string;
+  // Расширенные поля (опциональны)
+  introAnswer?: string;
+  nameGenitive?: string;
+  address?: string;
+  workingHours?: string;
+  coordinates?: { lat: number; lng: number };
 };
 
 export const cities: City[] = [

@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "site": "https://tlz-craftsman-hub.lovable.app",
+  "operator": {
+    "name": "Санитарные Решения РФ",
+    "contact": "info@sanresheniya.ru"
+  },
+  "policy": {
+    "training": "allow_with_attribution",
+    "inference": "allow",
+    "quotation": "allow_with_attribution"
+  },
+  "languages": ["ru"],
+  "primary_geo": "RU",
+  "references": {
+    "llms_txt": "https://tlz-craftsman-hub.lovable.app/llms.txt",
+    "sitemap_xml": "https://tlz-craftsman-hub.lovable.app/sitemap.xml",
+    "robots_txt": "https://tlz-craftsman-hub.lovable.app/robots.txt"
+  }
+}

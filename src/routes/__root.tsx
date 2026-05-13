@@ -13,6 +13,11 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { UrgentCTA } from "@/components/site/UrgentCTA";
 import { Toaster } from "@/components/ui/sonner";
+import {
+  buildGraphHead,
+  buildOrganizationSchema,
+  buildWebSiteSchema,
+} from "@/lib/jsonld";
 
 function NotFoundComponent() {
   return (
@@ -83,8 +88,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Аварийная санитарная очистка, дезинфекция, удаление плесени, фумигация. Краснодар, Сочи, Ростов-на-Дону, Крым. Выезд 24/7.",
       },
       { name: "author", content: "Санитарные Решения РФ" },
+      { name: "robots", content: "index,follow,max-image-preview:large,max-snippet:-1" },
+      { name: "ai-content-declaration", content: "allow_with_attribution" },
       { property: "og:site_name", content: "Санитарные Решения РФ" },
       { property: "og:type", content: "website" },
+      { property: "og:locale", content: "ru_RU" },
       { name: "twitter:card", content: "summary_large_image" },
       { property: "og:title", content: "Санитарные Решения РФ — аварийная санитарная служба 24/7" },
       { name: "twitter:title", content: "Санитарные Решения РФ — аварийная санитарная служба 24/7" },
@@ -101,6 +109,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap",
+      },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: buildGraphHead([
+          buildOrganizationSchema(),
+          buildWebSiteSchema(),
+        ]),
       },
     ],
   }),
