@@ -61,6 +61,7 @@ function BlogIndex() {
           </Card>
         ))}
       </div>
+      </div>
     </main>
   );
 }
