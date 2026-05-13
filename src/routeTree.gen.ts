@@ -25,6 +25,7 @@ import { Route as ServicesServiceSlugRouteImport } from './routes/services.$serv
 import { Route as RegionsKrymRouteImport } from './routes/regions.krym'
 import { Route as CitiesCitySlugRouteImport } from './routes/cities.$citySlug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as LpCitySlugServiceSlugRouteImport } from './routes/lp.$citySlug.$serviceSlug'
 import { Route as CitiesCitySlugServiceSlugRouteImport } from './routes/cities.$citySlug.$serviceSlug'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -107,6 +108,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => BlogRoute,
 } as any)
+const LpCitySlugServiceSlugRoute = LpCitySlugServiceSlugRouteImport.update({
+  id: '/lp/$citySlug/$serviceSlug',
+  path: '/lp/$citySlug/$serviceSlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CitiesCitySlugServiceSlugRoute =
   CitiesCitySlugServiceSlugRouteImport.update({
     id: '/$serviceSlug',
@@ -132,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/regions/krym': typeof RegionsKrymRoute
   '/services/$serviceSlug': typeof ServicesServiceSlugRoute
   '/cities/$citySlug/$serviceSlug': typeof CitiesCitySlugServiceSlugRoute
+  '/lp/$citySlug/$serviceSlug': typeof LpCitySlugServiceSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -151,6 +158,7 @@ export interface FileRoutesByTo {
   '/regions/krym': typeof RegionsKrymRoute
   '/services/$serviceSlug': typeof ServicesServiceSlugRoute
   '/cities/$citySlug/$serviceSlug': typeof CitiesCitySlugServiceSlugRoute
+  '/lp/$citySlug/$serviceSlug': typeof LpCitySlugServiceSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -171,6 +179,7 @@ export interface FileRoutesById {
   '/regions/krym': typeof RegionsKrymRoute
   '/services/$serviceSlug': typeof ServicesServiceSlugRoute
   '/cities/$citySlug/$serviceSlug': typeof CitiesCitySlugServiceSlugRoute
+  '/lp/$citySlug/$serviceSlug': typeof LpCitySlugServiceSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -192,6 +201,7 @@ export interface FileRouteTypes {
     | '/regions/krym'
     | '/services/$serviceSlug'
     | '/cities/$citySlug/$serviceSlug'
+    | '/lp/$citySlug/$serviceSlug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -211,6 +221,7 @@ export interface FileRouteTypes {
     | '/regions/krym'
     | '/services/$serviceSlug'
     | '/cities/$citySlug/$serviceSlug'
+    | '/lp/$citySlug/$serviceSlug'
   id:
     | '__root__'
     | '/'
@@ -230,6 +241,7 @@ export interface FileRouteTypes {
     | '/regions/krym'
     | '/services/$serviceSlug'
     | '/cities/$citySlug/$serviceSlug'
+    | '/lp/$citySlug/$serviceSlug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -245,6 +257,7 @@ export interface RootRouteChildren {
   RegionsRoute: typeof RegionsRouteWithChildren
   ServicesRoute: typeof ServicesRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  LpCitySlugServiceSlugRoute: typeof LpCitySlugServiceSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -361,6 +374,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
     }
+    '/lp/$citySlug/$serviceSlug': {
+      id: '/lp/$citySlug/$serviceSlug'
+      path: '/lp/$citySlug/$serviceSlug'
+      fullPath: '/lp/$citySlug/$serviceSlug'
+      preLoaderRoute: typeof LpCitySlugServiceSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cities/$citySlug/$serviceSlug': {
       id: '/cities/$citySlug/$serviceSlug'
       path: '/$serviceSlug'
@@ -440,17 +460,8 @@ const rootRouteChildren: RootRouteChildren = {
   RegionsRoute: RegionsRouteWithChildren,
   ServicesRoute: ServicesRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  LpCitySlugServiceSlugRoute: LpCitySlugServiceSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
