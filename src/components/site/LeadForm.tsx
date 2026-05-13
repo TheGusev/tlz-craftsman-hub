@@ -47,6 +47,7 @@ export function LeadForm({
       objectType: String(fd.get("objectType") ?? ""),
       problem: String(fd.get("problem") ?? ""),
       urgency: String(fd.get("urgency") ?? ""),
+      callTime: String(fd.get("callTime") ?? ""),
       comment: String(fd.get("comment") ?? ""),
       service: service ?? null,
       source,
