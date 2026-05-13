@@ -3,28 +3,39 @@ import { Card } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import { PageHero } from "@/components/site/PageHero";
 import geographyImg from "@/assets/geography.jpg";
+import {
+  buildGraphHead,
+  buildWebPageSchema,
+  buildBreadcrumbSchema,
+} from "@/lib/jsonld";
+import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/regions")({
-  head: () => ({
-    meta: [
-      { title: "Регионы присутствия — Санитарные Решения РФ" },
-      {
-        name: "description",
-        content:
-          "Региональные хабы санитарной службы: ЮФО (Краснодарский край, Ростовская область) и Республика Крым.",
-      },
-      {
-        property: "og:title",
-        content: "Регионы присутствия — Санитарные Решения РФ",
-      },
-      {
-        property: "og:description",
-        content:
-          "Дежурные бригады по ЮФО и Крыму. Региональные хабы с выездом 24/7.",
-      },
-    ],
-    links: [{ rel: "canonical", href: "/regions" }],
-  }),
+  head: () => {
+    const path = "/regions";
+    const canonical = buildCanonical(path);
+    const title = "Регионы присутствия — Санитарные Решения РФ";
+    const description = "Региональные хабы санитарной службы: ЮФО (Краснодарский край, Ростовская область) и Республика Крым.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: canonical },
+      ],
+      links: [{ rel: "canonical", href: canonical }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: buildGraphHead([
+            buildWebPageSchema({ path, name: title, description }),
+            buildBreadcrumbSchema([{ label: "Регионы", path }]),
+          ]),
+        },
+      ],
+    };
+  },
   component: RegionsHub,
 });
 
