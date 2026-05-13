@@ -2,17 +2,39 @@ import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-rout
 import { cities } from "@/data/cities";
 import { PageHero } from "@/components/site/PageHero";
 import { Card } from "@/components/ui/card";
+import {
+  buildGraphHead,
+  buildWebPageSchema,
+  buildBreadcrumbSchema,
+} from "@/lib/jsonld";
+import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/cities")({
-  head: () => ({
-    meta: [
-      { title: "Города присутствия — Санитарные Решения РФ" },
-      { name: "description", content: "Санитарная служба в Краснодаре, Сочи, Ростове-на-Дону и по всему Крыму. Дежурные бригады 24/7." },
-      { property: "og:title", content: "Города присутствия санитарной службы" },
-      { property: "og:description", content: "ЮФО и Крым — 8 городов, выезд бригады 1–5 часов." },
-    ],
-    links: [{ rel: "canonical", href: "/cities" }],
-  }),
+  head: () => {
+    const path = "/cities";
+    const canonical = buildCanonical(path);
+    const title = "Города присутствия — Санитарные Решения РФ";
+    const description = "Санитарная служба в Краснодаре, Сочи, Ростове-на-Дону и по всему Крыму. Дежурные бригады 24/7.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: canonical },
+      ],
+      links: [{ rel: "canonical", href: canonical }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: buildGraphHead([
+            buildWebPageSchema({ path, name: title, description }),
+            buildBreadcrumbSchema([{ label: "Города", path }]),
+          ]),
+        },
+      ],
+    };
+  },
   component: CitiesIndex,
 });
 
