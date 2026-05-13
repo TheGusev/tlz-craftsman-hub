@@ -1,0 +1,46 @@
+# Санитарные Решения РФ
+
+Профессиональная санитарная служба по ЮФО и Республике Крым: дезинфекция, дезинсекция, дератизация, аварийная очистка после пожара и потопа, удаление плесени, фумигация, биосанитарные работы. Дежурные бригады 24/7. Работаем в 8 городах ЮФО и Крыма (расширяемся до 16).
+
+## Услуги
+
+- [Уборка после пожара](https://tlz-craftsman-hub.lovable.app/services/posle-pozhara): аварийная санитарная обработка после возгорания, удаление сажи и запаха гари, подготовка под ремонт.
+- [Уборка после потопа](https://tlz-craftsman-hub.lovable.app/services/posle-potopa): откачка воды, просушка конструкций, антигрибковая обработка после затопления.
+- [Удаление запаха гари](https://tlz-craftsman-hub.lovable.app/services/udalenie-zapaha-gari): профессиональная нейтрализация запаха озонированием и сухим туманом.
+- [Дезинфекция после смерти](https://tlz-craftsman-hub.lovable.app/services/dezinfekciya-posle-smerti): конфиденциальная санация помещения, удаление биозагрязнений и запаха.
+- [Удаление трупного запаха](https://tlz-craftsman-hub.lovable.app/services/udalenie-trupnogo-zapaha): полное устранение запаха разложения с гарантией.
+- [Фумигация](https://tlz-craftsman-hub.lovable.app/services/fumigaciya): газовая обработка складов, элеваторов, подвалов от вредителей.
+- [Удаление плесени](https://tlz-craftsman-hub.lovable.app/services/udalenie-pleseni): антигрибковая обработка с гарантией 12 месяцев.
+- [Санитарная обработка помещений](https://tlz-craftsman-hub.lovable.app/services/sanitarnaya-obrabotka-pomeshcheniy): комплексная дезинфекция, дезинсекция, дератизация.
+- [Очистка участков](https://tlz-craftsman-hub.lovable.app/services/ochistka-uchastkov): расчистка территорий после ЧС, вывоз мусора, обработка грунта.
+
+## Города работы
+
+Краснодар, Сочи, Ростов-на-Дону, Симферополь, Севастополь, Ялта, Евпатория, Керчь.
+
+В планах: Ставрополь, Анапа, Геленджик, Новороссийск, Феодосия, Алушта, Судак, Саки.
+
+## Регионы
+
+- [Краснодарский край](https://tlz-craftsman-hub.lovable.app/cities)
+- [Ростовская область](https://tlz-craftsman-hub.lovable.app/cities)
+- [Республика Крым](https://tlz-craftsman-hub.lovable.app/regions/krym)
+
+## Контакты
+
+- Телефон 24/7: +7 (800) 555-12-34
+- WhatsApp: +7 (800) 555-12-34
+- Email: info@sanresheniya.ru
+- Сайт: https://tlz-craftsman-hub.lovable.app
+- [Контакты](https://tlz-craftsman-hub.lovable.app/contacts)
+- [О компании](https://tlz-craftsman-hub.lovable.app/about)
+- [Цены](https://tlz-craftsman-hub.lovable.app/prices)
+- [FAQ](https://tlz-craftsman-hub.lovable.app/faq)
+- [Блог](https://tlz-craftsman-hub.lovable.app/blog)
+- [Кейсы](https://tlz-craftsman-hub.lovable.app/cases)
+
+## Технические ссылки
+
+- [robots.txt](https://tlz-craftsman-hub.lovable.app/robots.txt)
+- [sitemap.xml](https://tlz-craftsman-hub.lovable.app/sitemap.xml)
+- [ai.json](https://tlz-craftsman-hub.lovable.app/.well-known/ai.json)

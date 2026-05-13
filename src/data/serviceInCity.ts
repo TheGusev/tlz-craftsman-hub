@@ -9,6 +9,12 @@ export type ServiceInCity = {
   priceContext: string;
   caseScenario: { title: string; description: string };
   faq: { q: string; a: string }[];
+  // Расширенные поля (опциональны)
+  introAnswer?: string;
+  localPricing?: { from: number; to?: number; unit: string };
+  popularDistricts?: string[];
+  localTriggers?: string[];
+  isReady?: boolean; // true → попадает в sitemap/prerender как готовая посадочная
 };
 
 export const serviceInCity: ServiceInCity[] = [

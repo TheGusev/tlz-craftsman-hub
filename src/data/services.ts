@@ -14,6 +14,10 @@ export type Service = {
   equipment: string[];
   priceFactors: string[];
   faq: { q: string; a: string }[];
+  // Расширенные поля (опциональны для обратной совместимости)
+  introAnswer?: string; // 40-80 слов, прямой ответ для AI
+  nameGenitive?: string; // для шаблонов "Цена [услуги] в городе"
+  priceFrom?: number; // минимальная цена в ₽
 };
 
 export const services: Service[] = [
