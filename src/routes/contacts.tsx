@@ -4,17 +4,39 @@ import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Card } from "@/components/ui/card";
 import { Phone, MessageCircle, Mail, MapPin } from "lucide-react";
+import {
+  buildGraphHead,
+  buildWebPageSchema,
+  buildBreadcrumbSchema,
+} from "@/lib/jsonld";
+import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/contacts")({
-  head: () => ({
-    meta: [
-      { title: "Контакты — Санитарные Решения РФ" },
-      { name: "description", content: "Контакты санитарной службы: телефон 24/7, WhatsApp, email. Краснодар, Сочи, Ростов-на-Дону, Крым." },
-      { property: "og:title", content: "Контакты Санитарные Решения РФ" },
-      { property: "og:description", content: "Свяжитесь с дежурной бригадой 24/7." },
-    ],
-    links: [{ rel: "canonical", href: "/contacts" }],
-  }),
+  head: () => {
+    const path = "/contacts";
+    const canonical = buildCanonical(path);
+    const title = "Контакты — Санитарные Решения РФ";
+    const description = "Контакты санитарной службы: телефон 24/7, WhatsApp, email. Краснодар, Сочи, Ростов-на-Дону, Крым.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: canonical },
+      ],
+      links: [{ rel: "canonical", href: canonical }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: buildGraphHead([
+            buildWebPageSchema({ path, name: title, description }),
+            buildBreadcrumbSchema([{ label: "Контакты", path }]),
+          ]),
+        },
+      ],
+    };
+  },
   component: ContactsPage,
 });
 
