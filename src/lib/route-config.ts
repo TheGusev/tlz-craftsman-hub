@@ -2,6 +2,7 @@ import { services } from "@/data/services";
 import { cities } from "@/data/cities";
 import { serviceInCity } from "@/data/serviceInCity";
 import { blogPosts } from "@/data/blog";
+import { cases } from "@/data/cases";
 import { SITE_URL } from "@/lib/site";
 
 export type RouteEntry = {
@@ -54,6 +55,11 @@ export function getAllRoutes(): RouteEntry[] {
     ...blogPosts.map((b) => ({
       path: `/blog/${b.slug}`,
       priority: "0.5",
+      changefreq: "monthly" as const,
+    })),
+    ...cases.map((c) => ({
+      path: `/cases/${c.slug}`,
+      priority: "0.6",
       changefreq: "monthly" as const,
     })),
   ];

@@ -151,6 +151,26 @@ export function buildFAQSchema(faqs: FaqItem[]): JsonLdNode | null {
   };
 }
 
+export function buildImageGallerySchema(opts: {
+  path: string;
+  name: string;
+  description?: string;
+  images: { url: string; caption?: string }[];
+}): JsonLdNode {
+  const url = buildCanonical(opts.path);
+  return {
+    "@type": "ImageGallery",
+    "@id": `${url}#gallery`,
+    name: opts.name,
+    ...(opts.description ? { description: opts.description } : {}),
+    image: opts.images.map((img) => ({
+      "@type": "ImageObject",
+      contentUrl: img.url.startsWith("http") ? img.url : `${SITE_URL}${img.url}`,
+      ...(img.caption ? { caption: img.caption } : {}),
+    })),
+  };
+}
+
 export function buildArticleSchema(opts: {
   path: string;
   headline: string;
