@@ -1,18 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/privacy")({
-  head: () => ({
-    meta: [
-      { title: "Политика конфиденциальности — Санитарные Решения РФ" },
-      {
-        name: "description",
-        content:
-          "Политика обработки персональных данных пользователей сайта Санитарные Решения РФ.",
-      },
-      { name: "robots", content: "noindex, follow" },
-    ],
-    links: [{ rel: "canonical", href: "/privacy" }],
-  }),
+  head: () => {
+    const canonical = buildCanonical("/privacy");
+    return {
+      meta: [
+        { title: "Политика конфиденциальности — Санитарные Решения РФ" },
+        {
+          name: "description",
+          content: "Политика обработки персональных данных пользователей сайта Санитарные Решения РФ.",
+        },
+        { name: "robots", content: "noindex, follow" },
+        { property: "og:url", content: canonical },
+      ],
+      links: [{ rel: "canonical", href: canonical }],
+    };
+  },
   component: PrivacyPage,
 });
 
