@@ -103,6 +103,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "author", content: "Санитарные Решения РФ" },
       { name: "robots", content: "index,follow,max-image-preview:large,max-snippet:-1" },
       { name: "ai-content-declaration", content: "allow_with_attribution" },
+      ...(YANDEX_VERIFICATION
+        ? [{ name: "yandex-verification", content: YANDEX_VERIFICATION }]
+        : []),
+      ...(GOOGLE_VERIFICATION
+        ? [{ name: "google-site-verification", content: GOOGLE_VERIFICATION }]
+        : []),
       { property: "og:site_name", content: "Санитарные Решения РФ" },
       { property: "og:type", content: "website" },
       { property: "og:locale", content: "ru_RU" },
