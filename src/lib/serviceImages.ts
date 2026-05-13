@@ -15,9 +15,20 @@ export const serviceImages: Record<string, string> = {
   "sanitarnaya-obrabotka-pomeshcheniy": disinfection,
   "dezinfekciya-posle-smerti": afterDeath,
   "udalenie-trupnogo-zapaha": odor,
-  "fumigaciya": fumigation,
+  fumigaciya: fumigation,
   "udalenie-pleseni": mold,
   "ochistka-uchastkov": plot,
+  // Новые услуги (переиспользуем имеющиеся обложки)
+  "dezinfekciya-pomeshcheniy": disinfection,
+  dezinsekciya: fumigation,
+  deratizaciya: fumigation,
+  "unichtozhenie-tarakanov": fumigation,
+  "unichtozhenie-klopov": fumigation,
+  "unichtozhenie-blokh": fumigation,
+  "unichtozhenie-muravev": fumigation,
+  "ozonirovanie-pomescheniy": odor,
+  "obrabotka-uchastkov-ot-kleschey": plot,
+  "obrabotka-ot-grizunov-na-uchastke": plot,
 };
 
 export const getServiceImage = (slug: string): string | undefined => serviceImages[slug];
