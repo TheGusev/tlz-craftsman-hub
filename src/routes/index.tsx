@@ -76,6 +76,9 @@ function HomePage() {
             key={image}
             src={image}
             alt="ЮФО и Крым с высоты"
+            loading={index === 0 ? "eager" : "lazy"}
+            fetchPriority={index === 0 ? "high" : "auto"}
+            decoding="async"
             className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${index === activeHero ? "opacity-100" : "opacity-0"}`}
           />
         ))}
