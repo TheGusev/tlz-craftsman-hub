@@ -14,6 +14,7 @@ import { Route as ThankYouRouteImport } from './routes/thank-you'
 import { Route as SoglasieRouteImport } from './routes/soglasie'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as RekvizityRouteImport } from './routes/rekvizity'
 import { Route as RegionsRouteImport } from './routes/regions'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricesRouteImport } from './routes/prices'
@@ -60,6 +61,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RekvizityRoute = RekvizityRouteImport.update({
+  id: '/rekvizity',
+  path: '/rekvizity',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegionsRoute = RegionsRouteImport.update({
@@ -190,6 +196,7 @@ export interface FileRoutesByFullPath {
   '/prices': typeof PricesRoute
   '/privacy': typeof PrivacyRoute
   '/regions': typeof RegionsRouteWithChildren
+  '/rekvizity': typeof RekvizityRoute
   '/services': typeof ServicesRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/soglasie': typeof SoglasieRoute
@@ -219,6 +226,7 @@ export interface FileRoutesByTo {
   '/prices': typeof PricesRoute
   '/privacy': typeof PrivacyRoute
   '/regions': typeof RegionsRouteWithChildren
+  '/rekvizity': typeof RekvizityRoute
   '/services': typeof ServicesRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/soglasie': typeof SoglasieRoute
@@ -249,6 +257,7 @@ export interface FileRoutesById {
   '/prices': typeof PricesRoute
   '/privacy': typeof PrivacyRoute
   '/regions': typeof RegionsRouteWithChildren
+  '/rekvizity': typeof RekvizityRoute
   '/services': typeof ServicesRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/soglasie': typeof SoglasieRoute
@@ -280,6 +289,7 @@ export interface FileRouteTypes {
     | '/prices'
     | '/privacy'
     | '/regions'
+    | '/rekvizity'
     | '/services'
     | '/sitemap.xml'
     | '/soglasie'
@@ -309,6 +319,7 @@ export interface FileRouteTypes {
     | '/prices'
     | '/privacy'
     | '/regions'
+    | '/rekvizity'
     | '/services'
     | '/sitemap.xml'
     | '/soglasie'
@@ -338,6 +349,7 @@ export interface FileRouteTypes {
     | '/prices'
     | '/privacy'
     | '/regions'
+    | '/rekvizity'
     | '/services'
     | '/sitemap.xml'
     | '/soglasie'
@@ -368,6 +380,7 @@ export interface RootRouteChildren {
   PricesRoute: typeof PricesRoute
   PrivacyRoute: typeof PrivacyRoute
   RegionsRoute: typeof RegionsRouteWithChildren
+  RekvizityRoute: typeof RekvizityRoute
   ServicesRoute: typeof ServicesRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SoglasieRoute: typeof SoglasieRoute
@@ -412,6 +425,13 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rekvizity': {
+      id: '/rekvizity'
+      path: '/rekvizity'
+      fullPath: '/rekvizity'
+      preLoaderRoute: typeof RekvizityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/regions': {
@@ -643,6 +663,7 @@ const rootRouteChildren: RootRouteChildren = {
   PricesRoute: PricesRoute,
   PrivacyRoute: PrivacyRoute,
   RegionsRoute: RegionsRouteWithChildren,
+  RekvizityRoute: RekvizityRoute,
   ServicesRoute: ServicesRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SoglasieRoute: SoglasieRoute,
@@ -654,3 +675,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
