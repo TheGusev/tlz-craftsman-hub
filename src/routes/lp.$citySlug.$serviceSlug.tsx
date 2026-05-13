@@ -131,6 +131,19 @@ function LandingPage() {
         </div>
       </section>
 
+      {/* Калькулятор */}
+      {service.priceFrom ? (
+        <section className="container mx-auto px-4 py-10">
+          <div className="mx-auto max-w-2xl">
+            <PriceQuiz
+              basePrice={service.priceFrom}
+              serviceName={service.slug}
+              cityName={city.slug}
+            />
+          </div>
+        </section>
+      ) : null}
+
       {/* УТП */}
       <section className="container mx-auto px-4 py-12">
         <div className="grid gap-4 md:grid-cols-3">
