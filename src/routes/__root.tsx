@@ -138,6 +138,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           buildWebSiteSchema(),
         ]),
       },
+      ...(metrikaSnippet ? [{ children: metrikaSnippet }] : []),
     ],
   }),
   shellComponent: RootShell,
