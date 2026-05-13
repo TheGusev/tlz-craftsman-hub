@@ -15,6 +15,7 @@ import { Route as ServicesRouteImport } from './routes/services'
 import { Route as RegionsRouteImport } from './routes/regions'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricesRouteImport } from './routes/prices'
+import { Route as GarantiiRouteImport } from './routes/garantii'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactsRouteImport } from './routes/contacts'
 import { Route as CitiesRouteImport } from './routes/cities'
@@ -58,6 +59,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const PricesRoute = PricesRouteImport.update({
   id: '/prices',
   path: '/prices',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GarantiiRoute = GarantiiRouteImport.update({
+  id: '/garantii',
+  path: '/garantii',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -140,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/cities': typeof CitiesRouteWithChildren
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
+  '/garantii': typeof GarantiiRoute
   '/prices': typeof PricesRoute
   '/privacy': typeof PrivacyRoute
   '/regions': typeof RegionsRouteWithChildren
@@ -162,6 +169,7 @@ export interface FileRoutesByTo {
   '/cities': typeof CitiesRouteWithChildren
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
+  '/garantii': typeof GarantiiRoute
   '/prices': typeof PricesRoute
   '/privacy': typeof PrivacyRoute
   '/regions': typeof RegionsRouteWithChildren
@@ -185,6 +193,7 @@ export interface FileRoutesById {
   '/cities': typeof CitiesRouteWithChildren
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
+  '/garantii': typeof GarantiiRoute
   '/prices': typeof PricesRoute
   '/privacy': typeof PrivacyRoute
   '/regions': typeof RegionsRouteWithChildren
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
     | '/cities'
     | '/contacts'
     | '/faq'
+    | '/garantii'
     | '/prices'
     | '/privacy'
     | '/regions'
@@ -231,6 +241,7 @@ export interface FileRouteTypes {
     | '/cities'
     | '/contacts'
     | '/faq'
+    | '/garantii'
     | '/prices'
     | '/privacy'
     | '/regions'
@@ -253,6 +264,7 @@ export interface FileRouteTypes {
     | '/cities'
     | '/contacts'
     | '/faq'
+    | '/garantii'
     | '/prices'
     | '/privacy'
     | '/regions'
@@ -276,6 +288,7 @@ export interface RootRouteChildren {
   CitiesRoute: typeof CitiesRouteWithChildren
   ContactsRoute: typeof ContactsRoute
   FaqRoute: typeof FaqRoute
+  GarantiiRoute: typeof GarantiiRoute
   PricesRoute: typeof PricesRoute
   PrivacyRoute: typeof PrivacyRoute
   RegionsRoute: typeof RegionsRouteWithChildren
@@ -328,6 +341,13 @@ declare module '@tanstack/react-router' {
       path: '/prices'
       fullPath: '/prices'
       preLoaderRoute: typeof PricesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/garantii': {
+      id: '/garantii'
+      path: '/garantii'
+      fullPath: '/garantii'
+      preLoaderRoute: typeof GarantiiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -495,6 +515,7 @@ const rootRouteChildren: RootRouteChildren = {
   CitiesRoute: CitiesRouteWithChildren,
   ContactsRoute: ContactsRoute,
   FaqRoute: FaqRoute,
+  GarantiiRoute: GarantiiRoute,
   PricesRoute: PricesRoute,
   PrivacyRoute: PrivacyRoute,
   RegionsRoute: RegionsRouteWithChildren,
