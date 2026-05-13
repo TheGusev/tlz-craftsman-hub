@@ -92,6 +92,7 @@ function CityPage() {
 
       <div className="container mx-auto grid gap-10 px-4 py-12 lg:grid-cols-[2fr_1fr]">
         <div className="space-y-12">
+          {city.introAnswer && <IntroAnswer>{city.introAnswer}</IntroAnswer>}
           <section>
             <h2 className="font-display text-2xl font-bold">Какие работы выполняем {city.nameLocative}</h2>
             <div className="mt-4 grid gap-3 md:grid-cols-2">
