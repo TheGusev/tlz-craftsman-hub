@@ -61,5 +61,6 @@ function ServicesIndex() {
         </div>
       ))}
     </div>
+    </>
   );
 }
