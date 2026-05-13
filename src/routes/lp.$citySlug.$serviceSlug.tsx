@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Phone, MessageCircle, Check, Clock, ShieldCheck, BadgeCheck } from "lucide-react";
 import { getServiceImage } from "@/lib/serviceImages";
+import { PriceQuiz } from "@/components/site/PriceQuiz";
 
 type LpSearch = {
   utm_source?: string;
@@ -130,6 +131,19 @@ function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* Калькулятор */}
+      {service.priceFrom ? (
+        <section className="container mx-auto px-4 py-10">
+          <div className="mx-auto max-w-2xl">
+            <PriceQuiz
+              basePrice={service.priceFrom}
+              serviceName={service.slug}
+              cityName={city.slug}
+            />
+          </div>
+        </section>
+      ) : null}
 
       {/* УТП */}
       <section className="container mx-auto px-4 py-12">
