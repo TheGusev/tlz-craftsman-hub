@@ -1,8 +1,8 @@
 import { createFileRoute, notFound, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { getCity } from "@/data/cities";
-import { getService } from "@/data/services";
-import { getServiceInCity } from "@/data/serviceInCity";
+import { getCity, type City } from "@/data/cities";
+import { getService, type Service } from "@/data/services";
+import { getServiceInCity, type ServiceInCity } from "@/data/serviceInCity";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
