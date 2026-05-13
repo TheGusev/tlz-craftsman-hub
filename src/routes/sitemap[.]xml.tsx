@@ -3,8 +3,7 @@ import { services } from "@/data/services";
 import { cities } from "@/data/cities";
 import { serviceInCity } from "@/data/serviceInCity";
 import { blogPosts } from "@/data/blog";
-
-const SITE_URL = "https://example.com";
+import { SITE_URL } from "@/lib/site";
 
 const staticPaths: { path: string; priority: string }[] = [
   { path: "/", priority: "1.0" },
