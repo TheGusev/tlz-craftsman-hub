@@ -1,49 +1,122 @@
 import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { cities } from "@/data/cities";
+import { trackGoal, readUtm } from "@/lib/analytics";
 
-export function LeadForm({ defaultCity, defaultProblem }: { defaultCity?: string; defaultProblem?: string }) {
+export function LeadForm({
+  defaultCity,
+  defaultProblem,
+  source = "lead_form",
+  service,
+}: {
+  defaultCity?: string;
+  defaultProblem?: string;
+  source?: string;
+  service?: string;
+}) {
   const [loading, setLoading] = useState(false);
+  const [consent, setConsent] = useState(true);
+  const navigate = useNavigate();
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!consent) {
+      toast.error("Необходимо согласие на обработку персональных данных");
+      return;
+    }
     setLoading(true);
-    setTimeout(() => {
-      toast.success("Заявка принята. Перезвоним в течение 15 минут.");
+    const fd = new FormData(e.currentTarget);
+    const utm = readUtm();
+    const payload = {
+      name: String(fd.get("name") ?? ""),
+      phone: String(fd.get("phone") ?? ""),
+      city: String(fd.get("city") ?? ""),
+      objectType: String(fd.get("objectType") ?? ""),
+      problem: String(fd.get("problem") ?? ""),
+      urgency: String(fd.get("urgency") ?? ""),
+      comment: String(fd.get("comment") ?? ""),
+      service: service ?? null,
+      source,
+      consent: true,
+      utm: Object.fromEntries(
+        Object.entries(utm).filter(([, v]) => typeof v === "string" && v),
+      ) as Record<string, string>,
+      landing: typeof window !== "undefined" ? window.location.pathname : "",
+      referrer: typeof document !== "undefined" ? document.referrer : "",
+    };
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error("network");
+      trackGoal("lead_form_submit", { source, service: service ?? null });
       (e.target as HTMLFormElement).reset();
+      navigate({ to: "/thank-you" });
+    } catch {
+      toast.error("Не удалось отправить. Позвоните нам напрямую.");
+    } finally {
       setLoading(false);
-    }, 600);
+    }
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-4 rounded-2xl border border-border bg-card p-6 md:p-8">
+    <form
+      onSubmit={onSubmit}
+      className="grid gap-4 rounded-2xl border border-border bg-card p-6 md:p-8"
+    >
       <div className="grid gap-4 md:grid-cols-2">
         <div className="grid gap-2">
           <Label htmlFor="name">Ваше имя *</Label>
-          <Input id="name" name="name" required placeholder="Имя" />
+          <Input id="name" name="name" required minLength={2} maxLength={100} placeholder="Имя" />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="phone">Телефон *</Label>
-          <Input id="phone" name="phone" type="tel" required placeholder="+7 (___) ___-__-__" />
+          <Input
+            id="phone"
+            name="phone"
+            type="tel"
+            required
+            minLength={7}
+            maxLength={30}
+            placeholder="+7 (___) ___-__-__"
+          />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="city">Город *</Label>
           <Select name="city" defaultValue={defaultCity}>
-            <SelectTrigger id="city"><SelectValue placeholder="Выберите город" /></SelectTrigger>
+            <SelectTrigger id="city">
+              <SelectValue placeholder="Выберите город" />
+            </SelectTrigger>
             <SelectContent>
-              {cities.map((c) => <SelectItem key={c.slug} value={c.slug}>{c.name}</SelectItem>)}
+              {cities.map((c) => (
+                <SelectItem key={c.slug} value={c.slug}>
+                  {c.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
         <div className="grid gap-2">
           <Label htmlFor="objectType">Тип объекта</Label>
           <Select name="objectType">
-            <SelectTrigger id="objectType"><SelectValue placeholder="Выберите тип" /></SelectTrigger>
+            <SelectTrigger id="objectType">
+              <SelectValue placeholder="Выберите тип" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="apartment">Квартира</SelectItem>
               <SelectItem value="house">Частный дом</SelectItem>
@@ -56,12 +129,21 @@ export function LeadForm({ defaultCity, defaultProblem }: { defaultCity?: string
       </div>
       <div className="grid gap-2">
         <Label htmlFor="problem">Проблема *</Label>
-        <Input id="problem" name="problem" required defaultValue={defaultProblem} placeholder="Например: затопило подвал, нужна просушка" />
+        <Input
+          id="problem"
+          name="problem"
+          required
+          maxLength={500}
+          defaultValue={defaultProblem}
+          placeholder="Например: затопило подвал, нужна просушка"
+        />
       </div>
       <div className="grid gap-2">
         <Label htmlFor="urgency">Срочность</Label>
         <Select name="urgency" defaultValue="urgent">
-          <SelectTrigger id="urgency"><SelectValue /></SelectTrigger>
+          <SelectTrigger id="urgency">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="now">Срочно — выезд сейчас</SelectItem>
             <SelectItem value="urgent">Сегодня</SelectItem>
@@ -71,29 +153,45 @@ export function LeadForm({ defaultCity, defaultProblem }: { defaultCity?: string
       </div>
       <div className="grid gap-2">
         <Label htmlFor="comment">Комментарий</Label>
-        <Textarea id="comment" name="comment" rows={3} placeholder="Опишите ситуацию подробнее" />
+        <Textarea
+          id="comment"
+          name="comment"
+          rows={3}
+          maxLength={2000}
+          placeholder="Опишите ситуацию подробнее"
+        />
       </div>
-      <div className="grid gap-2">
-        <Label htmlFor="files">Фото или видео объекта</Label>
-        <Input id="files" name="files" type="file" multiple accept="image/*,video/*" className="cursor-pointer file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-1 file:text-sm file:font-medium" />
-        <p className="text-xs text-muted-foreground">
-          Можно сразу прислать фото в{" "}
-          <a
-            href="https://wa.me/78005551234?text=Здравствуйте,%20отправляю%20фото%20объекта"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent hover:underline"
-          >
-            WhatsApp
+
+      <label className="flex items-start gap-3 text-xs text-muted-foreground">
+        <Checkbox
+          checked={consent}
+          onCheckedChange={(v) => setConsent(Boolean(v))}
+          aria-label="Согласие на обработку персональных данных"
+          className="mt-0.5"
+        />
+        <span>
+          Я согласен с{" "}
+          <a href="/soglasie" className="text-accent hover:underline">
+            обработкой персональных данных
+          </a>{" "}
+          и{" "}
+          <a href="/privacy" className="text-accent hover:underline">
+            политикой конфиденциальности
           </a>
           .
-        </p>
-      </div>
-      <Button type="submit" disabled={loading} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+        </span>
+      </label>
+
+      <Button
+        type="submit"
+        disabled={loading || !consent}
+        size="lg"
+        className="bg-accent text-accent-foreground hover:bg-accent/90"
+      >
         {loading ? "Отправка..." : "Получить расчёт стоимости"}
       </Button>
       <p className="text-xs text-muted-foreground">
-        Нажимая кнопку, вы соглашаетесь с обработкой персональных данных. Перезвоним в течение 15 минут.
+        Перезвоним в течение 15 минут. Бесплатная консультация и расчёт.
       </p>
     </form>
   );

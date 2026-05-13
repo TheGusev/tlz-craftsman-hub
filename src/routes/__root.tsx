@@ -18,6 +18,19 @@ import {
   buildOrganizationSchema,
   buildWebSiteSchema,
 } from "@/lib/jsonld";
+import { useAnalytics } from "@/hooks/useAnalytics";
+
+const YM_ID = Number(import.meta.env.VITE_YANDEX_METRIKA_ID ?? 0) || 0;
+const YANDEX_VERIFICATION = String(import.meta.env.VITE_YANDEX_VERIFICATION ?? "");
+const GOOGLE_VERIFICATION = String(import.meta.env.VITE_GOOGLE_VERIFICATION ?? "");
+
+const metrikaSnippet = YM_ID
+  ? `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
+k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+ym(${YM_ID},"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true,trackHash:true,ecommerce:"dataLayer"});`
+  : "";
 
 function NotFoundComponent() {
   return (
@@ -90,6 +103,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "author", content: "Санитарные Решения РФ" },
       { name: "robots", content: "index,follow,max-image-preview:large,max-snippet:-1" },
       { name: "ai-content-declaration", content: "allow_with_attribution" },
+      ...(YANDEX_VERIFICATION
+        ? [{ name: "yandex-verification", content: YANDEX_VERIFICATION }]
+        : []),
+      ...(GOOGLE_VERIFICATION
+        ? [{ name: "google-site-verification", content: GOOGLE_VERIFICATION }]
+        : []),
       { property: "og:site_name", content: "Санитарные Решения РФ" },
       { property: "og:type", content: "website" },
       { property: "og:locale", content: "ru_RU" },
@@ -119,6 +138,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           buildWebSiteSchema(),
         ]),
       },
+      ...(metrikaSnippet ? [{ children: metrikaSnippet }] : []),
     ],
   }),
   shellComponent: RootShell,
@@ -143,18 +163,36 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useAnalytics();
 
   return (
     <QueryClientProvider client={queryClient}>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground"
+      >
+        Перейти к содержимому
+      </a>
       <div className="flex min-h-screen flex-col bg-background">
         <Header />
-        <main className="flex-1">
+        <main id="main" className="flex-1">
           <Outlet />
         </main>
         <Footer />
         <UrgentCTA />
         <Toaster />
       </div>
+      {YM_ID ? (
+        <noscript>
+          <div>
+            <img
+              src={`https://mc.yandex.ru/watch/${YM_ID}`}
+              style={{ position: "absolute", left: "-9999px" }}
+              alt=""
+            />
+          </div>
+        </noscript>
+      ) : null}
     </QueryClientProvider>
   );
 }

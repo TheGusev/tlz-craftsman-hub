@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Phone, Send, User, X } from "lucide-react";
+import { trackGoal } from "@/lib/analytics";
+import { SITE_PHONE_RAW } from "@/lib/site";
 
 type Action = {
   label: string;
@@ -7,12 +9,13 @@ type Action = {
   icon: typeof Phone;
   bg: string;
   external?: boolean;
+  goal: string;
 };
 
 const actions: Action[] = [
-  { label: "Позвонить", href: "tel:+78005551234", icon: Phone, bg: "bg-[#25D366] text-white" },
-  { label: "MAX", href: "https://max.ru/", icon: User, bg: "bg-sky-500 text-white", external: true },
-  { label: "Telegram", href: "https://t.me/", icon: Send, bg: "bg-sky-500 text-white", external: true },
+  { label: "Позвонить", href: `tel:${SITE_PHONE_RAW}`, icon: Phone, bg: "bg-[#25D366] text-white", goal: "lead_phone_click" },
+  { label: "MAX", href: "https://max.ru/", icon: User, bg: "bg-sky-500 text-white", external: true, goal: "lead_max_click" },
+  { label: "Telegram", href: "https://t.me/", icon: Send, bg: "bg-sky-500 text-white", external: true, goal: "lead_telegram_click" },
 ];
 
 export function UrgentCTA() {
@@ -50,6 +53,7 @@ export function UrgentCTA() {
               target={a.external ? "_blank" : undefined}
               rel={a.external ? "noopener noreferrer" : undefined}
               aria-label={a.label}
+              onClick={() => trackGoal(a.goal, { source: "urgent_cta" })}
               tabIndex={open ? 0 : -1}
               style={{ transitionDelay: open ? `${i * 50}ms` : "0ms" }}
               className={`flex items-center gap-3 rounded-full pl-5 pr-2 py-2 shadow-lg transition-all duration-300 ${a.bg} ${
@@ -69,7 +73,12 @@ export function UrgentCTA() {
 
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          setOpen((v) => {
+            if (!v) trackGoal("quick_lead_open", { source: "urgent_cta" });
+            return !v;
+          });
+        }}
         aria-label={open ? "Закрыть меню связи" : "Открыть меню связи"}
         aria-expanded={open}
         className={`flex h-14 w-14 items-center justify-center rounded-full shadow-xl transition-all duration-300 ${

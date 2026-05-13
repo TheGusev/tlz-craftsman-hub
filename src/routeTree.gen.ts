@@ -9,11 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VyezdRouteImport } from './routes/vyezd'
+import { Route as ThankYouRouteImport } from './routes/thank-you'
+import { Route as SoglasieRouteImport } from './routes/soglasie'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as RekvizityRouteImport } from './routes/rekvizity'
 import { Route as RegionsRouteImport } from './routes/regions'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricesRouteImport } from './routes/prices'
+import { Route as OtzyvyRouteImport } from './routes/otzyvy'
+import { Route as OplataRouteImport } from './routes/oplata'
+import { Route as OfertaRouteImport } from './routes/oferta'
+import { Route as LicenziiRouteImport } from './routes/licenzii'
+import { Route as GarantiiRouteImport } from './routes/garantii'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactsRouteImport } from './routes/contacts'
 import { Route as CitiesRouteImport } from './routes/cities'
@@ -25,9 +34,25 @@ import { Route as ServicesServiceSlugRouteImport } from './routes/services.$serv
 import { Route as RegionsKrymRouteImport } from './routes/regions.krym'
 import { Route as CitiesCitySlugRouteImport } from './routes/cities.$citySlug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as ApiLeadsRouteImport } from './routes/api.leads'
 import { Route as LpCitySlugServiceSlugRouteImport } from './routes/lp.$citySlug.$serviceSlug'
 import { Route as CitiesCitySlugServiceSlugRouteImport } from './routes/cities.$citySlug.$serviceSlug'
 
+const VyezdRoute = VyezdRouteImport.update({
+  id: '/vyezd',
+  path: '/vyezd',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ThankYouRoute = ThankYouRouteImport.update({
+  id: '/thank-you',
+  path: '/thank-you',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SoglasieRoute = SoglasieRouteImport.update({
+  id: '/soglasie',
+  path: '/soglasie',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -36,6 +61,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RekvizityRoute = RekvizityRouteImport.update({
+  id: '/rekvizity',
+  path: '/rekvizity',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegionsRoute = RegionsRouteImport.update({
@@ -51,6 +81,31 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const PricesRoute = PricesRouteImport.update({
   id: '/prices',
   path: '/prices',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OtzyvyRoute = OtzyvyRouteImport.update({
+  id: '/otzyvy',
+  path: '/otzyvy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OplataRoute = OplataRouteImport.update({
+  id: '/oplata',
+  path: '/oplata',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OfertaRoute = OfertaRouteImport.update({
+  id: '/oferta',
+  path: '/oferta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LicenziiRoute = LicenziiRouteImport.update({
+  id: '/licenzii',
+  path: '/licenzii',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GarantiiRoute = GarantiiRouteImport.update({
+  id: '/garantii',
+  path: '/garantii',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -108,6 +163,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => BlogRoute,
 } as any)
+const ApiLeadsRoute = ApiLeadsRouteImport.update({
+  id: '/api/leads',
+  path: '/api/leads',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LpCitySlugServiceSlugRoute = LpCitySlugServiceSlugRouteImport.update({
   id: '/lp/$citySlug/$serviceSlug',
   path: '/lp/$citySlug/$serviceSlug',
@@ -128,11 +188,21 @@ export interface FileRoutesByFullPath {
   '/cities': typeof CitiesRouteWithChildren
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
+  '/garantii': typeof GarantiiRoute
+  '/licenzii': typeof LicenziiRoute
+  '/oferta': typeof OfertaRoute
+  '/oplata': typeof OplataRoute
+  '/otzyvy': typeof OtzyvyRoute
   '/prices': typeof PricesRoute
   '/privacy': typeof PrivacyRoute
   '/regions': typeof RegionsRouteWithChildren
+  '/rekvizity': typeof RekvizityRoute
   '/services': typeof ServicesRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/soglasie': typeof SoglasieRoute
+  '/thank-you': typeof ThankYouRoute
+  '/vyezd': typeof VyezdRoute
+  '/api/leads': typeof ApiLeadsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
   '/regions/krym': typeof RegionsKrymRoute
@@ -148,11 +218,21 @@ export interface FileRoutesByTo {
   '/cities': typeof CitiesRouteWithChildren
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
+  '/garantii': typeof GarantiiRoute
+  '/licenzii': typeof LicenziiRoute
+  '/oferta': typeof OfertaRoute
+  '/oplata': typeof OplataRoute
+  '/otzyvy': typeof OtzyvyRoute
   '/prices': typeof PricesRoute
   '/privacy': typeof PrivacyRoute
   '/regions': typeof RegionsRouteWithChildren
+  '/rekvizity': typeof RekvizityRoute
   '/services': typeof ServicesRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/soglasie': typeof SoglasieRoute
+  '/thank-you': typeof ThankYouRoute
+  '/vyezd': typeof VyezdRoute
+  '/api/leads': typeof ApiLeadsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
   '/regions/krym': typeof RegionsKrymRoute
@@ -169,11 +249,21 @@ export interface FileRoutesById {
   '/cities': typeof CitiesRouteWithChildren
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
+  '/garantii': typeof GarantiiRoute
+  '/licenzii': typeof LicenziiRoute
+  '/oferta': typeof OfertaRoute
+  '/oplata': typeof OplataRoute
+  '/otzyvy': typeof OtzyvyRoute
   '/prices': typeof PricesRoute
   '/privacy': typeof PrivacyRoute
   '/regions': typeof RegionsRouteWithChildren
+  '/rekvizity': typeof RekvizityRoute
   '/services': typeof ServicesRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/soglasie': typeof SoglasieRoute
+  '/thank-you': typeof ThankYouRoute
+  '/vyezd': typeof VyezdRoute
+  '/api/leads': typeof ApiLeadsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
   '/regions/krym': typeof RegionsKrymRoute
@@ -191,11 +281,21 @@ export interface FileRouteTypes {
     | '/cities'
     | '/contacts'
     | '/faq'
+    | '/garantii'
+    | '/licenzii'
+    | '/oferta'
+    | '/oplata'
+    | '/otzyvy'
     | '/prices'
     | '/privacy'
     | '/regions'
+    | '/rekvizity'
     | '/services'
     | '/sitemap.xml'
+    | '/soglasie'
+    | '/thank-you'
+    | '/vyezd'
+    | '/api/leads'
     | '/blog/$slug'
     | '/cities/$citySlug'
     | '/regions/krym'
@@ -211,11 +311,21 @@ export interface FileRouteTypes {
     | '/cities'
     | '/contacts'
     | '/faq'
+    | '/garantii'
+    | '/licenzii'
+    | '/oferta'
+    | '/oplata'
+    | '/otzyvy'
     | '/prices'
     | '/privacy'
     | '/regions'
+    | '/rekvizity'
     | '/services'
     | '/sitemap.xml'
+    | '/soglasie'
+    | '/thank-you'
+    | '/vyezd'
+    | '/api/leads'
     | '/blog/$slug'
     | '/cities/$citySlug'
     | '/regions/krym'
@@ -231,11 +341,21 @@ export interface FileRouteTypes {
     | '/cities'
     | '/contacts'
     | '/faq'
+    | '/garantii'
+    | '/licenzii'
+    | '/oferta'
+    | '/oplata'
+    | '/otzyvy'
     | '/prices'
     | '/privacy'
     | '/regions'
+    | '/rekvizity'
     | '/services'
     | '/sitemap.xml'
+    | '/soglasie'
+    | '/thank-you'
+    | '/vyezd'
+    | '/api/leads'
     | '/blog/$slug'
     | '/cities/$citySlug'
     | '/regions/krym'
@@ -252,16 +372,47 @@ export interface RootRouteChildren {
   CitiesRoute: typeof CitiesRouteWithChildren
   ContactsRoute: typeof ContactsRoute
   FaqRoute: typeof FaqRoute
+  GarantiiRoute: typeof GarantiiRoute
+  LicenziiRoute: typeof LicenziiRoute
+  OfertaRoute: typeof OfertaRoute
+  OplataRoute: typeof OplataRoute
+  OtzyvyRoute: typeof OtzyvyRoute
   PricesRoute: typeof PricesRoute
   PrivacyRoute: typeof PrivacyRoute
   RegionsRoute: typeof RegionsRouteWithChildren
+  RekvizityRoute: typeof RekvizityRoute
   ServicesRoute: typeof ServicesRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SoglasieRoute: typeof SoglasieRoute
+  ThankYouRoute: typeof ThankYouRoute
+  VyezdRoute: typeof VyezdRoute
+  ApiLeadsRoute: typeof ApiLeadsRoute
   LpCitySlugServiceSlugRoute: typeof LpCitySlugServiceSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/vyezd': {
+      id: '/vyezd'
+      path: '/vyezd'
+      fullPath: '/vyezd'
+      preLoaderRoute: typeof VyezdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/thank-you': {
+      id: '/thank-you'
+      path: '/thank-you'
+      fullPath: '/thank-you'
+      preLoaderRoute: typeof ThankYouRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/soglasie': {
+      id: '/soglasie'
+      path: '/soglasie'
+      fullPath: '/soglasie'
+      preLoaderRoute: typeof SoglasieRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -274,6 +425,13 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rekvizity': {
+      id: '/rekvizity'
+      path: '/rekvizity'
+      fullPath: '/rekvizity'
+      preLoaderRoute: typeof RekvizityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/regions': {
@@ -295,6 +453,41 @@ declare module '@tanstack/react-router' {
       path: '/prices'
       fullPath: '/prices'
       preLoaderRoute: typeof PricesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/otzyvy': {
+      id: '/otzyvy'
+      path: '/otzyvy'
+      fullPath: '/otzyvy'
+      preLoaderRoute: typeof OtzyvyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/oplata': {
+      id: '/oplata'
+      path: '/oplata'
+      fullPath: '/oplata'
+      preLoaderRoute: typeof OplataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/oferta': {
+      id: '/oferta'
+      path: '/oferta'
+      fullPath: '/oferta'
+      preLoaderRoute: typeof OfertaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/licenzii': {
+      id: '/licenzii'
+      path: '/licenzii'
+      fullPath: '/licenzii'
+      preLoaderRoute: typeof LicenziiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/garantii': {
+      id: '/garantii'
+      path: '/garantii'
+      fullPath: '/garantii'
+      preLoaderRoute: typeof GarantiiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -373,6 +566,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
+    }
+    '/api/leads': {
+      id: '/api/leads'
+      path: '/api/leads'
+      fullPath: '/api/leads'
+      preLoaderRoute: typeof ApiLeadsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/lp/$citySlug/$serviceSlug': {
       id: '/lp/$citySlug/$serviceSlug'
@@ -455,13 +655,33 @@ const rootRouteChildren: RootRouteChildren = {
   CitiesRoute: CitiesRouteWithChildren,
   ContactsRoute: ContactsRoute,
   FaqRoute: FaqRoute,
+  GarantiiRoute: GarantiiRoute,
+  LicenziiRoute: LicenziiRoute,
+  OfertaRoute: OfertaRoute,
+  OplataRoute: OplataRoute,
+  OtzyvyRoute: OtzyvyRoute,
   PricesRoute: PricesRoute,
   PrivacyRoute: PrivacyRoute,
   RegionsRoute: RegionsRouteWithChildren,
+  RekvizityRoute: RekvizityRoute,
   ServicesRoute: ServicesRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SoglasieRoute: SoglasieRoute,
+  ThankYouRoute: ThankYouRoute,
+  VyezdRoute: VyezdRoute,
+  ApiLeadsRoute: ApiLeadsRoute,
   LpCitySlugServiceSlugRoute: LpCitySlugServiceSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
