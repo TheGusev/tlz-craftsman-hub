@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ThankYouRouteImport } from './routes/thank-you'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as RegionsRouteImport } from './routes/regions'
@@ -29,6 +30,11 @@ import { Route as ApiLeadsRouteImport } from './routes/api.leads'
 import { Route as LpCitySlugServiceSlugRouteImport } from './routes/lp.$citySlug.$serviceSlug'
 import { Route as CitiesCitySlugServiceSlugRouteImport } from './routes/cities.$citySlug.$serviceSlug'
 
+const ThankYouRoute = ThankYouRouteImport.update({
+  id: '/thank-you',
+  path: '/thank-you',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/regions': typeof RegionsRouteWithChildren
   '/services': typeof ServicesRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/thank-you': typeof ThankYouRoute
   '/api/leads': typeof ApiLeadsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
@@ -160,6 +167,7 @@ export interface FileRoutesByTo {
   '/regions': typeof RegionsRouteWithChildren
   '/services': typeof ServicesRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/thank-you': typeof ThankYouRoute
   '/api/leads': typeof ApiLeadsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
@@ -182,6 +190,7 @@ export interface FileRoutesById {
   '/regions': typeof RegionsRouteWithChildren
   '/services': typeof ServicesRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/thank-you': typeof ThankYouRoute
   '/api/leads': typeof ApiLeadsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
@@ -205,6 +214,7 @@ export interface FileRouteTypes {
     | '/regions'
     | '/services'
     | '/sitemap.xml'
+    | '/thank-you'
     | '/api/leads'
     | '/blog/$slug'
     | '/cities/$citySlug'
@@ -226,6 +236,7 @@ export interface FileRouteTypes {
     | '/regions'
     | '/services'
     | '/sitemap.xml'
+    | '/thank-you'
     | '/api/leads'
     | '/blog/$slug'
     | '/cities/$citySlug'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '/regions'
     | '/services'
     | '/sitemap.xml'
+    | '/thank-you'
     | '/api/leads'
     | '/blog/$slug'
     | '/cities/$citySlug'
@@ -269,12 +281,20 @@ export interface RootRouteChildren {
   RegionsRoute: typeof RegionsRouteWithChildren
   ServicesRoute: typeof ServicesRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ThankYouRoute: typeof ThankYouRoute
   ApiLeadsRoute: typeof ApiLeadsRoute
   LpCitySlugServiceSlugRoute: typeof LpCitySlugServiceSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/thank-you': {
+      id: '/thank-you'
+      path: '/thank-you'
+      fullPath: '/thank-you'
+      preLoaderRoute: typeof ThankYouRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -480,6 +500,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegionsRoute: RegionsRouteWithChildren,
   ServicesRoute: ServicesRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ThankYouRoute: ThankYouRoute,
   ApiLeadsRoute: ApiLeadsRoute,
   LpCitySlugServiceSlugRoute: LpCitySlugServiceSlugRoute,
 }
