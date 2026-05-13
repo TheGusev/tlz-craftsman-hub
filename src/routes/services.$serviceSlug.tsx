@@ -5,11 +5,20 @@ import { cases } from "@/data/cases";
 import { getServiceInCityByService } from "@/data/serviceInCity";
 import { PageHero } from "@/components/site/PageHero";
 import { LeadForm } from "@/components/site/LeadForm";
+import { IntroAnswer } from "@/components/site/IntroAnswer";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Check, AlertTriangle } from "lucide-react";
 import { getServiceImage } from "@/lib/serviceImages";
 import { getCaseImage } from "@/lib/caseImages";
+import {
+  buildGraphHead,
+  buildWebPageSchema,
+  buildBreadcrumbSchema,
+  buildServiceSchema,
+  buildFAQSchema,
+} from "@/lib/jsonld";
+import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/services/$serviceSlug")({
   loader: ({ params }): { service: Service } => {
