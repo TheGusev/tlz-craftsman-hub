@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VyezdRouteImport } from './routes/vyezd'
 import { Route as ThankYouRouteImport } from './routes/thank-you'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ServicesRouteImport } from './routes/services'
@@ -32,6 +33,11 @@ import { Route as ApiLeadsRouteImport } from './routes/api.leads'
 import { Route as LpCitySlugServiceSlugRouteImport } from './routes/lp.$citySlug.$serviceSlug'
 import { Route as CitiesCitySlugServiceSlugRouteImport } from './routes/cities.$citySlug.$serviceSlug'
 
+const VyezdRoute = VyezdRouteImport.update({
+  id: '/vyezd',
+  path: '/vyezd',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ThankYouRoute = ThankYouRouteImport.update({
   id: '/thank-you',
   path: '/thank-you',
@@ -160,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/thank-you': typeof ThankYouRoute
+  '/vyezd': typeof VyezdRoute
   '/api/leads': typeof ApiLeadsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
@@ -184,6 +191,7 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/thank-you': typeof ThankYouRoute
+  '/vyezd': typeof VyezdRoute
   '/api/leads': typeof ApiLeadsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
@@ -209,6 +217,7 @@ export interface FileRoutesById {
   '/services': typeof ServicesRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/thank-you': typeof ThankYouRoute
+  '/vyezd': typeof VyezdRoute
   '/api/leads': typeof ApiLeadsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
@@ -235,6 +244,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/sitemap.xml'
     | '/thank-you'
+    | '/vyezd'
     | '/api/leads'
     | '/blog/$slug'
     | '/cities/$citySlug'
@@ -259,6 +269,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/sitemap.xml'
     | '/thank-you'
+    | '/vyezd'
     | '/api/leads'
     | '/blog/$slug'
     | '/cities/$citySlug'
@@ -283,6 +294,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/sitemap.xml'
     | '/thank-you'
+    | '/vyezd'
     | '/api/leads'
     | '/blog/$slug'
     | '/cities/$citySlug'
@@ -308,12 +320,20 @@ export interface RootRouteChildren {
   ServicesRoute: typeof ServicesRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ThankYouRoute: typeof ThankYouRoute
+  VyezdRoute: typeof VyezdRoute
   ApiLeadsRoute: typeof ApiLeadsRoute
   LpCitySlugServiceSlugRoute: typeof LpCitySlugServiceSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/vyezd': {
+      id: '/vyezd'
+      path: '/vyezd'
+      fullPath: '/vyezd'
+      preLoaderRoute: typeof VyezdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/thank-you': {
       id: '/thank-you'
       path: '/thank-you'
@@ -543,6 +563,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesRoute: ServicesRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ThankYouRoute: ThankYouRoute,
+  VyezdRoute: VyezdRoute,
   ApiLeadsRoute: ApiLeadsRoute,
   LpCitySlugServiceSlugRoute: LpCitySlugServiceSlugRoute,
 }
