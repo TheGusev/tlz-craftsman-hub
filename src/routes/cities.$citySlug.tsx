@@ -6,9 +6,17 @@ import { getServiceInCityByCity } from "@/data/serviceInCity";
 import { generalFaq } from "@/data/faq";
 import { PageHero } from "@/components/site/PageHero";
 import { LeadForm } from "@/components/site/LeadForm";
+import { IntroAnswer } from "@/components/site/IntroAnswer";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock } from "lucide-react";
+import {
+  buildGraphHead,
+  buildWebPageSchema,
+  buildBreadcrumbSchema,
+  buildLocalBusinessSchema,
+} from "@/lib/jsonld";
+import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/cities/$citySlug")({
   loader: ({ params }): { city: City } => {
