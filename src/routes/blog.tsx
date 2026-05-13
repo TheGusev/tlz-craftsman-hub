@@ -3,25 +3,39 @@ import { blogPosts } from "@/data/blog";
 import { Card } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import { PageHero } from "@/components/site/PageHero";
+import {
+  buildGraphHead,
+  buildWebPageSchema,
+  buildBreadcrumbSchema,
+} from "@/lib/jsonld";
+import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/blog")({
-  head: () => ({
-    meta: [
-      { title: "Блог — Санитарные Решения РФ" },
-      {
-        name: "description",
-        content:
-          "Полезные материалы о санитарных работах: плесень после потопа, действия после пожара, фумигация, биосанитарные случаи.",
-      },
-      { property: "og:title", content: "Блог — Санитарные Решения РФ" },
-      {
-        property: "og:description",
-        content:
-          "Статьи о санитарных работах, дезинфекции, удалении плесени и последствий ЧС.",
-      },
-    ],
-    links: [{ rel: "canonical", href: "/blog" }],
-  }),
+  head: () => {
+    const path = "/blog";
+    const canonical = buildCanonical(path);
+    const title = "Блог — Санитарные Решения РФ";
+    const description = "Полезные материалы о санитарных работах: плесень после потопа, действия после пожара, фумигация, биосанитарные случаи.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: canonical },
+      ],
+      links: [{ rel: "canonical", href: canonical }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: buildGraphHead([
+            buildWebPageSchema({ path, name: title, description }),
+            buildBreadcrumbSchema([{ label: "Блог", path }]),
+          ]),
+        },
+      ],
+    };
+  },
   component: BlogIndex,
 });
 

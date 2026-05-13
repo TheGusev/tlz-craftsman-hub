@@ -2,11 +2,22 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getCity, type City } from "@/data/cities";
 import { getService, type Service } from "@/data/services";
 import { getServiceInCity, type ServiceInCity } from "@/data/serviceInCity";
-import { Breadcrumbs } from "@/components/site/Breadcrumbs";
+import { PageHero } from "@/components/site/PageHero";
 import { LeadForm } from "@/components/site/LeadForm";
+import { IntroAnswer } from "@/components/site/IntroAnswer";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Check } from "lucide-react";
+import {
+  buildGraphHead,
+  buildWebPageSchema,
+  buildBreadcrumbSchema,
+  buildServiceSchema,
+  buildLocalBusinessSchema,
+  buildFAQSchema,
+} from "@/lib/jsonld";
+import { buildCanonical } from "@/lib/seo";
+import { getServiceImage } from "@/lib/serviceImages";
 
 export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
   loader: ({ params }) => {
@@ -16,37 +27,84 @@ export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
     if (!city || !service || !sc) throw notFound();
     return { city, service, sc };
   },
-  head: ({ loaderData }) => loaderData ? ({
-    meta: [
-      { title: loaderData.sc.metaTitle },
-      { name: "description", content: loaderData.sc.metaDescription },
-      { property: "og:title", content: loaderData.sc.metaTitle },
-      { property: "og:description", content: loaderData.sc.metaDescription },
-    ],
-    links: [{ rel: "canonical", href: `/cities/${loaderData.city.slug}/${loaderData.service.slug}` }],
-  }) : { meta: [] },
+  head: ({ loaderData }) => {
+    if (!loaderData) return { meta: [] };
+    const { city, service, sc } = loaderData;
+    const path = `/cities/${city.slug}/${service.slug}`;
+    const canonical = buildCanonical(path);
+    const img = getServiceImage(service.slug);
+    return {
+      meta: [
+        { title: sc.metaTitle },
+        { name: "description", content: sc.metaDescription },
+        { property: "og:title", content: sc.metaTitle },
+        { property: "og:description", content: sc.metaDescription },
+        { property: "og:url", content: canonical },
+        ...(img
+          ? [
+              { property: "og:image", content: img },
+              { name: "twitter:image", content: img },
+            ]
+          : []),
+      ],
+      links: [{ rel: "canonical", href: canonical }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: buildGraphHead([
+            buildWebPageSchema({ path, name: sc.metaTitle, description: sc.metaDescription }),
+            buildBreadcrumbSchema([
+              { label: "Города", path: "/cities" },
+              { label: city.name, path: `/cities/${city.slug}` },
+              { label: service.shortName, path },
+            ]),
+            buildServiceSchema({
+              path,
+              name: sc.h1,
+              description: sc.metaDescription,
+              serviceType: service.cluster,
+              priceFrom: sc.localPricing?.from ?? service.priceFrom,
+              areaServed: city.name,
+            }),
+            buildLocalBusinessSchema({
+              path,
+              cityName: city.name,
+              description: sc.localOffer,
+              address: city.address,
+              phone: city.phone,
+              coordinates: city.coordinates,
+              areaServed: city.region,
+            }),
+            buildFAQSchema(sc.faq),
+          ]),
+        },
+      ],
+    };
+  },
   notFoundComponent: () => <div className="container py-20 text-center">Страница не найдена</div>,
   component: ServiceInCityPage,
 });
 
 function ServiceInCityPage() {
   const { city, service, sc }: { city: City; service: Service; sc: ServiceInCity } = Route.useLoaderData();
+  const cover = getServiceImage(service.slug);
   return (
     <article>
-      <header className="bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 py-12 md:py-16">
-          <Breadcrumbs items={[
-            { label: "Города", to: "/cities" },
-            { label: city.name, to: `/cities/${city.slug}` },
-            { label: service.shortName },
-          ]} />
-          <h1 className="mt-4 font-display text-3xl font-bold md:text-5xl">{sc.h1}</h1>
-          <p className="mt-4 max-w-3xl opacity-90">{sc.localOffer}</p>
-        </div>
-      </header>
+      <PageHero
+        backgroundImage={cover ?? undefined}
+        breadcrumbs={[
+          { label: "Города", to: "/cities" },
+          { label: city.name, to: `/cities/${city.slug}` },
+          { label: service.shortName },
+        ]}
+        eyebrow={`${service.cluster} · ${city.name}`}
+        title={sc.h1}
+        description={sc.localOffer}
+      />
 
       <div className="container mx-auto grid gap-10 px-4 py-12 lg:grid-cols-[2fr_1fr]">
         <div className="space-y-12">
+          {sc.introAnswer && <IntroAnswer>{sc.introAnswer}</IntroAnswer>}
           <section>
             <h2 className="font-display text-2xl font-bold">Когда вызывают {city.nameLocative}</h2>
             <ul className="mt-4 space-y-2">
@@ -80,7 +138,7 @@ function ServiceInCityPage() {
           <section>
             <h2 className="font-display text-2xl font-bold">Районы выезда</h2>
             <div className="mt-4 flex flex-wrap gap-2">
-              {city.districts.map((d: string) => (
+              {(sc.popularDistricts ?? city.districts).map((d: string) => (
                 <span key={d} className="rounded-full border border-border bg-card px-3 py-1 text-sm">{d}</span>
               ))}
             </div>

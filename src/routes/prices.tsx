@@ -2,17 +2,39 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Card } from "@/components/ui/card";
+import {
+  buildGraphHead,
+  buildWebPageSchema,
+  buildBreadcrumbSchema,
+} from "@/lib/jsonld";
+import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/prices")({
-  head: () => ({
-    meta: [
-      { title: "Цены на санитарные работы — прайс-лист" },
-      { name: "description", content: "Цены на уборку после пожара, потопа, удаление плесени, дезинфекцию, фумигацию. Бесплатный выезд для оценки." },
-      { property: "og:title", content: "Цены на санитарные работы" },
-      { property: "og:description", content: "Прайс-лист и порядок расчёта стоимости." },
-    ],
-    links: [{ rel: "canonical", href: "/prices" }],
-  }),
+  head: () => {
+    const path = "/prices";
+    const canonical = buildCanonical(path);
+    const title = "Цены на санитарные работы — прайс-лист";
+    const description = "Цены на уборку после пожара, потопа, удаление плесени, дезинфекцию, фумигацию. Бесплатный выезд для оценки.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: canonical },
+      ],
+      links: [{ rel: "canonical", href: canonical }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: buildGraphHead([
+            buildWebPageSchema({ path, name: title, description }),
+            buildBreadcrumbSchema([{ label: "Цены", path }]),
+          ]),
+        },
+      ],
+    };
+  },
   component: PricesPage,
 });
 

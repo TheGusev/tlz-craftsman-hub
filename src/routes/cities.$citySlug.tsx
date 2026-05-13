@@ -6,9 +6,17 @@ import { getServiceInCityByCity } from "@/data/serviceInCity";
 import { generalFaq } from "@/data/faq";
 import { PageHero } from "@/components/site/PageHero";
 import { LeadForm } from "@/components/site/LeadForm";
+import { IntroAnswer } from "@/components/site/IntroAnswer";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock } from "lucide-react";
+import {
+  buildGraphHead,
+  buildWebPageSchema,
+  buildBreadcrumbSchema,
+  buildLocalBusinessSchema,
+} from "@/lib/jsonld";
+import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/cities/$citySlug")({
   loader: ({ params }): { city: City } => {
@@ -16,15 +24,43 @@ export const Route = createFileRoute("/cities/$citySlug")({
     if (!city) throw notFound();
     return { city };
   },
-  head: ({ loaderData }) => loaderData ? ({
-    meta: [
-      { title: loaderData.city.metaTitle },
-      { name: "description", content: loaderData.city.metaDescription },
-      { property: "og:title", content: loaderData.city.metaTitle },
-      { property: "og:description", content: loaderData.city.metaDescription },
-    ],
-    links: [{ rel: "canonical", href: `/cities/${loaderData.city.slug}` }],
-  }) : { meta: [] },
+  head: ({ loaderData }) => {
+    if (!loaderData) return { meta: [] };
+    const c = loaderData.city;
+    const path = `/cities/${c.slug}`;
+    const canonical = buildCanonical(path);
+    return {
+      meta: [
+        { title: c.metaTitle },
+        { name: "description", content: c.metaDescription },
+        { property: "og:title", content: c.metaTitle },
+        { property: "og:description", content: c.metaDescription },
+        { property: "og:url", content: canonical },
+      ],
+      links: [{ rel: "canonical", href: canonical }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: buildGraphHead([
+            buildWebPageSchema({ path, name: c.metaTitle, description: c.metaDescription }),
+            buildBreadcrumbSchema([
+              { label: "Города", path: "/cities" },
+              { label: c.name, path },
+            ]),
+            buildLocalBusinessSchema({
+              path,
+              cityName: c.name,
+              description: c.intro,
+              address: c.address,
+              phone: c.phone,
+              coordinates: c.coordinates,
+              areaServed: c.region,
+            }),
+          ]),
+        },
+      ],
+    };
+  },
   notFoundComponent: () => <div className="container py-20 text-center">Город не найден</div>,
   component: CityPage,
 });
@@ -56,6 +92,7 @@ function CityPage() {
 
       <div className="container mx-auto grid gap-10 px-4 py-12 lg:grid-cols-[2fr_1fr]">
         <div className="space-y-12">
+          {city.introAnswer && <IntroAnswer>{city.introAnswer}</IntroAnswer>}
           <section>
             <h2 className="font-display text-2xl font-bold">Какие работы выполняем {city.nameLocative}</h2>
             <div className="mt-4 grid gap-3 md:grid-cols-2">

@@ -5,17 +5,39 @@ import { getService } from "@/data/services";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { Card } from "@/components/ui/card";
 import { getCaseImage } from "@/lib/caseImages";
+import {
+  buildGraphHead,
+  buildWebPageSchema,
+  buildBreadcrumbSchema,
+} from "@/lib/jsonld";
+import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/cases")({
-  head: () => ({
-    meta: [
-      { title: "Кейсы — реальные работы санитарной службы" },
-      { name: "description", content: "Реальные кейсы санитарных работ: уборка после пожара, потопа, удаление плесени, дезинфекция. Краснодар, Сочи, Ростов, Крым." },
-      { property: "og:title", content: "Кейсы санитарной службы" },
-      { property: "og:description", content: "Реальные работы по ЮФО и Крыму." },
-    ],
-    links: [{ rel: "canonical", href: "/cases" }],
-  }),
+  head: () => {
+    const path = "/cases";
+    const canonical = buildCanonical(path);
+    const title = "Кейсы — реальные работы санитарной службы";
+    const description = "Реальные кейсы санитарных работ: уборка после пожара, потопа, удаление плесени, дезинфекция. Краснодар, Сочи, Ростов, Крым.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: canonical },
+      ],
+      links: [{ rel: "canonical", href: canonical }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: buildGraphHead([
+            buildWebPageSchema({ path, name: title, description }),
+            buildBreadcrumbSchema([{ label: "Кейсы", path }]),
+          ]),
+        },
+      ],
+    };
+  },
   component: CasesPage,
 });
 

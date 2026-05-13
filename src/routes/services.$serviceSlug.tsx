@@ -5,11 +5,20 @@ import { cases } from "@/data/cases";
 import { getServiceInCityByService } from "@/data/serviceInCity";
 import { PageHero } from "@/components/site/PageHero";
 import { LeadForm } from "@/components/site/LeadForm";
+import { IntroAnswer } from "@/components/site/IntroAnswer";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Check, AlertTriangle } from "lucide-react";
 import { getServiceImage } from "@/lib/serviceImages";
 import { getCaseImage } from "@/lib/caseImages";
+import {
+  buildGraphHead,
+  buildWebPageSchema,
+  buildBreadcrumbSchema,
+  buildServiceSchema,
+  buildFAQSchema,
+} from "@/lib/jsonld";
+import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/services/$serviceSlug")({
   loader: ({ params }): { service: Service } => {
@@ -21,12 +30,16 @@ export const Route = createFileRoute("/services/$serviceSlug")({
     if (!loaderData) return { meta: [] };
     const s = loaderData.service;
     const img = getServiceImage(s.slug);
+    const path = `/services/${s.slug}`;
+    const canonical = buildCanonical(path);
     return {
       meta: [
         { title: s.metaTitle },
         { name: "description", content: s.metaDescription },
         { property: "og:title", content: s.metaTitle },
         { property: "og:description", content: s.metaDescription },
+        { property: "og:url", content: canonical },
+        { property: "og:type", content: "article" },
         ...(img
           ? [
               { property: "og:image", content: img },
@@ -34,40 +47,26 @@ export const Route = createFileRoute("/services/$serviceSlug")({
             ]
           : []),
       ],
-      links: [{ rel: "canonical", href: `/services/${s.slug}` }],
+      links: [{ rel: "canonical", href: canonical }],
       scripts: [
         {
           type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Service",
-            name: s.name,
-            description: s.metaDescription,
-            serviceType: s.cluster,
-            provider: {
-              "@type": "LocalBusiness",
-              name: "Санитарные Решения РФ",
-              telephone: "+7-800-555-12-34",
-            },
-            areaServed: "ЮФО и Республика Крым",
-          }),
+          children: buildGraphHead([
+            buildWebPageSchema({ path, name: s.metaTitle, description: s.metaDescription }),
+            buildBreadcrumbSchema([
+              { label: "Услуги", path: "/services" },
+              { label: s.shortName, path },
+            ]),
+            buildServiceSchema({
+              path,
+              name: s.name,
+              description: s.metaDescription,
+              serviceType: s.cluster,
+              priceFrom: s.priceFrom,
+            }),
+            buildFAQSchema(s.faq),
+          ]),
         },
-        ...(s.faq.length > 0
-          ? [
-              {
-                type: "application/ld+json",
-                children: JSON.stringify({
-                  "@context": "https://schema.org",
-                  "@type": "FAQPage",
-                  mainEntity: s.faq.map((f: { q: string; a: string }) => ({
-                    "@type": "Question",
-                    name: f.q,
-                    acceptedAnswer: { "@type": "Answer", text: f.a },
-                  })),
-                }),
-              },
-            ]
-          : []),
       ],
     };
   },
@@ -93,6 +92,7 @@ function ServicePage() {
 
       <div className="container mx-auto grid gap-10 px-4 py-12 lg:grid-cols-[2fr_1fr]">
         <div className="space-y-12">
+          {service.introAnswer && <IntroAnswer>{service.introAnswer}</IntroAnswer>}
           <section>
             <h2 className="font-display text-2xl font-bold">Что входит в работу</h2>
             <ul className="mt-4 grid gap-2 md:grid-cols-2">

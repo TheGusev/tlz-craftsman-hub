@@ -3,18 +3,42 @@ import { cities } from "@/data/cities";
 import { PageHero } from "@/components/site/PageHero";
 import { Card } from "@/components/ui/card";
 import geographyImg from "@/assets/geography.jpg";
+import {
+  buildGraphHead,
+  buildWebPageSchema,
+  buildBreadcrumbSchema,
+} from "@/lib/jsonld";
+import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/regions/krym")({
-  head: () => ({
-    meta: [
-      { title: "Санитарные услуги в Крыму — региональный хаб" },
-      { name: "description", content: "Санитарная служба по всему Крыму: Симферополь, Севастополь, Ялта, Евпатория, Керчь. Дежурные бригады, выезд 24/7." },
-      { property: "og:title", content: "Санитарные услуги в Крыму" },
-      { property: "og:description", content: "Региональный хаб с выездом по всему полуострову." },
-      { property: "og:image", content: geographyImg },
-    ],
-    links: [{ rel: "canonical", href: "/regions/krym" }],
-  }),
+  head: () => {
+    const path = "/regions/krym";
+    const canonical = buildCanonical(path);
+    const title = "Санитарные услуги в Крыму — региональный хаб";
+    const description = "Санитарная служба по всему Крыму: Симферополь, Севастополь, Ялта, Евпатория, Керчь. Дежурные бригады, выезд 24/7.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: canonical },
+      ],
+      links: [{ rel: "canonical", href: canonical }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: buildGraphHead([
+            buildWebPageSchema({ path, name: title, description }),
+            buildBreadcrumbSchema([
+              { label: "Регионы", path: "/regions" },
+              { label: "Крым", path },
+            ]),
+          ]),
+        },
+      ],
+    };
+  },
   component: KrymPage,
 });
 

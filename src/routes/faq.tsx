@@ -3,17 +3,45 @@ import { generalFaq } from "@/data/faq";
 import { services } from "@/data/services";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  buildGraphHead,
+  buildWebPageSchema,
+  buildBreadcrumbSchema,
+  buildFAQSchema,
+} from "@/lib/jsonld";
+import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/faq")({
-  head: () => ({
-    meta: [
-      { title: "FAQ — частые вопросы о санитарных работах" },
-      { name: "description", content: "Ответы на частые вопросы: сроки выезда, гарантии, конфиденциальность, работа со страховыми, цены." },
-      { property: "og:title", content: "FAQ санитарной службы" },
-      { property: "og:description", content: "Частые вопросы и ответы." },
-    ],
-    links: [{ rel: "canonical", href: "/faq" }],
-  }),
+  head: () => {
+    const path = "/faq";
+    const canonical = buildCanonical(path);
+    const title = "FAQ — частые вопросы о санитарных работах";
+    const description = "Ответы на частые вопросы: сроки выезда, гарантии, конфиденциальность, работа со страховыми, цены.";
+    const allFaq = [
+      ...generalFaq,
+      ...services.flatMap((s) => s.faq.slice(0, 3)),
+    ];
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: canonical },
+      ],
+      links: [{ rel: "canonical", href: canonical }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: buildGraphHead([
+            buildWebPageSchema({ path, name: title, description }),
+            buildBreadcrumbSchema([{ label: "FAQ", path }]),
+            buildFAQSchema(allFaq),
+          ]),
+        },
+      ],
+    };
+  },
   component: FaqPage,
 });
 

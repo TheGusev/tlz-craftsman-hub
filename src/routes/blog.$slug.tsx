@@ -4,6 +4,12 @@ import { getService } from "@/data/services";
 import type { Service } from "@/data/services";
 import { Card } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
+import {
+  buildGraphHead,
+  buildBreadcrumbSchema,
+  buildArticleSchema,
+} from "@/lib/jsonld";
+import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/blog/$slug")({
   loader: ({ params }): { post: BlogPost } => {
@@ -14,7 +20,8 @@ export const Route = createFileRoute("/blog/$slug")({
   head: ({ loaderData }) => {
     if (!loaderData) return { meta: [{ title: "Статья не найдена" }] };
     const { post } = loaderData;
-    const url = `/blog/${post.slug}`;
+    const path = `/blog/${post.slug}`;
+    const canonical = buildCanonical(path);
     return {
       meta: [
         { title: post.metaTitle },
@@ -22,23 +29,24 @@ export const Route = createFileRoute("/blog/$slug")({
         { property: "og:title", content: post.metaTitle },
         { property: "og:description", content: post.metaDescription },
         { property: "og:type", content: "article" },
+        { property: "og:url", content: canonical },
       ],
-      links: [{ rel: "canonical", href: url }],
+      links: [{ rel: "canonical", href: canonical }],
       scripts: [
         {
           type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Article",
-            headline: post.title,
-            description: post.excerpt,
-            datePublished: post.publishedAt,
-            author: { "@type": "Organization", name: "Санитарные Решения РФ" },
-            publisher: {
-              "@type": "Organization",
-              name: "Санитарные Решения РФ",
-            },
-          }),
+          children: buildGraphHead([
+            buildBreadcrumbSchema([
+              { label: "Блог", path: "/blog" },
+              { label: post.title, path },
+            ]),
+            buildArticleSchema({
+              path,
+              headline: post.title,
+              description: post.excerpt,
+              datePublished: post.publishedAt,
+            }),
+          ]),
         },
       ],
     };
