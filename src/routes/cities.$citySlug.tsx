@@ -24,15 +24,43 @@ export const Route = createFileRoute("/cities/$citySlug")({
     if (!city) throw notFound();
     return { city };
   },
-  head: ({ loaderData }) => loaderData ? ({
-    meta: [
-      { title: loaderData.city.metaTitle },
-      { name: "description", content: loaderData.city.metaDescription },
-      { property: "og:title", content: loaderData.city.metaTitle },
-      { property: "og:description", content: loaderData.city.metaDescription },
-    ],
-    links: [{ rel: "canonical", href: `/cities/${loaderData.city.slug}` }],
-  }) : { meta: [] },
+  head: ({ loaderData }) => {
+    if (!loaderData) return { meta: [] };
+    const c = loaderData.city;
+    const path = `/cities/${c.slug}`;
+    const canonical = buildCanonical(path);
+    return {
+      meta: [
+        { title: c.metaTitle },
+        { name: "description", content: c.metaDescription },
+        { property: "og:title", content: c.metaTitle },
+        { property: "og:description", content: c.metaDescription },
+        { property: "og:url", content: canonical },
+      ],
+      links: [{ rel: "canonical", href: canonical }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: buildGraphHead([
+            buildWebPageSchema({ path, name: c.metaTitle, description: c.metaDescription }),
+            buildBreadcrumbSchema([
+              { label: "Города", path: "/cities" },
+              { label: c.name, path },
+            ]),
+            buildLocalBusinessSchema({
+              path,
+              cityName: c.name,
+              description: c.intro,
+              address: c.address,
+              phone: c.phone,
+              coordinates: c.coordinates,
+              areaServed: c.region,
+            }),
+          ]),
+        },
+      ],
+    };
+  },
   notFoundComponent: () => <div className="container py-20 text-center">Город не найден</div>,
   component: CityPage,
 });
