@@ -18,6 +18,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricesRouteImport } from './routes/prices'
 import { Route as OtzyvyRouteImport } from './routes/otzyvy'
 import { Route as OplataRouteImport } from './routes/oplata'
+import { Route as LicenziiRouteImport } from './routes/licenzii'
 import { Route as GarantiiRouteImport } from './routes/garantii'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactsRouteImport } from './routes/contacts'
@@ -77,6 +78,11 @@ const OtzyvyRoute = OtzyvyRouteImport.update({
 const OplataRoute = OplataRouteImport.update({
   id: '/oplata',
   path: '/oplata',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LicenziiRoute = LicenziiRouteImport.update({
+  id: '/licenzii',
+  path: '/licenzii',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GarantiiRoute = GarantiiRouteImport.update({
@@ -165,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
   '/garantii': typeof GarantiiRoute
+  '/licenzii': typeof LicenziiRoute
   '/oplata': typeof OplataRoute
   '/otzyvy': typeof OtzyvyRoute
   '/prices': typeof PricesRoute
@@ -191,6 +198,7 @@ export interface FileRoutesByTo {
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
   '/garantii': typeof GarantiiRoute
+  '/licenzii': typeof LicenziiRoute
   '/oplata': typeof OplataRoute
   '/otzyvy': typeof OtzyvyRoute
   '/prices': typeof PricesRoute
@@ -218,6 +226,7 @@ export interface FileRoutesById {
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
   '/garantii': typeof GarantiiRoute
+  '/licenzii': typeof LicenziiRoute
   '/oplata': typeof OplataRoute
   '/otzyvy': typeof OtzyvyRoute
   '/prices': typeof PricesRoute
@@ -246,6 +255,7 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/faq'
     | '/garantii'
+    | '/licenzii'
     | '/oplata'
     | '/otzyvy'
     | '/prices'
@@ -272,6 +282,7 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/faq'
     | '/garantii'
+    | '/licenzii'
     | '/oplata'
     | '/otzyvy'
     | '/prices'
@@ -298,6 +309,7 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/faq'
     | '/garantii'
+    | '/licenzii'
     | '/oplata'
     | '/otzyvy'
     | '/prices'
@@ -325,6 +337,7 @@ export interface RootRouteChildren {
   ContactsRoute: typeof ContactsRoute
   FaqRoute: typeof FaqRoute
   GarantiiRoute: typeof GarantiiRoute
+  LicenziiRoute: typeof LicenziiRoute
   OplataRoute: typeof OplataRoute
   OtzyvyRoute: typeof OtzyvyRoute
   PricesRoute: typeof PricesRoute
@@ -401,6 +414,13 @@ declare module '@tanstack/react-router' {
       path: '/oplata'
       fullPath: '/oplata'
       preLoaderRoute: typeof OplataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/licenzii': {
+      id: '/licenzii'
+      path: '/licenzii'
+      fullPath: '/licenzii'
+      preLoaderRoute: typeof LicenziiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/garantii': {
@@ -576,6 +596,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactsRoute: ContactsRoute,
   FaqRoute: FaqRoute,
   GarantiiRoute: GarantiiRoute,
+  LicenziiRoute: LicenziiRoute,
   OplataRoute: OplataRoute,
   OtzyvyRoute: OtzyvyRoute,
   PricesRoute: PricesRoute,
