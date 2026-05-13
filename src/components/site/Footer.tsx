@@ -100,7 +100,7 @@ export function Footer() {
       </div>
       <div className="border-t border-white/10">
         <div className="container mx-auto flex flex-col gap-3 px-4 py-5 text-xs opacity-70 md:flex-row md:items-center md:justify-between">
-          <span>© 2026 {SITE_NAME}. ИНН 2300000000 · ОГРН 1232300000000</span>
+          <span>{`© 2026 ${SITE_NAME}. ИНН 2300000000 · ОГРН 1232300000000`}</span>
           <div className="flex flex-wrap gap-x-4 gap-y-1">
             <Link to="/privacy" className="hover:text-accent">Политика</Link>
             <Link to="/soglasie" className="hover:text-accent">Согласие на ОПД</Link>

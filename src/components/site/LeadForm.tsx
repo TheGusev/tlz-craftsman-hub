@@ -47,6 +47,7 @@ export function LeadForm({
       objectType: String(fd.get("objectType") ?? ""),
       problem: String(fd.get("problem") ?? ""),
       urgency: String(fd.get("urgency") ?? ""),
+      callTime: String(fd.get("callTime") ?? ""),
       comment: String(fd.get("comment") ?? ""),
       service: service ?? null,
       source,
@@ -138,18 +139,34 @@ export function LeadForm({
           placeholder="Например: затопило подвал, нужна просушка"
         />
       </div>
-      <div className="grid gap-2">
-        <Label htmlFor="urgency">Срочность</Label>
-        <Select name="urgency" defaultValue="urgent">
-          <SelectTrigger id="urgency">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="now">Срочно — выезд сейчас</SelectItem>
-            <SelectItem value="urgent">Сегодня</SelectItem>
-            <SelectItem value="planned">В ближайшие дни</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-2">
+          <Label htmlFor="urgency">Срочность</Label>
+          <Select name="urgency" defaultValue="urgent">
+            <SelectTrigger id="urgency">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="now">Срочно — выезд сейчас</SelectItem>
+              <SelectItem value="urgent">Сегодня</SelectItem>
+              <SelectItem value="planned">В ближайшие дни</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="grid gap-2">
+          <Label htmlFor="callTime">Удобное время звонка</Label>
+          <Select name="callTime" defaultValue="asap">
+            <SelectTrigger id="callTime">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="asap">Перезвонить сейчас</SelectItem>
+              <SelectItem value="1hr">В течение часа</SelectItem>
+              <SelectItem value="today_evening">Сегодня вечером</SelectItem>
+              <SelectItem value="tomorrow_morning">Завтра утром</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="grid gap-2">
         <Label htmlFor="comment">Комментарий</Label>
