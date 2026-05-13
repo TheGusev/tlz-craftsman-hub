@@ -2,17 +2,39 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { Card } from "@/components/ui/card";
 import { ShieldCheck, Award, Users, Truck } from "lucide-react";
+import {
+  buildGraphHead,
+  buildWebPageSchema,
+  buildBreadcrumbSchema,
+} from "@/lib/jsonld";
+import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/about")({
-  head: () => ({
-    meta: [
-      { title: "О компании — Санитарные Решения РФ" },
-      { name: "description", content: "Санитарные Решения РФ — лицензированная санитарная служба по ЮФО и Крыму. Сертифицированные препараты, опытные бригады, гарантия результата." },
-      { property: "og:title", content: "О компании Санитарные Решения РФ" },
-      { property: "og:description", content: "Лицензированная санитарная служба по ЮФО и Крыму." },
-    ],
-    links: [{ rel: "canonical", href: "/about" }],
-  }),
+  head: () => {
+    const path = "/about";
+    const canonical = buildCanonical(path);
+    const title = "О компании — Санитарные Решения РФ";
+    const description = "Санитарные Решения РФ — лицензированная санитарная служба по ЮФО и Крыму. Сертифицированные препараты, опытные бригады, гарантия результата.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: canonical },
+      ],
+      links: [{ rel: "canonical", href: canonical }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: buildGraphHead([
+            buildWebPageSchema({ path, name: title, description }),
+            buildBreadcrumbSchema([{ label: "О компании", path }]),
+          ]),
+        },
+      ],
+    };
+  },
   component: AboutPage,
 });
 
