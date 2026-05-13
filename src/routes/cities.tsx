@@ -42,5 +42,6 @@ function CitiesIndex() {
         ))}
       </div>
     </div>
+    </>
   );
 }
