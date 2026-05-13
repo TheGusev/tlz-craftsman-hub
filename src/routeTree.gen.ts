@@ -33,6 +33,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ServicesServiceSlugRouteImport } from './routes/services.$serviceSlug'
 import { Route as RegionsKrymRouteImport } from './routes/regions.krym'
 import { Route as CitiesCitySlugRouteImport } from './routes/cities.$citySlug'
+import { Route as CasesSlugRouteImport } from './routes/cases.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiLeadsRouteImport } from './routes/api.leads'
 import { Route as LpCitySlugServiceSlugRouteImport } from './routes/lp.$citySlug.$serviceSlug'
@@ -158,6 +159,11 @@ const CitiesCitySlugRoute = CitiesCitySlugRouteImport.update({
   path: '/$citySlug',
   getParentRoute: () => CitiesRoute,
 } as any)
+const CasesSlugRoute = CasesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => CasesRoute,
+} as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -184,7 +190,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/blog': typeof BlogRouteWithChildren
-  '/cases': typeof CasesRoute
+  '/cases': typeof CasesRouteWithChildren
   '/cities': typeof CitiesRouteWithChildren
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
@@ -204,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/vyezd': typeof VyezdRoute
   '/api/leads': typeof ApiLeadsRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/cases/$slug': typeof CasesSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
   '/regions/krym': typeof RegionsKrymRoute
   '/services/$serviceSlug': typeof ServicesServiceSlugRoute
@@ -214,7 +221,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/blog': typeof BlogRouteWithChildren
-  '/cases': typeof CasesRoute
+  '/cases': typeof CasesRouteWithChildren
   '/cities': typeof CitiesRouteWithChildren
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
@@ -234,6 +241,7 @@ export interface FileRoutesByTo {
   '/vyezd': typeof VyezdRoute
   '/api/leads': typeof ApiLeadsRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/cases/$slug': typeof CasesSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
   '/regions/krym': typeof RegionsKrymRoute
   '/services/$serviceSlug': typeof ServicesServiceSlugRoute
@@ -245,7 +253,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/blog': typeof BlogRouteWithChildren
-  '/cases': typeof CasesRoute
+  '/cases': typeof CasesRouteWithChildren
   '/cities': typeof CitiesRouteWithChildren
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
@@ -265,6 +273,7 @@ export interface FileRoutesById {
   '/vyezd': typeof VyezdRoute
   '/api/leads': typeof ApiLeadsRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/cases/$slug': typeof CasesSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
   '/regions/krym': typeof RegionsKrymRoute
   '/services/$serviceSlug': typeof ServicesServiceSlugRoute
@@ -297,6 +306,7 @@ export interface FileRouteTypes {
     | '/vyezd'
     | '/api/leads'
     | '/blog/$slug'
+    | '/cases/$slug'
     | '/cities/$citySlug'
     | '/regions/krym'
     | '/services/$serviceSlug'
@@ -327,6 +337,7 @@ export interface FileRouteTypes {
     | '/vyezd'
     | '/api/leads'
     | '/blog/$slug'
+    | '/cases/$slug'
     | '/cities/$citySlug'
     | '/regions/krym'
     | '/services/$serviceSlug'
@@ -357,6 +368,7 @@ export interface FileRouteTypes {
     | '/vyezd'
     | '/api/leads'
     | '/blog/$slug'
+    | '/cases/$slug'
     | '/cities/$citySlug'
     | '/regions/krym'
     | '/services/$serviceSlug'
@@ -368,7 +380,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   BlogRoute: typeof BlogRouteWithChildren
-  CasesRoute: typeof CasesRoute
+  CasesRoute: typeof CasesRouteWithChildren
   CitiesRoute: typeof CitiesRouteWithChildren
   ContactsRoute: typeof ContactsRoute
   FaqRoute: typeof FaqRoute
@@ -560,6 +572,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CitiesCitySlugRouteImport
       parentRoute: typeof CitiesRoute
     }
+    '/cases/$slug': {
+      id: '/cases/$slug'
+      path: '/$slug'
+      fullPath: '/cases/$slug'
+      preLoaderRoute: typeof CasesSlugRouteImport
+      parentRoute: typeof CasesRoute
+    }
     '/blog/$slug': {
       id: '/blog/$slug'
       path: '/$slug'
@@ -600,6 +619,16 @@ const BlogRouteChildren: BlogRouteChildren = {
 }
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
+
+interface CasesRouteChildren {
+  CasesSlugRoute: typeof CasesSlugRoute
+}
+
+const CasesRouteChildren: CasesRouteChildren = {
+  CasesSlugRoute: CasesSlugRoute,
+}
+
+const CasesRouteWithChildren = CasesRoute._addFileChildren(CasesRouteChildren)
 
 interface CitiesCitySlugRouteChildren {
   CitiesCitySlugServiceSlugRoute: typeof CitiesCitySlugServiceSlugRoute
@@ -651,7 +680,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   BlogRoute: BlogRouteWithChildren,
-  CasesRoute: CasesRoute,
+  CasesRoute: CasesRouteWithChildren,
   CitiesRoute: CitiesRouteWithChildren,
   ContactsRoute: ContactsRoute,
   FaqRoute: FaqRoute,

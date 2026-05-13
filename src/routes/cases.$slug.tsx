@@ -145,7 +145,7 @@ function CaseDetailPage() {
         <Card className="p-5">
           <div className="text-xs font-semibold uppercase tracking-wider text-accent">Что сделали</div>
           <ul className="mt-2 space-y-1 text-sm">
-            {item.works.map((w, i) => <li key={i}>— {w}</li>)}
+            {item.works.map((w: string, i: number) => <li key={i}>— {w}</li>)}
           </ul>
         </Card>
         <Card className="p-5">
