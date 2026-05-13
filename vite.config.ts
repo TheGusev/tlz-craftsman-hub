@@ -13,9 +13,11 @@ import { blogPosts } from "./src/data/blog";
 const dynamicPages = [
   ...services.map((s) => ({ path: `/services/${s.slug}` })),
   ...cities.map((c) => ({ path: `/cities/${c.slug}` })),
-  ...serviceInCity.map((sc) => ({
-    path: `/cities/${sc.citySlug}/${sc.serviceSlug}`,
-  })),
+  ...serviceInCity
+    .filter((sc) => sc.isReady !== false)
+    .map((sc) => ({
+      path: `/cities/${sc.citySlug}/${sc.serviceSlug}`,
+    })),
   ...blogPosts.map((p) => ({ path: `/blog/${p.slug}` })),
   { path: "/regions/krym" },
 ];
