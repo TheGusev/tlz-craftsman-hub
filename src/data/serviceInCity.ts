@@ -394,7 +394,8 @@ for (const citySlug of TOP_SIC_CITIES) {
         { q: "Выдаёте акт?", a: "Да, акт о проведённой обработке с указанием препаратов." },
       ],
       popularDistricts: city.districts.slice(0, 3),
-      isReady: true,
+      // isReady: false — авто-шаблон, не попадает в sitemap/prerender до ручной доработки контента
+      isReady: false,
     });
   }
 }
