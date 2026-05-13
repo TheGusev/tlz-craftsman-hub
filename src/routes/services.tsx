@@ -4,17 +4,39 @@ import { PageHero } from "@/components/site/PageHero";
 import { Card } from "@/components/ui/card";
 import { getServiceImage } from "@/lib/serviceImages";
 import { ArrowRight } from "lucide-react";
+import {
+  buildGraphHead,
+  buildWebPageSchema,
+  buildBreadcrumbSchema,
+} from "@/lib/jsonld";
+import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/services")({
-  head: () => ({
-    meta: [
-      { title: "Услуги — Санитарные Решения РФ" },
-      { name: "description", content: "Каталог санитарных услуг: уборка после пожара, потопа, удаление плесени, дезинфекция, фумигация, очистка участков." },
-      { property: "og:title", content: "Услуги санитарной службы" },
-      { property: "og:description", content: "8 направлений санитарных работ по ЮФО и Крыму." },
-    ],
-    links: [{ rel: "canonical", href: "/services" }],
-  }),
+  head: () => {
+    const path = "/services";
+    const canonical = buildCanonical(path);
+    const title = "Услуги — Санитарные Решения РФ";
+    const description = "Каталог санитарных услуг: уборка после пожара, потопа, удаление плесени, дезинфекция, фумигация, очистка участков.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: canonical },
+      ],
+      links: [{ rel: "canonical", href: canonical }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: buildGraphHead([
+            buildWebPageSchema({ path, name: title, description }),
+            buildBreadcrumbSchema([{ label: "Услуги", path }]),
+          ]),
+        },
+      ],
+    };
+  },
   component: ServicesIndex,
 });
 
