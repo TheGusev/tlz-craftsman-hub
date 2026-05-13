@@ -92,6 +92,7 @@ function ServicePage() {
 
       <div className="container mx-auto grid gap-10 px-4 py-12 lg:grid-cols-[2fr_1fr]">
         <div className="space-y-12">
+          {service.introAnswer && <IntroAnswer>{service.introAnswer}</IntroAnswer>}
           <section>
             <h2 className="font-display text-2xl font-bold">Что входит в работу</h2>
             <ul className="mt-4 grid gap-2 md:grid-cols-2">
