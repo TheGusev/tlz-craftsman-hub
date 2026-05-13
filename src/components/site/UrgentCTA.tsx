@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Phone, Send, User, X } from "lucide-react";
+import { trackGoal } from "@/lib/analytics";
+import { SITE_PHONE_RAW } from "@/lib/site";
 
 type Action = {
   label: string;
@@ -7,12 +9,13 @@ type Action = {
   icon: typeof Phone;
   bg: string;
   external?: boolean;
+  goal: string;
 };
 
 const actions: Action[] = [
-  { label: "Позвонить", href: "tel:+78005551234", icon: Phone, bg: "bg-[#25D366] text-white" },
-  { label: "MAX", href: "https://max.ru/", icon: User, bg: "bg-sky-500 text-white", external: true },
-  { label: "Telegram", href: "https://t.me/", icon: Send, bg: "bg-sky-500 text-white", external: true },
+  { label: "Позвонить", href: `tel:${SITE_PHONE_RAW}`, icon: Phone, bg: "bg-[#25D366] text-white", goal: "lead_phone_click" },
+  { label: "MAX", href: "https://max.ru/", icon: User, bg: "bg-sky-500 text-white", external: true, goal: "lead_max_click" },
+  { label: "Telegram", href: "https://t.me/", icon: Send, bg: "bg-sky-500 text-white", external: true, goal: "lead_telegram_click" },
 ];
 
 export function UrgentCTA() {
