@@ -49,7 +49,11 @@ export const Route = createFileRoute("/lp/$citySlug/$serviceSlug")({
 });
 
 function LandingPage() {
-  const { city, service, sc } = Route.useLoaderData();
+  const { city, service, sc } = Route.useLoaderData() as {
+    city: City;
+    service: Service;
+    sc: ServiceInCity | undefined;
+  };
   const search = useSearch({ from: "/lp/$citySlug/$serviceSlug" }) as LpSearch;
   const cover = getServiceImage(service.slug);
 
