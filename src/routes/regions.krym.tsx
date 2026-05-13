@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { cities } from "@/data/cities";
-import { Breadcrumbs } from "@/components/site/Breadcrumbs";
+import { PageHero } from "@/components/site/PageHero";
 import { Card } from "@/components/ui/card";
 import geographyImg from "@/assets/geography.jpg";
 
@@ -22,20 +22,12 @@ function KrymPage() {
   const krym = cities.filter((c) => c.region === "Республика Крым");
   return (
     <article>
-      <header className="relative overflow-hidden bg-primary text-primary-foreground">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${geographyImg})` }}
-          aria-hidden
-        />
-        <div className="container relative mx-auto px-4 py-12 md:py-20">
-          <div className="max-w-3xl rounded-2xl bg-primary/70 p-5 backdrop-blur-sm md:p-8">
-            <Breadcrumbs items={[{ label: "Регионы" }, { label: "Крым" }]} />
-            <h1 className="mt-4 font-display text-3xl font-bold sm:text-4xl md:text-5xl">Санитарные услуги в Крыму</h1>
-            <p className="mt-4 text-sm opacity-95 md:text-base">Симферополь — наш региональный хаб. Из него оперативно выезжаем по всему полуострову. Дежурная бригада 24/7. Работаем с частными лицами, УК, гостиничным сектором и промышленностью.</p>
-          </div>
-        </div>
-      </header>
+      <PageHero
+        backgroundImage={geographyImg}
+        breadcrumbs={[{ label: "Регионы" }, { label: "Крым" }]}
+        title="Санитарные услуги в Крыму"
+        description="Симферополь — наш региональный хаб. Из него оперативно выезжаем по всему полуострову. Дежурная бригада 24/7. Работаем с частными лицами, УК, гостиничным сектором и промышленностью."
+      />
       <div className="container mx-auto px-4 py-10 md:py-12">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {krym.map((c) => (
