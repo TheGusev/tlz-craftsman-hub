@@ -14,41 +14,45 @@ import { getCaseImage } from "@/lib/caseImages";
 import { MobileQuickLead } from "@/components/site/MobileQuickLead";
 import geographyImg from "@/assets/geography.jpg";
 import heroCrimeaMountain from "@/assets/hero-crimea-mountain.png";
+import {
+  buildGraphHead,
+  buildWebPageSchema,
+  buildLocalBusinessSchema,
+  buildFAQSchema,
+} from "@/lib/jsonld";
+import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Санитарные Решения РФ — аварийная санитарная служба 24/7 по ЮФО и Крыму" },
-      { name: "description", content: "Аварийная санитарная очистка, дезинфекция, удаление плесени, фумигация. Краснодар, Сочи, Ростов-на-Дону, Крым. Выезд бригады 24/7." },
-      { property: "og:title", content: "Санитарные Решения РФ — аварийная санитарная служба 24/7" },
-      { property: "og:description", content: "Аварийная санобработка по ЮФО и Крыму. Выезд бригады в течение 1–3 часов." },
-    ],
-    links: [{ rel: "canonical", href: "/" }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "LocalBusiness",
-          name: "Санитарные Решения РФ",
-          description:
-            "Аварийная санитарная служба 24/7: дезинфекция, удаление плесени, фумигация, очистка после ЧС.",
-          telephone: "+7-800-555-12-34",
-          areaServed: [
-            "Краснодар",
-            "Сочи",
-            "Ростов-на-Дону",
-            "Симферополь",
-            "Севастополь",
-            "Ялта",
-            "Евпатория",
-            "Керчь",
-          ],
-          openingHours: "Mo-Su 00:00-23:59",
-        }),
-      },
-    ],
-  }),
+  head: () => {
+    const canonical = buildCanonical("/");
+    const title = "Санитарные Решения РФ — аварийная санитарная служба 24/7 по ЮФО и Крыму";
+    const description = "Аварийная санитарная очистка, дезинфекция, удаление плесени, фумигация. Краснодар, Сочи, Ростов-на-Дону, Крым. Выезд бригады 24/7.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: canonical },
+      ],
+      links: [{ rel: "canonical", href: canonical }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: buildGraphHead([
+            buildWebPageSchema({ path: "/", name: title, description }),
+            buildLocalBusinessSchema({
+              path: "/",
+              cityName: "ЮФО и Крым",
+              description,
+              areaServed: "ЮФО и Республика Крым",
+            }),
+            buildFAQSchema(generalFaq),
+          ]),
+        },
+      ],
+    };
+  },
   component: HomePage,
 });
 
