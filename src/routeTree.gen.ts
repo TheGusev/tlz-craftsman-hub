@@ -15,6 +15,7 @@ import { Route as ServicesRouteImport } from './routes/services'
 import { Route as RegionsRouteImport } from './routes/regions'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricesRouteImport } from './routes/prices'
+import { Route as OplataRouteImport } from './routes/oplata'
 import { Route as GarantiiRouteImport } from './routes/garantii'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactsRouteImport } from './routes/contacts'
@@ -59,6 +60,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const PricesRoute = PricesRouteImport.update({
   id: '/prices',
   path: '/prices',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OplataRoute = OplataRouteImport.update({
+  id: '/oplata',
+  path: '/oplata',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GarantiiRoute = GarantiiRouteImport.update({
@@ -147,6 +153,7 @@ export interface FileRoutesByFullPath {
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
   '/garantii': typeof GarantiiRoute
+  '/oplata': typeof OplataRoute
   '/prices': typeof PricesRoute
   '/privacy': typeof PrivacyRoute
   '/regions': typeof RegionsRouteWithChildren
@@ -170,6 +177,7 @@ export interface FileRoutesByTo {
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
   '/garantii': typeof GarantiiRoute
+  '/oplata': typeof OplataRoute
   '/prices': typeof PricesRoute
   '/privacy': typeof PrivacyRoute
   '/regions': typeof RegionsRouteWithChildren
@@ -194,6 +202,7 @@ export interface FileRoutesById {
   '/contacts': typeof ContactsRoute
   '/faq': typeof FaqRoute
   '/garantii': typeof GarantiiRoute
+  '/oplata': typeof OplataRoute
   '/prices': typeof PricesRoute
   '/privacy': typeof PrivacyRoute
   '/regions': typeof RegionsRouteWithChildren
@@ -219,6 +228,7 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/faq'
     | '/garantii'
+    | '/oplata'
     | '/prices'
     | '/privacy'
     | '/regions'
@@ -242,6 +252,7 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/faq'
     | '/garantii'
+    | '/oplata'
     | '/prices'
     | '/privacy'
     | '/regions'
@@ -265,6 +276,7 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/faq'
     | '/garantii'
+    | '/oplata'
     | '/prices'
     | '/privacy'
     | '/regions'
@@ -289,6 +301,7 @@ export interface RootRouteChildren {
   ContactsRoute: typeof ContactsRoute
   FaqRoute: typeof FaqRoute
   GarantiiRoute: typeof GarantiiRoute
+  OplataRoute: typeof OplataRoute
   PricesRoute: typeof PricesRoute
   PrivacyRoute: typeof PrivacyRoute
   RegionsRoute: typeof RegionsRouteWithChildren
@@ -341,6 +354,13 @@ declare module '@tanstack/react-router' {
       path: '/prices'
       fullPath: '/prices'
       preLoaderRoute: typeof PricesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/oplata': {
+      id: '/oplata'
+      path: '/oplata'
+      fullPath: '/oplata'
+      preLoaderRoute: typeof OplataRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/garantii': {
@@ -516,6 +536,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactsRoute: ContactsRoute,
   FaqRoute: FaqRoute,
   GarantiiRoute: GarantiiRoute,
+  OplataRoute: OplataRoute,
   PricesRoute: PricesRoute,
   PrivacyRoute: PrivacyRoute,
   RegionsRoute: RegionsRouteWithChildren,
