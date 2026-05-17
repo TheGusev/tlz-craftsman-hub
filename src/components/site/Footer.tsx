@@ -99,14 +99,19 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-white/10">
-        <div className="container mx-auto flex flex-col gap-3 px-4 py-5 text-xs opacity-70 md:flex-row md:items-center md:justify-between">
-          <span>{`© 2026 ${SITE_NAME}. ИНН 2300000000 · ОГРН 1232300000000`}</span>
-          <div className="flex flex-wrap gap-x-4 gap-y-1">
-            <Link to="/privacy" className="hover:text-accent">Политика</Link>
-            <Link to="/soglasie" className="hover:text-accent">Согласие на ОПД</Link>
-            <Link to="/oferta" className="hover:text-accent">Оферта</Link>
-            <Link to="/rekvizity" className="hover:text-accent">Реквизиты</Link>
+        <div className="container mx-auto flex flex-col gap-2 px-4 py-5 text-xs opacity-70">
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <span>© 2026 ИП Посохова А. Н. · ИНН 503220067144 · ОГРНИП 324508100153350</span>
+            <div className="flex flex-wrap gap-x-4 gap-y-1">
+              <Link to="/privacy" className="hover:text-accent">Политика</Link>
+              <Link to="/soglasie" className="hover:text-accent">Согласие на ОПД</Link>
+              <Link to="/oferta" className="hover:text-accent">Оферта</Link>
+              <Link to="/rekvizity" className="hover:text-accent">Реквизиты</Link>
+            </div>
           </div>
+          <span className="opacity-90">
+            Лицензия № 50.99.08.003.Л.000121.03.25 от 12.03.2025 — Управление Роспотребнадзора по Московской области (дезинфекция, дезинсекция, дератизация).
+          </span>
         </div>
       </div>
     </footer>
