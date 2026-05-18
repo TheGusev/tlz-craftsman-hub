@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Check, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { cities } from "@/data/cities";
 import { services } from "@/data/services";
 import { cn } from "@/lib/utils";
+import { sendLeadToTelegram, checkRateLimit } from "@/lib/telegram";
+import { trackGoal, readUtm } from "@/lib/analytics";
 
 const objectTypes = [
   { value: "apartment", label: "Квартира" },
