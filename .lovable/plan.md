@@ -1,53 +1,45 @@
-# Канонические URL + редирект `/path/` → `/path`
+# Уникальные изображения для каждого раздела
 
-## Что уже сделано (проверил)
+## Найденные повторы
 
-- `buildCanonical()` в `src/lib/seo.ts` уже возвращает URL **без** завершающего слэша — это единый источник правды.
-- 22 из 25 публичных роутов уже выставляют `<link rel="canonical">` через `buildCanonical(path)`.
-- В `__root.tsx` canonical не задаётся — это правильно (TanStack концатенирует `links` без dedup, см. правило «canonical только на листе»).
-- `.htaccess` уже содержит `DirectorySlash Off` — `/services` отдаёт `dist/services/index.html` без 301 на `/services/`.
+### 1. `src/lib/serviceImages.ts` — одни и те же файлы на разных услугах
+- `service-fumigation.jpg` используется на **7 услугах**: `fumigaciya`, `dezinsekciya`, `deratizaciya`, `unichtozhenie-tarakanov`, `unichtozhenie-klopov`, `unichtozhenie-blokh`, `unichtozhenie-muravev`
+- `service-plot.png` на **3 услугах**: `ochistka-uchastkov`, `obrabotka-uchastkov-ot-kleschey`, `obrabotka-ot-grizunov-na-uchastke`
+- `service-disinfection.jpg` на **2 услугах**: `sanitarnaya-obrabotka-pomeshcheniy`, `dezinfekciya-pomeshcheniy`
+- `service-odor.jpg` на **2 услугах**: `udalenie-trupnogo-zapaha`, `ozonirovanie-pomescheniy`
+- `hero-main.jpg` стоит и на услуге `dezinfekciya-posle-smerti`, и как hero главной страницы
 
-## Что нужно сделать
+В комментарии в коде прямо написано «переиспользуем имеющиеся обложки» — это техдолг.
 
-### 1. Добавить canonical на 2 страницы, где его нет
+### 2. `src/assets/geography.jpg` — на 3 страницах
+- `src/routes/index.tsx`
+- `src/routes/regions.tsx`
+- `src/routes/regions.krym.tsx`
 
-- **`src/routes/thank-you.tsx`** — добавить `links: [{ rel: "canonical", href: \`${SITE_URL}/thank-you\` }]`. Страница уже `noindex,nofollow`, но canonical поможет, если кто-то даст на неё ссылку.
-- **`src/routes/lp.$citySlug.$serviceSlug.tsx`** — посадочная под рекламу. Здесь два корректных варианта; нужно решение (см. вопрос ниже).
+### 3. Кейсы (`src/assets/cases/*`) и блог — повторов **нет** ✓
 
-### 2. Редирект `/path/` → `/path` в `.htaccess`
+## План
 
-Сейчас:
-- `/services` → 200 (отдаёт `dist/services/index.html`).
-- `/services/` → тоже 200 (Apache видит директорию + `DirectoryIndex`), **дубль контента**.
+1. **Сгенерировать 9 новых уникальных обложек услуг** (1024×768, JPG, тематические):
+   - `service-dezinsekciya.jpg` — общая дезинсекция (распылитель, СИЗ)
+   - `service-deratizaciya.jpg` — дератизация (приманочная станция)
+   - `service-tarakany.jpg` — тараканы
+   - `service-klopy.jpg` — клопы (матрас, обработка постельных принадлежностей)
+   - `service-blohi.jpg` — блохи (ковёр, пол)
+   - `service-muravi.jpg` — муравьи
+   - `service-ozonirovanie.jpg` — озонатор в помещении
+   - `service-klesch.jpg` — клещи на участке (трава)
+   - `service-rodents-yard.jpg` — грызуны на участке
+   - `service-dezinfekciya-room.jpg` — отдельная обложка для `dezinfekciya-pomeshcheniy` (чтобы не дублировать `sanitarnaya-obrabotka-pomeshcheniy`)
+   - `service-after-death.jpg` — отдельная обложка для `dezinfekciya-posle-smerti`, чтобы освободить `hero-main.jpg` под единственный hero главной
+2. **Сгенерировать 2 новые обложки** для разделов:
+   - `regions-cover.jpg` — общая карта регионов России (для `regions.tsx`)
+   - оставить `geography.jpg` только за `index.tsx`; `hero-crimea-mountain.png` уже уникальна для Крыма
+3. **Обновить** `src/lib/serviceImages.ts` — каждому slug свой импорт, никаких комментариев «переиспользуем».
+4. **Обновить** `src/routes/regions.tsx` на новый `regions-cover.jpg`.
 
-Добавить в `public/.htaccess` **до** правил file/dir-exists:
+Итого 12 новых картинок. Генерирую через `imagegen` (`fast`-tier, по ~5 сек/шт).
 
-```apache
-# Убрать завершающий слэш: /services/ → /services (301)
-RewriteCond %{REQUEST_URI} ^.+/$
-RewriteRule ^(.+)/$ /$1 [R=301,L]
-```
+## Вопрос
 
-После этого:
-- `/services/` → 301 → `/services` → 200.
-- `/` остаётся как есть (правило срабатывает только если в URI есть символ перед `/`).
-- `/sitemap.xml`, `/robots.txt`, ассеты не затрагиваются (нет завершающего слэша).
-
-### 3. Sitemap
-
-Уже без слэшей (107 URL), `buildCanonical` без слэшей, после редиректа всё совпадёт. Менять не нужно.
-
-### 4. Проверка после деплоя
-
-`curl -I https://tlz-craftsman-hub.lovable.app/services/` → должен быть `301` на `/services`.
-`curl -I https://tlz-craftsman-hub.lovable.app/services` → `200`, в HTML `<link rel="canonical" href=".../services">`.
-
-## Вопрос перед реализацией
-
-**`/lp/<город>/<услуга>`** (рекламный лендинг) — добавляю на эти страницы:
-
-1. `noindex, nofollow` + canonical на саму lp-страницу? (стандарт для платных лендингов — не индексировать, но canonical корректный)
-2. `noindex, nofollow` без canonical? (минимум, как сейчас)
-3. canonical на основную страницу `/cities/<город>/<услуга>` + `noindex, nofollow`? (если контент дублирует основную)
-
-Рекомендую вариант 1 — безопаснее всего.
+Подтверди — генерируем все 12 уникальных обложек, или ограничиться только теми, что повторяются больше 2 раз (тогда `service-fumigation` и `service-plot` дробим, остальное оставляем)?
