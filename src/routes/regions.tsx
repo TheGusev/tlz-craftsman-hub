@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-rout
 import { Card } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import { PageHero } from "@/components/site/PageHero";
-import geographyImg from "@/assets/geography.jpg";
+import geographyImg from "@/assets/regions-cover.jpg";
 import {
   buildGraphHead,
   buildWebPageSchema,
