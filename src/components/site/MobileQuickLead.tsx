@@ -152,6 +152,16 @@ export function MobileQuickLead() {
 
   return (
     <form onSubmit={onSubmit} className="grid gap-3">
+      <input
+        type="text"
+        name="website"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        value={hp}
+        onChange={(e) => setHp(e.target.value)}
+        style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+      />
       <div>
         <h2 className="font-display text-xl font-bold">Рассчитать выезд</h2>
         <p className="text-xs text-muted-foreground mt-1">Ответьте на 3 вопроса — перезвоним за 15 минут.</p>
