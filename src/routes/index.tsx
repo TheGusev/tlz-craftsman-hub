@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Phone, Clock, ShieldCheck, MapPin, ArrowRight } from "lucide-react";
 import { getServiceImage } from "@/lib/serviceImages";
-import { getCaseImage } from "@/lib/caseImages";
+import { getCaseGallery } from "@/lib/caseGallery";
 import { MobileQuickLead } from "@/components/site/MobileQuickLead";
 import geographyImg from "@/assets/geography.jpg";
 import heroCrimeaMountain from "@/assets/hero-crimea-mountain.png";
@@ -234,10 +234,10 @@ function HomePage() {
         </div>
         <div className="mt-10 grid gap-4 md:grid-cols-3">
           {cases.slice(0, 6).map((c) => {
-            const image = getCaseImage(c.slug);
+            const photo = getCaseGallery(c.slug)[0];
             return (
               <Card key={c.slug} className="overflow-hidden p-0">
-                {image && <img src={image} alt={c.title} loading="lazy" className="aspect-[16/10] w-full object-cover" />}
+                {photo && <img src={photo.src} alt={photo.alt} loading="lazy" className="aspect-[16/10] w-full object-cover" />}
                 <div className="p-6">
                   <div className="text-xs font-semibold uppercase tracking-wider text-accent">{c.objectType}</div>
                   <h3 className="mt-2 font-display text-base font-bold">{c.title}</h3>

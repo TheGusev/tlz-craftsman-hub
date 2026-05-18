@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Check, AlertTriangle } from "lucide-react";
 import { getServiceImage } from "@/lib/serviceImages";
-import { getCaseImage } from "@/lib/caseImages";
+import { getCaseGallery } from "@/lib/caseGallery";
 import {
   buildGraphHead,
   buildWebPageSchema,
@@ -172,10 +172,10 @@ function ServicePage() {
               <h2 className="font-display text-2xl font-bold">Кейсы по услуге</h2>
               <div className="mt-4 grid gap-3 md:grid-cols-2">
                 {serviceCases.slice(0, 4).map((c) => {
-                  const image = getCaseImage(c.slug);
+                  const photo = getCaseGallery(c.slug)[0];
                   return (
                     <Card key={c.slug} className="overflow-hidden p-0">
-                      {image && <img src={image} alt={c.title} loading="lazy" className="aspect-[16/10] w-full object-cover" />}
+                      {photo && <img src={photo.src} alt={photo.alt} loading="lazy" className="aspect-[16/10] w-full object-cover" />}
                       <div className="p-5">
                         <div className="text-xs text-accent">{c.objectType}</div>
                         <h3 className="mt-1 font-display text-base font-bold">{c.title}</h3>
