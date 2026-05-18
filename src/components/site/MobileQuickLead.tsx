@@ -88,12 +88,15 @@ export function MobileQuickLead() {
   const [problem, setProblem] = useState<string>();
   const [openStep, setOpenStep] = useState<number | null>(null);
   const [phone, setPhone] = useState("");
+  const [hp, setHp] = useState(""); // honeypot
   const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const cityLabel = cities.find((c) => c.slug === city)?.name;
   const objectLabel = objectTypes.find((o) => o.value === objectType)?.label;
   const problemLabel = services.find((s) => s.slug === problem)?.shortName;
+  const problemName = services.find((s) => s.slug === problem)?.name;
 
   const allStepsDone = !!city && !!objectType && !!problem;
   const canSubmit = allStepsDone && phone.trim().length >= 10 && agree && !loading;
@@ -103,20 +106,48 @@ export function MobileQuickLead() {
     setOpenStep(step < 3 ? step + 1 : null);
   }
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!canSubmit) return;
+    if (hp.trim()) {
+      navigate({ to: "/thank-you" });
+      return;
+    }
+    const rl = checkRateLimit();
+    if (!rl.ok) {
+      toast.error(`Подождите ${rl.waitSec} сек. перед повторной отправкой`);
+      return;
+    }
     setLoading(true);
-    setTimeout(() => {
-      toast.success("Заявка принята. Перезвоним в течение 15 минут.");
+    const utm = readUtm();
+    try {
+      await sendLeadToTelegram({
+        source: "mobile_quick_lead",
+        phone,
+        city: cityLabel,
+        objectType: objectLabel,
+        problem: problemName ?? problemLabel,
+        service: problem ?? null,
+        utm: Object.fromEntries(
+          Object.entries(utm).filter(([, v]) => typeof v === "string" && v),
+        ) as Record<string, string>,
+        landing: typeof window !== "undefined" ? window.location.pathname : "",
+        referrer: typeof document !== "undefined" ? document.referrer : "",
+      });
+      trackGoal("lead_form_submit", { source: "mobile_quick_lead" });
       setCity(undefined);
       setObjectType(undefined);
       setProblem(undefined);
       setPhone("");
       setAgree(false);
       setOpenStep(1);
+      navigate({ to: "/thank-you" });
+    } catch (err) {
+      console.error(err);
+      toast.error("Не удалось отправить. Позвоните нам напрямую.");
+    } finally {
       setLoading(false);
-    }, 600);
+    }
   }
 
   return (
