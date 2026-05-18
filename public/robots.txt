@@ -5,7 +5,7 @@ Disallow: /lp/
 Disallow: /landing/
 Disallow: /account/
 Disallow: /quiz/
-Disallow: /thank-you/
+Disallow: /thank-you
 Disallow: /calculator/
 Disallow: /*?utm
 Disallow: /*?yclid
