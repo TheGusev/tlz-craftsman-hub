@@ -1,61 +1,53 @@
-# Проверка sitemap.xml / robots.txt после PRERENDER=1
+# Канонические URL + редирект `/path/` → `/path`
 
-## Что проверил
+## Что уже сделано (проверил)
 
-- Сгенерировал `dist/sitemap.xml` через `npx tsx scripts/generate-seo.ts` — 99 URL.
-- Сравнил все пути из sitemap с роутами в `src/routes/` и со списком в `src/lib/route-config.ts`.
-- Проверил `public/.htaccess` (как Apache/Beget будет отдавать `dist/<route>/index.html`).
-- Проверил `public/robots.txt` vs тот, что пишет `scripts/generate-seo.ts` в `dist/`.
-- Проверил, что `stavropol` нигде не осталось — чисто (0 совпадений).
+- `buildCanonical()` в `src/lib/seo.ts` уже возвращает URL **без** завершающего слэша — это единый источник правды.
+- 22 из 25 публичных роутов уже выставляют `<link rel="canonical">` через `buildCanonical(path)`.
+- В `__root.tsx` canonical не задаётся — это правильно (TanStack концатенирует `links` без dedup, см. правило «canonical только на листе»).
+- `.htaccess` уже содержит `DirectorySlash Off` — `/services` отдаёт `dist/services/index.html` без 301 на `/services/`.
 
-## Найденные проблемы
+## Что нужно сделать
 
-### 1. `generate-seo.ts` затирает `public/robots.txt` (критично)
+### 1. Добавить canonical на 2 страницы, где его нет
 
-Vite копирует `public/robots.txt` в `dist/`, а потом `generate-seo.ts` перезаписывает его минимальной версией:
+- **`src/routes/thank-you.tsx`** — добавить `links: [{ rel: "canonical", href: \`${SITE_URL}/thank-you\` }]`. Страница уже `noindex,nofollow`, но canonical поможет, если кто-то даст на неё ссылку.
+- **`src/routes/lp.$citySlug.$serviceSlug.tsx`** — посадочная под рекламу. Здесь два корректных варианта; нужно решение (см. вопрос ниже).
 
+### 2. Редирект `/path/` → `/path` в `.htaccess`
+
+Сейчас:
+- `/services` → 200 (отдаёт `dist/services/index.html`).
+- `/services/` → тоже 200 (Apache видит директорию + `DirectoryIndex`), **дубль контента**.
+
+Добавить в `public/.htaccess` **до** правил file/dir-exists:
+
+```apache
+# Убрать завершающий слэш: /services/ → /services (301)
+RewriteCond %{REQUEST_URI} ^.+/$
+RewriteRule ^(.+)/$ /$1 [R=301,L]
 ```
-User-agent: *
-Allow: /
-Disallow: /thank-you
-Sitemap: https://tlz-craftsman-hub.lovable.app/sitemap.xml
-```
 
-В `public/robots.txt` лежит богатая версия (Disallow `/api/`, `/lp/`, `/quiz/`, `?utm`, `?gclid`, плюс блоки для GPTBot/ClaudeBot/PerplexityBot/YandexGPT/Google-Extended/OAI-SearchBot/ChatGPT-User, `Host:`). После `build:prod` всё это пропадает.
+После этого:
+- `/services/` → 301 → `/services` → 200.
+- `/` остаётся как есть (правило срабатывает только если в URI есть символ перед `/`).
+- `/sitemap.xml`, `/robots.txt`, ассеты не затрагиваются (нет завершающего слэша).
 
-**Фикс:** убрать запись `robots.txt` из `scripts/generate-seo.ts` — оставить только генерацию `sitemap.xml`. Источник правды для robots — `public/robots.txt`. (Если нужно — синхронизировать `Disallow: /thank-you` и `Sitemap:` в `public/robots.txt`.)
+### 3. Sitemap
 
-### 2. Trailing-slash mismatch между sitemap и физическими файлами
+Уже без слэшей (107 URL), `buildCanonical` без слэшей, после редиректа всё совпадёт. Менять не нужно.
 
-Sitemap содержит `https://.../services` (без `/`), а prerender пишет `dist/services/index.html`. Apache с `DirectoryIndex index.html` на запрос `/services` сделает 301 → `/services/`. То есть **каждый URL в sitemap (кроме `/`) — это редирект**, что Google помечает как «sitemap contains URLs that redirect».
+### 4. Проверка после деплоя
 
-**Варианты фикса** (выбрать один):
+`curl -I https://tlz-craftsman-hub.lovable.app/services/` → должен быть `301` на `/services`.
+`curl -I https://tlz-craftsman-hub.lovable.app/services` → `200`, в HTML `<link rel="canonical" href=".../services">`.
 
-- **A. Канонический URL без слэша** (рекомендую — короче, совпадает с `<Link to="/services">`):
-  prerender пишет в `dist/services.html` вместо `dist/services/index.html`. В `.htaccess` добавить `RewriteRule ^([^/]+)/$ /$1 [R=301,L]`, чтобы убрать слэш.
-- **B. Канонический URL со слэшем:** в `route-config.ts` ко всем путям (кроме `/`) добавить `/`. Sitemap и `<link rel="canonical">` будут совпадать с физическим путём. Меняется и `getCanonical()`.
+## Вопрос перед реализацией
 
-### 3. Роуты, которые есть в приложении, но отсутствуют в sitemap
+**`/lp/<город>/<услуга>`** (рекламный лендинг) — добавляю на эти страницы:
 
-В `src/routes/` есть страницы, которых нет в `route-config.ts`:
-`/garantii`, `/licenzii`, `/otzyvy`, `/oplata`, `/oferta`, `/rekvizity`, `/soglasie`, `/vyezd`, `/thank-you`, `/lp/$citySlug/$serviceSlug`.
+1. `noindex, nofollow` + canonical на саму lp-страницу? (стандарт для платных лендингов — не индексировать, но canonical корректный)
+2. `noindex, nofollow` без canonical? (минимум, как сейчас)
+3. canonical на основную страницу `/cities/<город>/<услуга>` + `noindex, nofollow`? (если контент дублирует основную)
 
-- `/thank-you`, `/lp/*` — правильно НЕ в sitemap (служебные).
-- `/garantii`, `/licenzii`, `/otzyvy`, `/vyezd` — скорее всего, надо добавить в `staticEntries` (priority 0.5, monthly).
-- `/oplata`, `/oferta`, `/rekvizity`, `/soglasie` — юридические, обычно ставят priority 0.3 yearly, либо оставляют вне sitemap, но без `noindex`.
-
-Уточню решение в вопросах ниже.
-
-## План действий
-
-1. **`scripts/generate-seo.ts`** — удалить функцию `buildRobots()` и её запись в `dist/`. Оставить только `sitemap.xml`.
-2. **Привести sitemap и физические файлы к одной форме URL** (вариант A или B из п. 2).
-3. **Добавить недостающие страницы** в `staticEntries` `src/lib/route-config.ts` (по решению в вопросе ниже).
-4. **`public/robots.txt`** — синхронизировать с реальностью: добавить `Disallow: /thank-you`, убедиться, что `Sitemap:` строка актуальна. Остальные правила (AI-боты, utm/gclid) остаются.
-5. Прогнать `npm run build:prod` локально (с Chromium) и убедиться, что `generate-seo.ts --verify` проходит (для каждого URL из sitemap есть `dist/<route>/index.html` или `dist/<route>.html`).
-
-## Вопросы перед реализацией
-
-1. Канонический URL — со слэшем (`/services/`) или без (`/services`)? Сейчас в коде везде без слэша — рекомендую вариант A (без слэша) и редирект в `.htaccess`.
-2. Юридические страницы `/oferta`, `/rekvizity`, `/soglasie`, `/oplata` — добавляем в sitemap (priority 0.3) или оставляем вне?
-3. `/garantii`, `/licenzii`, `/otzyvy`, `/vyezd` — добавляю в sitemap?
+Рекомендую вариант 1 — безопаснее всего.

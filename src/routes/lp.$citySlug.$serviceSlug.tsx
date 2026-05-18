@@ -33,8 +33,13 @@ export const Route = createFileRoute("/lp/$citySlug/$serviceSlug")({
     const sc = getServiceInCity(params.citySlug, params.serviceSlug);
     return { city, service, sc };
   },
-  head: ({ loaderData }) => {
-    if (!loaderData) return { meta: [{ name: "robots", content: "noindex,nofollow" }] };
+  head: ({ params, loaderData }) => {
+    const canonical = `https://tlz-craftsman-hub.lovable.app/lp/${params.citySlug}/${params.serviceSlug}`;
+    if (!loaderData)
+      return {
+        meta: [{ name: "robots", content: "noindex,nofollow" }],
+        links: [{ rel: "canonical", href: canonical }],
+      };
     const { city, service, sc } = loaderData;
     const title = `${service.shortName} ${city.nameLocative} — выезд за ${city.arrivalTime.split(",")[0]}`;
     const description = sc?.metaDescription ?? service.metaDescription;
@@ -44,6 +49,7 @@ export const Route = createFileRoute("/lp/$citySlug/$serviceSlug")({
         { name: "description", content: description },
         { name: "robots", content: "noindex,nofollow" },
       ],
+      links: [{ rel: "canonical", href: canonical }],
     };
   },
   component: LandingPage,

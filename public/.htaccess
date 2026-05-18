@@ -15,6 +15,13 @@ ErrorDocument 404 /404.html
   RewriteEngine On
   RewriteBase /
 
+  # Канонический URL — без завершающего слэша.
+  # /services/ → 301 → /services. Корень / не трогаем.
+  RewriteCond %{REQUEST_URI} ^.+/$
+  RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+
+
   # Если запрошен реальный файл или директория — отдать как есть
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
