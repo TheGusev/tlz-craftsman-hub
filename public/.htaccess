@@ -1,0 +1,60 @@
+# Apache config для SPA на Beget
+# Prerender создаёт dist/<route>/index.html для каждого маршрута,
+# Apache сам отдаёт их при прямом заходе. Fallback на /index.html — только для несуществующих путей.
+
+Options -MultiViews -Indexes
+DirectoryIndex index.html
+
+# Кастомная 404 (prerender создаёт dist/404.html с правильными метатегами)
+ErrorDocument 404 /404.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Если запрошен реальный файл или директория — отдать как есть
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Известные системные пути не редиректим
+  RewriteRule ^(assets|favicon\.ico|robots\.txt|sitemap\.xml|llms\.txt|og-default\.jpg) - [L]
+
+  # Всё остальное — 404 (Apache отдаст ErrorDocument /404.html со статусом 404).
+  # Это правильно для SEO: несуществующий URL должен возвращать HTTP 404, а не 200.
+  RewriteRule ^ - [R=404,L]
+</IfModule>
+
+# --- Кэширование ---
+<IfModule mod_headers.c>
+  # HTML — без кэша, чтобы обновления сразу подхватывались
+  <FilesMatch "\.(html)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+  </FilesMatch>
+
+  # Хэшированные ассеты — долгий immutable-кэш
+  <FilesMatch "\.(js|css|woff2?|ttf|otf|eot|svg|png|jpg|jpeg|webp|avif|gif|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # sitemap/robots — короткий кэш
+  <FilesMatch "^(sitemap\.xml|robots\.txt|llms\.txt)$">
+    Header set Cache-Control "public, max-age=3600"
+  </FilesMatch>
+</IfModule>
+
+# --- Сжатие ---
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml application/javascript application/json application/xml image/svg+xml
+</IfModule>
+
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css text/xml application/javascript application/json application/xml image/svg+xml
+</IfModule>
+
+# --- Безопасность ---
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>

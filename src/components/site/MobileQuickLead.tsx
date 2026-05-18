@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Check, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { cities } from "@/data/cities";
 import { services } from "@/data/services";
 import { cn } from "@/lib/utils";
+import { sendLeadToTelegram, checkRateLimit } from "@/lib/telegram";
+import { trackGoal, readUtm } from "@/lib/analytics";
 
 const objectTypes = [
   { value: "apartment", label: "Квартира" },
@@ -86,12 +88,15 @@ export function MobileQuickLead() {
   const [problem, setProblem] = useState<string>();
   const [openStep, setOpenStep] = useState<number | null>(null);
   const [phone, setPhone] = useState("");
+  const [hp, setHp] = useState(""); // honeypot
   const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const cityLabel = cities.find((c) => c.slug === city)?.name;
   const objectLabel = objectTypes.find((o) => o.value === objectType)?.label;
   const problemLabel = services.find((s) => s.slug === problem)?.shortName;
+  const problemName = services.find((s) => s.slug === problem)?.name;
 
   const allStepsDone = !!city && !!objectType && !!problem;
   const canSubmit = allStepsDone && phone.trim().length >= 10 && agree && !loading;
@@ -101,24 +106,62 @@ export function MobileQuickLead() {
     setOpenStep(step < 3 ? step + 1 : null);
   }
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!canSubmit) return;
+    if (hp.trim()) {
+      navigate({ to: "/thank-you" });
+      return;
+    }
+    const rl = checkRateLimit();
+    if (!rl.ok) {
+      toast.error(`Подождите ${rl.waitSec} сек. перед повторной отправкой`);
+      return;
+    }
     setLoading(true);
-    setTimeout(() => {
-      toast.success("Заявка принята. Перезвоним в течение 15 минут.");
+    const utm = readUtm();
+    try {
+      await sendLeadToTelegram({
+        source: "mobile_quick_lead",
+        phone,
+        city: cityLabel,
+        objectType: objectLabel,
+        problem: problemName ?? problemLabel,
+        service: problem ?? null,
+        utm: Object.fromEntries(
+          Object.entries(utm).filter(([, v]) => typeof v === "string" && v),
+        ) as Record<string, string>,
+        landing: typeof window !== "undefined" ? window.location.pathname : "",
+        referrer: typeof document !== "undefined" ? document.referrer : "",
+      });
+      trackGoal("lead_form_submit", { source: "mobile_quick_lead" });
       setCity(undefined);
       setObjectType(undefined);
       setProblem(undefined);
       setPhone("");
       setAgree(false);
       setOpenStep(1);
+      navigate({ to: "/thank-you" });
+    } catch (err) {
+      console.error(err);
+      toast.error("Не удалось отправить. Позвоните нам напрямую.");
+    } finally {
       setLoading(false);
-    }, 600);
+    }
   }
 
   return (
     <form onSubmit={onSubmit} className="grid gap-3">
+      <input
+        type="text"
+        name="website"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        value={hp}
+        onChange={(e) => setHp(e.target.value)}
+        style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+      />
       <div>
         <h2 className="font-display text-xl font-bold">Рассчитать выезд</h2>
         <p className="text-xs text-muted-foreground mt-1">Ответьте на 3 вопроса — перезвоним за 15 минут.</p>

@@ -15,6 +15,7 @@ import {
 import { toast } from "sonner";
 import { cities } from "@/data/cities";
 import { trackGoal, readUtm } from "@/lib/analytics";
+import { sendLeadToTelegram, checkRateLimit } from "@/lib/telegram";
 
 export function LeadForm({
   defaultCity,
@@ -37,38 +38,44 @@ export function LeadForm({
       toast.error("Необходимо согласие на обработку персональных данных");
       return;
     }
-    setLoading(true);
     const fd = new FormData(e.currentTarget);
+    // honeypot: если бот заполнил скрытое поле — тихо имитируем успех
+    if (String(fd.get("website") ?? "").trim()) {
+      navigate({ to: "/thank-you" });
+      return;
+    }
+    const rl = checkRateLimit();
+    if (!rl.ok) {
+      toast.error(`Подождите ${rl.waitSec} сек. перед повторной отправкой`);
+      return;
+    }
+    setLoading(true);
     const utm = readUtm();
-    const payload = {
-      name: String(fd.get("name") ?? ""),
-      phone: String(fd.get("phone") ?? ""),
-      city: String(fd.get("city") ?? ""),
-      objectType: String(fd.get("objectType") ?? ""),
-      problem: String(fd.get("problem") ?? ""),
-      urgency: String(fd.get("urgency") ?? ""),
-      callTime: String(fd.get("callTime") ?? ""),
-      comment: String(fd.get("comment") ?? ""),
-      service: service ?? null,
-      source,
-      consent: true,
-      utm: Object.fromEntries(
-        Object.entries(utm).filter(([, v]) => typeof v === "string" && v),
-      ) as Record<string, string>,
-      landing: typeof window !== "undefined" ? window.location.pathname : "",
-      referrer: typeof document !== "undefined" ? document.referrer : "",
-    };
+    const cityVal = String(fd.get("city") ?? "");
+    const cityName = cities.find((c) => c.slug === cityVal)?.name ?? cityVal;
     try {
-      const res = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+      await sendLeadToTelegram({
+        source,
+        name: String(fd.get("name") ?? ""),
+        phone: String(fd.get("phone") ?? ""),
+        city: cityName,
+        objectType: String(fd.get("objectType") ?? ""),
+        problem: String(fd.get("problem") ?? ""),
+        urgency: String(fd.get("urgency") ?? ""),
+        callTime: String(fd.get("callTime") ?? ""),
+        comment: String(fd.get("comment") ?? ""),
+        service: service ?? null,
+        utm: Object.fromEntries(
+          Object.entries(utm).filter(([, v]) => typeof v === "string" && v),
+        ) as Record<string, string>,
+        landing: typeof window !== "undefined" ? window.location.pathname : "",
+        referrer: typeof document !== "undefined" ? document.referrer : "",
       });
-      if (!res.ok) throw new Error("network");
       trackGoal("lead_form_submit", { source, service: service ?? null });
       (e.target as HTMLFormElement).reset();
       navigate({ to: "/thank-you" });
-    } catch {
+    } catch (err) {
+      console.error(err);
       toast.error("Не удалось отправить. Позвоните нам напрямую.");
     } finally {
       setLoading(false);
@@ -80,6 +87,15 @@ export function LeadForm({
       onSubmit={onSubmit}
       className="grid gap-4 rounded-2xl border border-border bg-card p-6 md:p-8"
     >
+      {/* honeypot — скрытое поле от ботов */}
+      <input
+        type="text"
+        name="website"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+      />
       <div className="grid gap-4 md:grid-cols-2">
         <div className="grid gap-2">
           <Label htmlFor="name">Ваше имя *</Label>

@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as VyezdRouteImport } from './routes/vyezd'
 import { Route as ThankYouRouteImport } from './routes/thank-you'
 import { Route as SoglasieRouteImport } from './routes/soglasie'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as RekvizityRouteImport } from './routes/rekvizity'
 import { Route as RegionsRouteImport } from './routes/regions'
@@ -35,7 +34,6 @@ import { Route as RegionsKrymRouteImport } from './routes/regions.krym'
 import { Route as CitiesCitySlugRouteImport } from './routes/cities.$citySlug'
 import { Route as CasesSlugRouteImport } from './routes/cases.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
-import { Route as ApiLeadsRouteImport } from './routes/api.leads'
 import { Route as LpCitySlugServiceSlugRouteImport } from './routes/lp.$citySlug.$serviceSlug'
 import { Route as CitiesCitySlugServiceSlugRouteImport } from './routes/cities.$citySlug.$serviceSlug'
 
@@ -52,11 +50,6 @@ const ThankYouRoute = ThankYouRouteImport.update({
 const SoglasieRoute = SoglasieRouteImport.update({
   id: '/soglasie',
   path: '/soglasie',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesRoute = ServicesRouteImport.update({
@@ -169,11 +162,6 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => BlogRoute,
 } as any)
-const ApiLeadsRoute = ApiLeadsRouteImport.update({
-  id: '/api/leads',
-  path: '/api/leads',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LpCitySlugServiceSlugRoute = LpCitySlugServiceSlugRouteImport.update({
   id: '/lp/$citySlug/$serviceSlug',
   path: '/lp/$citySlug/$serviceSlug',
@@ -204,11 +192,9 @@ export interface FileRoutesByFullPath {
   '/regions': typeof RegionsRouteWithChildren
   '/rekvizity': typeof RekvizityRoute
   '/services': typeof ServicesRouteWithChildren
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/soglasie': typeof SoglasieRoute
   '/thank-you': typeof ThankYouRoute
   '/vyezd': typeof VyezdRoute
-  '/api/leads': typeof ApiLeadsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cases/$slug': typeof CasesSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
@@ -235,11 +221,9 @@ export interface FileRoutesByTo {
   '/regions': typeof RegionsRouteWithChildren
   '/rekvizity': typeof RekvizityRoute
   '/services': typeof ServicesRouteWithChildren
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/soglasie': typeof SoglasieRoute
   '/thank-you': typeof ThankYouRoute
   '/vyezd': typeof VyezdRoute
-  '/api/leads': typeof ApiLeadsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cases/$slug': typeof CasesSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
@@ -267,11 +251,9 @@ export interface FileRoutesById {
   '/regions': typeof RegionsRouteWithChildren
   '/rekvizity': typeof RekvizityRoute
   '/services': typeof ServicesRouteWithChildren
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/soglasie': typeof SoglasieRoute
   '/thank-you': typeof ThankYouRoute
   '/vyezd': typeof VyezdRoute
-  '/api/leads': typeof ApiLeadsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cases/$slug': typeof CasesSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
@@ -300,11 +282,9 @@ export interface FileRouteTypes {
     | '/regions'
     | '/rekvizity'
     | '/services'
-    | '/sitemap.xml'
     | '/soglasie'
     | '/thank-you'
     | '/vyezd'
-    | '/api/leads'
     | '/blog/$slug'
     | '/cases/$slug'
     | '/cities/$citySlug'
@@ -331,11 +311,9 @@ export interface FileRouteTypes {
     | '/regions'
     | '/rekvizity'
     | '/services'
-    | '/sitemap.xml'
     | '/soglasie'
     | '/thank-you'
     | '/vyezd'
-    | '/api/leads'
     | '/blog/$slug'
     | '/cases/$slug'
     | '/cities/$citySlug'
@@ -362,11 +340,9 @@ export interface FileRouteTypes {
     | '/regions'
     | '/rekvizity'
     | '/services'
-    | '/sitemap.xml'
     | '/soglasie'
     | '/thank-you'
     | '/vyezd'
-    | '/api/leads'
     | '/blog/$slug'
     | '/cases/$slug'
     | '/cities/$citySlug'
@@ -394,11 +370,9 @@ export interface RootRouteChildren {
   RegionsRoute: typeof RegionsRouteWithChildren
   RekvizityRoute: typeof RekvizityRoute
   ServicesRoute: typeof ServicesRouteWithChildren
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SoglasieRoute: typeof SoglasieRoute
   ThankYouRoute: typeof ThankYouRoute
   VyezdRoute: typeof VyezdRoute
-  ApiLeadsRoute: typeof ApiLeadsRoute
   LpCitySlugServiceSlugRoute: typeof LpCitySlugServiceSlugRoute
 }
 
@@ -423,13 +397,6 @@ declare module '@tanstack/react-router' {
       path: '/soglasie'
       fullPath: '/soglasie'
       preLoaderRoute: typeof SoglasieRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services': {
@@ -586,13 +553,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
     }
-    '/api/leads': {
-      id: '/api/leads'
-      path: '/api/leads'
-      fullPath: '/api/leads'
-      preLoaderRoute: typeof ApiLeadsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/lp/$citySlug/$serviceSlug': {
       id: '/lp/$citySlug/$serviceSlug'
       path: '/lp/$citySlug/$serviceSlug'
@@ -694,23 +654,11 @@ const rootRouteChildren: RootRouteChildren = {
   RegionsRoute: RegionsRouteWithChildren,
   RekvizityRoute: RekvizityRoute,
   ServicesRoute: ServicesRouteWithChildren,
-  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SoglasieRoute: SoglasieRoute,
   ThankYouRoute: ThankYouRoute,
   VyezdRoute: VyezdRoute,
-  ApiLeadsRoute: ApiLeadsRoute,
   LpCitySlugServiceSlugRoute: LpCitySlugServiceSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
