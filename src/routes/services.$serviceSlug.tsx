@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Check, AlertTriangle } from "lucide-react";
 import { getServiceImage } from "@/lib/serviceImages";
-import { getCaseImage } from "@/lib/caseImages";
+import { getCaseGallery } from "@/lib/caseGallery";
 import {
   buildGraphHead,
   buildWebPageSchema,
