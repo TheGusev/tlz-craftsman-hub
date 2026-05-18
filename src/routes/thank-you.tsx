@@ -13,6 +13,7 @@ export const Route = createFileRoute("/thank-you")({
       { name: "description", content: "Спасибо! Ваша заявка принята, перезвоним в течение 15 минут." },
       { property: "og:url", content: `${SITE_URL}/thank-you` },
     ],
+    links: [{ rel: "canonical", href: `${SITE_URL}/thank-you` }],
   }),
 });
 
