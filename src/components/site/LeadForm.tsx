@@ -87,6 +87,15 @@ export function LeadForm({
       onSubmit={onSubmit}
       className="grid gap-4 rounded-2xl border border-border bg-card p-6 md:p-8"
     >
+      {/* honeypot — скрытое поле от ботов */}
+      <input
+        type="text"
+        name="website"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+      />
       <div className="grid gap-4 md:grid-cols-2">
         <div className="grid gap-2">
           <Label htmlFor="name">Ваше имя *</Label>
