@@ -84,7 +84,7 @@ export function MobileQuickLead() {
   const [city, setCity] = useState<string>();
   const [objectType, setObjectType] = useState<string>();
   const [problem, setProblem] = useState<string>();
-  const [openStep, setOpenStep] = useState<number | null>(1);
+  const [openStep, setOpenStep] = useState<number | null>(null);
   const [phone, setPhone] = useState("");
   const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
