@@ -37,17 +37,6 @@ function buildSitemap(): string {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`;
 }
 
-function buildRobots(): string {
-  return [
-    "User-agent: *",
-    "Allow: /",
-    "Disallow: /thank-you",
-    "",
-    `Sitemap: ${SITE_URL}/sitemap.xml`,
-    "",
-  ].join("\n");
-}
-
 function ensureDir(p: string) {
   if (!existsSync(p)) mkdirSync(p, { recursive: true });
 }
@@ -55,8 +44,9 @@ function ensureDir(p: string) {
 function generate() {
   ensureDir(DIST);
   writeFileSync(join(DIST, "sitemap.xml"), buildSitemap(), "utf8");
-  writeFileSync(join(DIST, "robots.txt"), buildRobots(), "utf8");
-  console.log(`[seo] sitemap.xml (${getAllRoutes().length} URLs) и robots.txt записаны в dist/`);
+  // robots.txt не трогаем — источник правды это public/robots.txt,
+  // Vite сам копирует его в dist/ при сборке.
+  console.log(`[seo] sitemap.xml (${getAllRoutes().length} URLs) записан в dist/`);
 }
 
 function verify() {

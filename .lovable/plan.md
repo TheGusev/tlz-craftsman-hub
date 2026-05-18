@@ -1,50 +1,61 @@
-# Миграция TanStack Start → Vite SPA + Telegram + Apache (Beget)
+# Проверка sitemap.xml / robots.txt после PRERENDER=1
 
-Статус: **выполнено**.
+## Что проверил
 
-## Что сделано
+- Сгенерировал `dist/sitemap.xml` через `npx tsx scripts/generate-seo.ts` — 99 URL.
+- Сравнил все пути из sitemap с роутами в `src/routes/` и со списком в `src/lib/route-config.ts`.
+- Проверил `public/.htaccess` (как Apache/Beget будет отдавать `dist/<route>/index.html`).
+- Проверил `public/robots.txt` vs тот, что пишет `scripts/generate-seo.ts` в `dist/`.
+- Проверил, что `stavropol` нигде не осталось — чисто (0 совпадений).
 
-### Серверная часть удалена
-- `src/server.ts`, `src/start.ts`, `src/lib/error-{capture,page}.ts`
-- `src/routes/api.leads.ts`, `src/routes/sitemap[.]xml.tsx`
-- `wrangler.jsonc`
-- Зависимости: `@tanstack/react-start`, `@cloudflare/vite-plugin`, `@lovable.dev/vite-tanstack-config`
+## Найденные проблемы
 
-### Чистый SPA на TanStack Router
-- `vite.config.ts` — только `TanStackRouterVite` + react + tailwind + tsconfigPaths
-- `index.html` (корневой) + `src/main.tsx` (RouterProvider)
-- `src/routes/__root.tsx` без `shellComponent`/`<html>`; `<HeadContent />` внутри `RootComponent`
-- `src/router.tsx` без SSR-специфики
-- `routeTree.gen.ts` регенерируется плагином автоматически
+### 1. `generate-seo.ts` затирает `public/robots.txt` (критично)
 
-### Лид-форма → Telegram Bot API
-- `src/lib/telegram.ts` — `sendLeadToTelegram()` + `checkRateLimit()` (30 сек/lead через `localStorage`)
-- `src/components/site/LeadForm.tsx` и `MobileQuickLead.tsx` шлют напрямую в Telegram, оба в один чат, формат HTML с источником `[lead_form]` / `[mobile_quick_lead]`
-- Honeypot-поле `website` (скрытый input) — боты заполняют → silent success
-- Переменные: `VITE_TG_BOT_TOKEN`, `VITE_TG_CHAT_ID` (см. `.env.example`)
+Vite копирует `public/robots.txt` в `dist/`, а потом `generate-seo.ts` перезаписывает его минимальной версией:
 
-### Prerender + SEO
-- `scripts/generate-seo.ts` — генерирует `dist/sitemap.xml` (99 URL) и `dist/robots.txt`; флаг `--verify` проверяет наличие HTML для каждого маршрута
-- `scripts/prerender.ts` — sirv-сервер + puppeteer-core, для каждого URL пишет `dist/<route>/index.html` с гидратированными `<title>/meta/JSON-LD`; дополнительно `dist/404.html`
-- `package.json`: `build` = `vite build` (для Lovable sandbox); `build:prod` = full chain с prerender (для локальной сборки/деплоя)
+```
+User-agent: *
+Allow: /
+Disallow: /thank-you
+Sitemap: https://tlz-craftsman-hub.lovable.app/sitemap.xml
+```
 
-### Apache (Beget)
-- `public/.htaccess` — отдаёт реальные prerender-файлы, остальные пути → `ErrorDocument 404 /404.html` (правильный HTTP 404 для SEO); gzip/brotli, immutable-кэш для ассетов, `no-cache` для html, security headers
-- `public/_redirects` — на будущее (Netlify/CF)
+В `public/robots.txt` лежит богатая версия (Disallow `/api/`, `/lp/`, `/quiz/`, `?utm`, `?gclid`, плюс блоки для GPTBot/ClaudeBot/PerplexityBot/YandexGPT/Google-Extended/OAI-SearchBot/ChatGPT-User, `Host:`). После `build:prod` всё это пропадает.
 
-## Как пользоваться
+**Фикс:** убрать запись `robots.txt` из `scripts/generate-seo.ts` — оставить только генерацию `sitemap.xml`. Источник правды для robots — `public/robots.txt`. (Если нужно — синхронизировать `Disallow: /thank-you` и `Sitemap:` в `public/robots.txt`.)
 
-1. Скопируй `.env.example` → `.env` и впиши `VITE_TG_BOT_TOKEN` (от @BotFather) и `VITE_TG_CHAT_ID`
-2. Локально для деплоя на Beget:
-   ```
-   npm install
-   PRERENDER=1 CHROMIUM_PATH=/usr/bin/chromium npm run build:prod
-   ```
-   (на Mac автоопределится Google Chrome; на Linux — установить chromium-browser)
-3. Содержимое `dist/` залить на Beget (например, в `~/public_html`)
-4. `.htaccess` уже внутри `dist/` (из public/)
+### 2. Trailing-slash mismatch между sitemap и физическими файлами
 
-## Что осталось пользователю
-- Создать Telegram-бот через @BotFather, добавить его в чат, узнать chat_id
-- Положить `og-default.jpg` (1200×630) в `public/` если хочется fallback OG-картинки
-- Первый деплой по SSH/FTP вручную; CI можно настроить позже
+Sitemap содержит `https://.../services` (без `/`), а prerender пишет `dist/services/index.html`. Apache с `DirectoryIndex index.html` на запрос `/services` сделает 301 → `/services/`. То есть **каждый URL в sitemap (кроме `/`) — это редирект**, что Google помечает как «sitemap contains URLs that redirect».
+
+**Варианты фикса** (выбрать один):
+
+- **A. Канонический URL без слэша** (рекомендую — короче, совпадает с `<Link to="/services">`):
+  prerender пишет в `dist/services.html` вместо `dist/services/index.html`. В `.htaccess` добавить `RewriteRule ^([^/]+)/$ /$1 [R=301,L]`, чтобы убрать слэш.
+- **B. Канонический URL со слэшем:** в `route-config.ts` ко всем путям (кроме `/`) добавить `/`. Sitemap и `<link rel="canonical">` будут совпадать с физическим путём. Меняется и `getCanonical()`.
+
+### 3. Роуты, которые есть в приложении, но отсутствуют в sitemap
+
+В `src/routes/` есть страницы, которых нет в `route-config.ts`:
+`/garantii`, `/licenzii`, `/otzyvy`, `/oplata`, `/oferta`, `/rekvizity`, `/soglasie`, `/vyezd`, `/thank-you`, `/lp/$citySlug/$serviceSlug`.
+
+- `/thank-you`, `/lp/*` — правильно НЕ в sitemap (служебные).
+- `/garantii`, `/licenzii`, `/otzyvy`, `/vyezd` — скорее всего, надо добавить в `staticEntries` (priority 0.5, monthly).
+- `/oplata`, `/oferta`, `/rekvizity`, `/soglasie` — юридические, обычно ставят priority 0.3 yearly, либо оставляют вне sitemap, но без `noindex`.
+
+Уточню решение в вопросах ниже.
+
+## План действий
+
+1. **`scripts/generate-seo.ts`** — удалить функцию `buildRobots()` и её запись в `dist/`. Оставить только `sitemap.xml`.
+2. **Привести sitemap и физические файлы к одной форме URL** (вариант A или B из п. 2).
+3. **Добавить недостающие страницы** в `staticEntries` `src/lib/route-config.ts` (по решению в вопросе ниже).
+4. **`public/robots.txt`** — синхронизировать с реальностью: добавить `Disallow: /thank-you`, убедиться, что `Sitemap:` строка актуальна. Остальные правила (AI-боты, utm/gclid) остаются.
+5. Прогнать `npm run build:prod` локально (с Chromium) и убедиться, что `generate-seo.ts --verify` проходит (для каждого URL из sitemap есть `dist/<route>/index.html` или `dist/<route>.html`).
+
+## Вопросы перед реализацией
+
+1. Канонический URL — со слэшем (`/services/`) или без (`/services`)? Сейчас в коде везде без слэша — рекомендую вариант A (без слэша) и редирект в `.htaccess`.
+2. Юридические страницы `/oferta`, `/rekvizity`, `/soglasie`, `/oplata` — добавляем в sitemap (priority 0.3) или оставляем вне?
+3. `/garantii`, `/licenzii`, `/otzyvy`, `/vyezd` — добавляю в sitemap?
