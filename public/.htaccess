@@ -4,6 +4,9 @@
 
 Options -MultiViews -Indexes
 DirectoryIndex index.html
+# Не редиректить /services → /services/ — отдавать dist/services/index.html напрямую,
+# чтобы канонические URL без слэша из sitemap не превращались в 301.
+DirectorySlash Off
 
 # Кастомная 404 (prerender создаёт dist/404.html с правильными метатегами)
 ErrorDocument 404 /404.html
