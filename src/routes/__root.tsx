@@ -5,10 +5,8 @@ import {
   createRootRouteWithContext,
   useRouter,
   HeadContent,
-  Scripts,
 } from "@tanstack/react-router";
 
-import appCss from "../styles.css?url";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { UrgentCTA } from "@/components/site/UrgentCTA";
@@ -92,13 +90,11 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Санитарные Решения РФ — аварийная санитарная служба 24/7" },
       {
         name: "description",
         content:
-          "Аварийная санитарная очистка, дезинфекция, удаление плесени, фумигация. Краснодар, Сочи, Ростов-на-Дону, Крым. Выезд 24/7.",
+          "Профессиональная санитарная обработка. Ликвидация последствий пожаров и затоплений, удаление запахов, дезинфекция после смерти, вывоз мусора. Выезд 24/7",
       },
       { name: "author", content: "Санитарные Решения РФ" },
       { name: "robots", content: "index,follow,max-image-preview:large,max-snippet:-1" },
@@ -115,51 +111,39 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { property: "og:title", content: "Санитарные Решения РФ — аварийная санитарная служба 24/7" },
       { name: "twitter:title", content: "Санитарные Решения РФ — аварийная санитарная служба 24/7" },
-      { name: "description", content: "Профессиональная санитарная обработка. Ликвидация последствий пожаров и затоплений, удаление запахов, дезинфекция после смерти, вывоз мусора. Выезд 24/7" },
-      { property: "og:description", content: "Профессиональная санитарная обработка. Ликвидация последствий пожаров и затоплений, удаление запахов, дезинфекция после смерти, вывоз мусора. Выезд 24/7" },
-      { name: "twitter:description", content: "Профессиональная санитарная обработка. Ликвидация последствий пожаров и затоплений, удаление запахов, дезинфекция после смерти, вывоз мусора. Выезд 24/7" },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e13e54c1-0dc1-4ab4-a66c-89bf0ef108da" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e13e54c1-0dc1-4ab4-a66c-89bf0ef108da" },
-    ],
-    links: [
-      { rel: "stylesheet", href: appCss },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap",
+        property: "og:description",
+        content:
+          "Профессиональная санитарная обработка. Ликвидация последствий пожаров и затоплений, удаление запахов, дезинфекция после смерти, вывоз мусора. Выезд 24/7",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Профессиональная санитарная обработка. Ликвидация последствий пожаров и затоплений, удаление запахов, дезинфекция после смерти, вывоз мусора. Выезд 24/7",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e13e54c1-0dc1-4ab4-a66c-89bf0ef108da",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e13e54c1-0dc1-4ab4-a66c-89bf0ef108da",
       },
     ],
     scripts: [
       {
         type: "application/ld+json",
-        children: buildGraphHead([
-          buildOrganizationSchema(),
-          buildWebSiteSchema(),
-        ]),
+        children: buildGraphHead([buildOrganizationSchema(), buildWebSiteSchema()]),
       },
       ...(metrikaSnippet ? [{ children: metrikaSnippet }] : []),
     ],
   }),
-  shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
 });
-
-function RootShell({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="ru">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  );
-}
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
@@ -167,6 +151,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <HeadContent />
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground"
