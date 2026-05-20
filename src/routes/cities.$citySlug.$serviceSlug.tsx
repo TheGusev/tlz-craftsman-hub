@@ -20,7 +20,8 @@ import { buildCanonical } from "@/lib/seo";
 import { getServiceImage } from "@/lib/serviceImages";
 
 function buildDefaultServiceInCity(city: City, service: Service): ServiceInCity {
-  const phoneSuffix = city.phone ? ` Телефон: ${city.phone}.` : "";
+  const phoneText = city.phoneDisplay || city.phone;
+  const phoneSuffix = phoneText ? ` Телефон: ${phoneText}.` : "";
   const description = `${service.name} в ${city.name}. Выезд бригады в течение ${city.arrivalTime}, гарантия, договор.${phoneSuffix}`;
   return {
     citySlug: city.slug,

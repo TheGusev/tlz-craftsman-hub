@@ -1,15 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import { services } from "@/data/services";
 import { cities } from "@/data/cities";
-import {
-  SITE_NAME,
-  SITE_PHONE,
-  SITE_PHONE_RAW,
-  SITE_EMAIL,
-} from "@/lib/site";
+import { SITE_NAME, SITE_EMAIL } from "@/lib/site";
 import { trackGoal } from "@/lib/analytics";
+import { useActiveCity } from "@/lib/useActiveCity";
 
 export function Footer() {
+  const activeCity = useActiveCity();
+  const cityPhoneRaw = activeCity?.phone
+    ? activeCity.phone.replace(/[^+\d]/g, "")
+    : "";
   return (
     <footer className="mt-20 border-t border-border bg-primary text-primary-foreground">
       <div className="container mx-auto grid gap-10 px-4 py-14 md:grid-cols-4">
@@ -24,6 +24,15 @@ export function Footer() {
             Аварийная санитарная служба по ЮФО и Крыму. Дезинфекция, фумигация, удаление плесени, очистка после ЧС.
           </p>
           <address className="mt-4 not-italic text-sm opacity-90 space-y-1">
+            {activeCity?.phoneDisplay && cityPhoneRaw && (
+              <a
+                href={`tel:${cityPhoneRaw}`}
+                onClick={() => trackGoal("lead_phone_click", { source: "footer", city: activeCity.slug })}
+                className="block text-lg font-semibold text-accent"
+              >
+                {activeCity.phoneDisplay}
+              </a>
+            )}
             <div className="text-xs opacity-80">Круглосуточно, без выходных</div>
             <a
               href={`mailto:${SITE_EMAIL}`}

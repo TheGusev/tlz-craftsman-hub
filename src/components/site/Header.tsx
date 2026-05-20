@@ -3,6 +3,7 @@ import { Phone, Menu, X, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { services } from "@/data/services";
 import { cities } from "@/data/cities";
+import { useActiveCity } from "@/lib/useActiveCity";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -22,6 +23,12 @@ import {
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const activeCity = useActiveCity();
+  const cityPhoneRaw = activeCity?.phone
+    ? activeCity.phone.replace(/[^+\d]/g, "")
+    : "";
+  const cityPhoneHref = cityPhoneRaw ? `tel:${cityPhoneRaw}` : "tel:+78005551234";
+  const cityPhoneDisplay = activeCity?.phoneDisplay;
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85">
@@ -167,17 +174,18 @@ export function Header() {
 
         <div className="flex items-center gap-2">
           <a
-            href="tel:+78005551234"
+            href={cityPhoneHref}
             aria-label="Позвонить"
             className="hidden items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-foreground hover:text-accent md:inline-flex"
           >
             <Phone className="h-4 w-4" />
+            {cityPhoneDisplay && <span>{cityPhoneDisplay}</span>}
           </a>
           <Button
             asChild
             className="hidden md:inline-flex bg-[linear-gradient(110deg,var(--urgent),var(--accent),var(--urgent))] bg-[length:200%_auto] animate-shimmer text-urgent-foreground shadow-lg shadow-urgent/30 hover:opacity-90"
           >
-            <a href="tel:+78005551234">Срочный выезд</a>
+            <a href={cityPhoneHref}>Срочный выезд</a>
           </Button>
 
           <Sheet open={open} onOpenChange={setOpen}>

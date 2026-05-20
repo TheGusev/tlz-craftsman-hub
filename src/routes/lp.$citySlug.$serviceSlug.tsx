@@ -76,7 +76,9 @@ function LandingPage() {
     });
   }, [city.slug, service.slug, search]);
 
-  const phoneHref = `tel:${city.phone.replace(/[^+\d]/g, "")}`;
+  const phoneRaw = (city.phone || "+78005551234").replace(/[^+\d]/g, "");
+  const phoneHref = `tel:${phoneRaw}`;
+  const phoneDisplay = city.phoneDisplay ?? "";
   const whatsappHref = `https://wa.me/${city.whatsapp.replace(/[^\d]/g, "")}`;
 
   return (
@@ -85,8 +87,8 @@ function LandingPage() {
       <header className="border-b border-border bg-card/50">
         <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-3">
           <span className="text-sm font-semibold">Аварийная санслужба</span>
-          <a href={phoneHref} className="text-sm font-semibold text-primary">
-            {city.phone}
+          <a href={phoneHref} className="text-sm font-semibold text-primary" aria-label="Позвонить">
+            {phoneDisplay || <Phone className="h-4 w-4" />}
           </a>
         </div>
       </header>

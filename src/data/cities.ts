@@ -11,6 +11,7 @@ export type City = {
   localContext: string;
   popularServices: string[]; // service slugs
   phone: string;
+  phoneDisplay?: string;
   whatsapp: string;
   // Расширенные поля (опциональны)
   introAnswer?: string;
@@ -74,7 +75,8 @@ export const cities: City[] = [
     localContext:
       "Влажный субтропический климат Сочи — главный фактор. Плесень, грибок, последствия ливневых подтоплений и затопленных подвалов — самые частые обращения. Высокий сезон (май–октябрь) увеличивает нагрузку на гостиничный сектор.",
     popularServices: ["posle-potopa", "udalenie-pleseni", "fumigaciya"],
-    phone: "",
+    phone: "+78622305690",
+    phoneDisplay: "+7 (8622) 30-56-90",
     whatsapp: "+78005551234",
   },
   {
@@ -129,7 +131,8 @@ export const cities: City[] = [
     localContext:
       "Симферополь — административный центр Крыма с большим жилым фондом советской застройки. Высокий спрос на дезинфекцию и удаление плесени в старых домах с плохой вентиляцией.",
     popularServices: ["dezinfekciya-posle-smerti", "udalenie-pleseni"],
-    phone: "",
+    phone: "+73652292195",
+    phoneDisplay: "+7 (3652) 29-21-95",
     whatsapp: "+78005551234",
   },
   {
@@ -154,7 +157,8 @@ export const cities: City[] = [
     localContext:
       "Севастополь — город с сложной топографией и историческими постройками. Частые обращения по последствиям пожаров и санитарной обработке после ЧС в старом фонде.",
     popularServices: ["posle-pozhara", "dezinfekciya-posle-smerti"],
-    phone: "",
+    phone: "+78692779165",
+    phoneDisplay: "+7 (8692) 77-91-65",
     whatsapp: "+78005551234",
   },
   {
