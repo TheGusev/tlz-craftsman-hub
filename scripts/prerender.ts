@@ -94,15 +94,25 @@ function routeToFsPath(route: string): string {
 }
 
 async function startServer(): Promise<{ url: string; close: () => void }> {
-  const handler = sirv(DIST, {
-    dev: false,
-    single: true, // SPA fallback
-    etag: true,
+  // Статика — только для запросов с расширением. Никакого встроенного SPA-fallback:
+  // мы хотим, чтобы любой "страничный" URL всегда отдавал свежий dist/index.html,
+  // а не stale prerender-результат, если он вдруг остался в dist/.
+  const staticHandler = sirv(DIST, { dev: false, etag: true, single: false });
+  const indexHtml = readFileSync(join(DIST, "index.html"));
+
+  const server = http.createServer((req, res) => {
+    const url = req.url ?? "/";
+    const pathname = url.split("?")[0];
+    const hasExt = /\.[a-zA-Z0-9]+$/.test(pathname);
+    if (hasExt) {
+      return staticHandler(req, res, () => {
+        res.statusCode = 404;
+        res.end("Not found");
+      });
+    }
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.end(indexHtml);
   });
-  const server = http.createServer((req, res) => handler(req, res, () => {
-    res.statusCode = 404;
-    res.end("Not found");
-  }));
   await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
   const addr = server.address();
   if (!addr || typeof addr === "string") throw new Error("Не удалось поднять сервер");
