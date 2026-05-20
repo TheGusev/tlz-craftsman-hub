@@ -1,74 +1,80 @@
-## React error #29 — расшифровка
+## Диагноз
 
-С https://react.dev/errors/29:
+React #299 (`createRoot: Target container is not a DOM element`) на `/cases`, `/faq`, `/prices`, `/regions/krym` — Puppeteer грузит уже-prerendered `dist/<route>/index.html` от прошлого прогона. Там `<div id="root">` либо удалён React-гидрацией перед сериализацией, либо заменён готовым DOM-деревом без узла с `id="root"`, на который потом пытается смонтироваться `main.tsx`.
 
-> **Accumulated items must be not be null or undefined.**
+Почему именно эти роуты: `sirv(DIST, { single: true })` отдаёт `single: true`-fallback ТОЛЬКО когда файла нет. Если `dist/cases/index.html` существует с прошлого CI/локального прогона (а он существует — мы же его туда пишем), sirv отдаёт его как есть. `main.tsx` делает `document.getElementById("root")!` → null → `createRoot` бросает #299 → `pageerror` → таймаут на `#main` → fail.
 
-Эта ошибка приходит из аккумулятора React (head / children / Children API). На наших падающих маршрутах (`/faq`, `/prices`, `/cases`, `/regions/krym`) самый вероятный кандидат — `HeadContent`: TanStack Router склеивает `meta`/`scripts` всех matched routes (root + leaf), и если хоть одна запись в `scripts[].children` или `meta[].content` имеет значение `undefined`, аккумулятор бросает #29.
-
-Что именно сейчас выглядит подозрительно:
-- `src/routes/faq.tsx` строит `buildFAQSchema(allFaq)` — функция отсутствует в показанной части `src/lib/jsonld.ts`; нужно проверить, не возвращает ли она `undefined`/массив с `undefined` для пустых `q`/`a` (в `generalFaq` или `services[].faq`).
-- `buildGraphHead([...])` на этих 4 страницах вызывается с массивом нод; если один из `build*Schema(...)` возвращает `undefined` (например, при пустом `path`), JSON-граф ломается.
-- На `/prices` и `/cases` подключаются тяжёлые компоненты (`LeadForm`, `Lightbox`) — но Lightbox рендерится только при `lightbox !== null`, а LeadForm SSR-безопасен (window guarded). Скорее всего, дело не в них, а в `scripts[].children` head.
+Первые маршруты («которые работают») — это те, для которых в `dist/` нет stale-файла (новые роуты или после `vite build` без предыдущего prerender). Как только CI накопил историю — падает.
 
 ## План
 
-### Шаг 1 (приоритет — делаем первым). Полный стек в логах CI
-В `scripts/prerender.ts` заменить
-```ts
-page.on("pageerror", (e) => console.error(`  [pageerror ${route}]`, e.message));
-```
-на
-```ts
-page.on("pageerror", (e) => console.error(`  [pageerror ${route}]`, e.stack ?? e.message));
-```
-Это даст минифицированный, но всё-таки путь по бандлу — уже подскажет компонент.
+Правка одного файла: `scripts/prerender.ts`.
 
-### Шаг 2. Сделать стек читаемым на проде
-В `vite.config.ts` для production-сборки включить сохранение имён функций. В TanStack Start template минификатор — esbuild по умолчанию (не terser). Правка:
+### 1. Очистка stale HTML перед стартом
+
+После проверки `existsSync(DIST)`, до `startServer()`:
 
 ```ts
-// vite.config.ts
-export default defineConfig({
-  // ...
-  build: {
-    minify: "esbuild",
-    sourcemap: true,           // карты загрузятся puppeteer'ом, стек развернётся
-  },
-  esbuild: {
-    keepNames: true,            // имена компонентов сохраняются в проде
-  },
+import { readdirSync, statSync, rmSync } from "node:fs";
+
+function cleanStaleHtml(dir: string) {
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    const st = statSync(full);
+    if (st.isDirectory()) {
+      cleanStaleHtml(full);
+      // удалить пустую папку, если осталась только index.html и её снесли
+      try { if (!readdirSync(full).length) rmSync(full, { recursive: true }); } catch {}
+    } else if (entry === "index.html" && dir !== DIST) {
+      rmSync(full);
+    } else if (entry === "404.html" && dir === DIST) {
+      rmSync(full);
+    }
+  }
+}
+cleanStaleHtml(DIST);
+```
+
+Оставляем `dist/index.html` (свежий SPA-шаблон от vite build) и все ассеты. Удаляем `dist/<route>/index.html` и `dist/404.html`.
+
+### 2. Принудительный SPA-fallback в сервере
+
+Заменить `sirv` на собственный handler, который:
+- для запросов с расширением (`.js`, `.css`, `.png`, `.svg`, `.ico`, `.json`, `.txt`, `.xml`, `.webp`, `.woff2`, …) — отдаёт файл из `dist/` или 404;
+- для всех остальных запросов (включая `/`, `/cases`, `/faq/anything`) — ВСЕГДА отдаёт содержимое `dist/index.html`, игнорируя возможные коллизии.
+
+Можно оставить `sirv` для статики и добавить fallback сверху:
+
+```ts
+const staticHandler = sirv(DIST, { dev: false, etag: true, single: false });
+const indexHtml = readFileSync(join(DIST, "index.html"));
+
+const server = http.createServer((req, res) => {
+  const url = req.url ?? "/";
+  const pathname = url.split("?")[0];
+  const hasExt = /\.[a-zA-Z0-9]+$/.test(pathname);
+  if (hasExt) {
+    return staticHandler(req, res, () => {
+      res.statusCode = 404; res.end("Not found");
+    });
+  }
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.end(indexHtml);
 });
 ```
 
-Если в шаблоне уже есть `build.minify: "terser"` — добавить `terserOptions: { keep_fnames: true, keep_classnames: true }`. `sourcemap: true` критичен — Chromium автоматически разворачивает стек по map-файлам.
+Ключевое: `single: false` у sirv (мы сами рулим fallback), и для любого «страничного» пути — свежий `index.html`, никогда не stale.
 
-### Шаг 3. Записать в `scripts/prerender.ts` комментарий-расшифровку
-В шапку файла:
-```ts
-/**
- * React minified error #29: "Accumulated items must be not be null or undefined."
- * Источник: https://react.dev/errors/29
- * Чаще всего ловится в head-аккумуляторе TanStack Router, когда
- * scripts[].children или meta[].content равен undefined.
- */
-```
+### 3. Порядок выполнения остаётся прежним
 
-### Шаг 4. После прогона CI с шагами 1–3 — точечный фикс
-Логи покажут конкретный модуль. Наиболее вероятные правки:
-- В `src/lib/jsonld.ts`: проверить `buildFAQSchema` (его нет в показанной части — открыть и убедиться, что он не возвращает `undefined` при пустом списке и не кладёт `undefined` в `mainEntity[].acceptedAnswer.text`).
-- На всех роутах с `head() → scripts`: убедиться, что `buildGraphHead([...])` всегда возвращает string. Если внутри один из `build*Schema` вернул `undefined`, отфильтровать.
-- Защитный фильтр в `buildGraphHead`: `nodes.filter(Boolean)` перед сериализацией.
-
-### Шаг 5. Чистый прогон
-После фикса CI-лог должен не содержать `[pageerror]` ни на одном из 4 маршрутов, prerender отрабатывает 100% routes.
+`cleanStaleHtml(DIST)` → `startServer()` → `renderQueue()` пишет свежие `dist/<route>/index.html` → `render404()` пишет `dist/404.html`. Между прогонами CI лишних файлов нет.
 
 ## Файлы
-- `scripts/prerender.ts` — комментарий + `e.stack`.
-- `vite.config.ts` — `esbuild.keepNames: true` + `build.sourcemap: true`.
-- (после Шага 4) `src/lib/jsonld.ts` или конкретный route — точечный фикс.
+
+- `scripts/prerender.ts` — `cleanStaleHtml`, замена обработчика http-сервера на explicit SPA-fallback из in-memory `dist/index.html`.
 
 ## Что НЕ делаем
-- Не оборачиваем страницы в дополнительный `<main id="main">` — он уже глобально в `__root.tsx`.
-- Не отключаем минификацию целиком (только `keepNames` + sourcemap).
-- Не правим вслепую — сначала Шаг 1+2 → читаем CI → потом точечный фикс.
+
+- Не трогаем `vite.config.ts`, `src/main.tsx`, `__root.tsx` — корень в исходном `index.html` есть, проблема только в сервере prerender.
+- Не меняем `WAIT_SELECTOR`, concurrency, таймауты.
+- Не удаляем ассеты из `dist/` — только HTML-страницы роутов.
