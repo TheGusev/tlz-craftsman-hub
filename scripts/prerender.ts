@@ -71,9 +71,19 @@ async function startServer(): Promise<{ url: string; close: () => void }> {
 
 async function renderRoute(browser: Browser, baseUrl: string, route: string) {
   const page = await browser.newPage();
+  page.on("pageerror", (e) => console.error(`  [pageerror ${route}]`, e.message));
+  page.on("console", (m) => {
+    if (m.type() === "error") console.error(`  [console.error ${route}]`, m.text());
+  });
   try {
     await page.goto(`${baseUrl}${route}`, { waitUntil: "networkidle0", timeout: TIMEOUT });
-    await page.waitForSelector(WAIT_SELECTOR, { timeout: TIMEOUT });
+    const winner = await Promise.race([
+      page.waitForSelector(WAIT_SELECTOR, { timeout: TIMEOUT }).then(() => "main" as const),
+      page.waitForSelector("[data-error-boundary]", { timeout: TIMEOUT }).then(() => "error" as const),
+    ]);
+    if (winner === "error") {
+      throw new Error(`route rendered ErrorComponent (see [pageerror ${route}] / [console.error ${route}] above)`);
+    }
     // Дать TanStack Router время дописать head/JSON-LD
     await new Promise((r) => setTimeout(r, 300));
     const html = await page.evaluate(() => "<!doctype html>\n" + document.documentElement.outerHTML);
