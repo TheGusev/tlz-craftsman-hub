@@ -1,45 +1,73 @@
-# Уникальные изображения для каждого раздела
+## План: GitHub Actions deploy на Beget
 
-## Найденные повторы
+### Что создаём
+Файл `.github/workflows/deploy.yml` — автодеплой при push в `main`.
 
-### 1. `src/lib/serviceImages.ts` — одни и те же файлы на разных услугах
-- `service-fumigation.jpg` используется на **7 услугах**: `fumigaciya`, `dezinsekciya`, `deratizaciya`, `unichtozhenie-tarakanov`, `unichtozhenie-klopov`, `unichtozhenie-blokh`, `unichtozhenie-muravev`
-- `service-plot.png` на **3 услугах**: `ochistka-uchastkov`, `obrabotka-uchastkov-ot-kleschey`, `obrabotka-ot-grizunov-na-uchastke`
-- `service-disinfection.jpg` на **2 услугах**: `sanitarnaya-obrabotka-pomeshcheniy`, `dezinfekciya-pomeshcheniy`
-- `service-odor.jpg` на **2 услугах**: `udalenie-trupnogo-zapaha`, `ozonirovanie-pomescheniy`
-- `hero-main.jpg` стоит и на услуге `dezinfekciya-posle-smerti`, и как hero главной страницы
+### Ключевые улучшения vs исходник
+1. **PRERENDER=1** — используем `npm run build:prod`, который генерирует sitemap, prerender HTML и проверяет результат. Без этого канонические URL и sitemap, которые мы настраивали, не материализуются в статику.
+2. **Кэш npm** оставляем (`actions/setup-node` с `cache: 'npm'`).
+3. **Puppeteer для prerender** — `puppeteer-core` уже в devDependencies; нужен Chrome. Добавляем `npx puppeteer browsers install chrome` перед сборкой (или ставим системный chromium через apt).
+4. **FTP exclude** — исключаем `**/.git*`, `**/.git*/**`, `**/node_modules/**` (на всякий случай, хотя в dist их нет).
+5. **dangerous-clean-slate: false** (по умолчанию) — не сносить файлы на сервере, использовать инкрементальную синхронизацию.
+6. **Concurrency** — оставляем как было.
+7. **Проверка секретов** — workflow рассчитывает на `FTP_HOST`, `FTP_USER`, `FTP_PASSWORD`, `FTP_PATH` в GitHub Secrets репозитория.
 
-В комментарии в коде прямо написано «переиспользуем имеющиеся обложки» — это техдолг.
+### Финальный workflow
 
-### 2. `src/assets/geography.jpg` — на 3 страницах
-- `src/routes/index.tsx`
-- `src/routes/regions.tsx`
-- `src/routes/regions.krym.tsx`
+```yaml
+name: Build & Deploy to Beget
 
-### 3. Кейсы (`src/assets/cases/*`) и блог — повторов **нет** ✓
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
 
-## План
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
 
-1. **Сгенерировать 9 новых уникальных обложек услуг** (1024×768, JPG, тематические):
-   - `service-dezinsekciya.jpg` — общая дезинсекция (распылитель, СИЗ)
-   - `service-deratizaciya.jpg` — дератизация (приманочная станция)
-   - `service-tarakany.jpg` — тараканы
-   - `service-klopy.jpg` — клопы (матрас, обработка постельных принадлежностей)
-   - `service-blohi.jpg` — блохи (ковёр, пол)
-   - `service-muravi.jpg` — муравьи
-   - `service-ozonirovanie.jpg` — озонатор в помещении
-   - `service-klesch.jpg` — клещи на участке (трава)
-   - `service-rodents-yard.jpg` — грызуны на участке
-   - `service-dezinfekciya-room.jpg` — отдельная обложка для `dezinfekciya-pomeshcheniy` (чтобы не дублировать `sanitarnaya-obrabotka-pomeshcheniy`)
-   - `service-after-death.jpg` — отдельная обложка для `dezinfekciya-posle-smerti`, чтобы освободить `hero-main.jpg` под единственный hero главной
-2. **Сгенерировать 2 новые обложки** для разделов:
-   - `regions-cover.jpg` — общая карта регионов России (для `regions.tsx`)
-   - оставить `geography.jpg` только за `index.tsx`; `hero-crimea-mountain.png` уже уникальна для Крыма
-3. **Обновить** `src/lib/serviceImages.ts` — каждому slug свой импорт, никаких комментариев «переиспользуем».
-4. **Обновить** `src/routes/regions.tsx` на новый `regions-cover.jpg`.
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-Итого 12 новых картинок. Генерирую через `imagegen` (`fast`-tier, по ~5 сек/шт).
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-## Вопрос
+      - name: Install dependencies
+        run: npm ci
 
-Подтверди — генерируем все 12 уникальных обложек, или ограничиться только теми, что повторяются больше 2 раз (тогда `service-fumigation` и `service-plot` дробим, остальное оставляем)?
+      - name: Install Chrome for prerender
+        run: npx puppeteer browsers install chrome
+
+      - name: Build (with prerender + sitemap)
+        run: npm run build:prod
+        env:
+          PRERENDER: '1'
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_PATH }}/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+```
+
+### Что нужно от пользователя
+Добавить в **GitHub → Settings → Secrets and variables → Actions**:
+- `FTP_HOST` — например `ftp.beget.com`
+- `FTP_USER` — FTP-логин Beget
+- `FTP_PASSWORD` — пароль
+- `FTP_PATH` — путь на сервере, например `/site/public_html` (со слэшем в конце не обязательно — добавим в workflow)
+
+### Открытый вопрос
+Если prerender в CI окажется тяжёлым (puppeteer ~5 мин), можно откатиться на `PRERENDER=0` + положиться только на SPA-режим. Но тогда теряется SEO-эффект всей предыдущей работы. Рекомендую PRERENDER=1.
