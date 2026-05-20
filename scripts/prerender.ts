@@ -7,6 +7,17 @@
  *   PRERENDER=1 CHROMIUM_PATH=/usr/bin/chromium npx tsx scripts/prerender.ts
  *
  * PRERENDER=0 — пропускает шаг (для CI без браузера).
+ *
+ * ----------------------------------------------------------------
+ * React minified error #29: "Accumulated items must be not be null or undefined."
+ * Источник: https://react.dev/errors/29
+ * Ловится в аккумуляторе React (head/Children API), когда в массиве оказался
+ * null/undefined. Типовые причины в TanStack Start:
+ *   - scripts[].children или meta[].content === undefined в head() роута;
+ *   - JSX вида {cond && <X/>} где cond === undefined внутри списка children.
+ * Для читаемого стека в проде включены esbuild.keepNames + sourcemap
+ * (см. vite.config.ts), а ниже логируется e.stack целиком.
+ * ----------------------------------------------------------------
  */
 import { writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
