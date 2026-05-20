@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { trackGoal } from "@/lib/analytics";
+import { trackCityConversion } from "@/lib/conversions";
 
 type ObjectType = "apartment" | "house" | "commercial";
 type AreaBand = "s" | "m" | "l" | "xl";
