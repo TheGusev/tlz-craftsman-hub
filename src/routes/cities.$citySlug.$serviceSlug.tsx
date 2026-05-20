@@ -19,7 +19,28 @@ import {
 import { buildCanonical } from "@/lib/seo";
 import { getServiceImage } from "@/lib/serviceImages";
 
+function buildDefaultServiceInCity(city: City, service: Service): ServiceInCity {
+  const phoneSuffix = city.phone ? ` Телефон: ${city.phone}.` : "";
+  const description = `${service.name} в ${city.name}. Выезд бригады в течение ${city.arrivalTime}, гарантия, договор.${phoneSuffix}`;
+  return {
+    citySlug: city.slug,
+    serviceSlug: service.slug,
+    h1: `${service.name} ${city.nameLocative}`,
+    metaTitle: `${service.shortName} ${city.nameLocative} — выезд 24/7`.slice(0, 70),
+    metaDescription: description.slice(0, 160),
+    localOffer: `Работаем ${city.nameLocative} и пригородах. Выезд по графику: ${city.arrivalTime}. ${service.intro}`,
+    whenCalled: [],
+    priceContext: service.priceFrom
+      ? `${city.nameLocative} — от ${service.priceFrom.toLocaleString("ru-RU")} ₽. Финальная цена зависит от площади, объёма работ и срочности.`
+      : "Стоимость рассчитывается индивидуально по объёму работ. Замер и смета — бесплатно.",
+    caseScenario: { title: "", description: "" },
+    faq: service.faq.slice(0, 3),
+    popularDistricts: city.districts,
+  };
+}
+
 export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
+
   loader: ({ params }) => {
     const city = getCity(params.citySlug);
     const service = getService(params.serviceSlug);
