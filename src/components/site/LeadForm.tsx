@@ -15,6 +15,8 @@ import {
 import { toast } from "sonner";
 import { cities } from "@/data/cities";
 import { trackGoal, readUtm } from "@/lib/analytics";
+import { trackCityConversion } from "@/lib/conversions";
+import { useActiveCity } from "@/lib/useActiveCity";
 import { sendLeadToTelegram, checkRateLimit } from "@/lib/telegram";
 
 export function LeadForm({
@@ -31,6 +33,7 @@ export function LeadForm({
   const [loading, setLoading] = useState(false);
   const [consent, setConsent] = useState(true);
   const navigate = useNavigate();
+  const activeCity = useActiveCity();
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -72,6 +75,10 @@ export function LeadForm({
         referrer: typeof document !== "undefined" ? document.referrer : "",
       });
       trackGoal("lead_form_submit", { source, service: service ?? null });
+      trackCityConversion(activeCity?.slug ?? defaultCity ?? cityVal, "form", {
+        source,
+        service: service ?? null,
+      });
       (e.target as HTMLFormElement).reset();
       navigate({ to: "/thank-you" });
     } catch (err) {

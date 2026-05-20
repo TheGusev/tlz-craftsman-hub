@@ -71,6 +71,10 @@ export function PriceQuiz({
         urgency: u,
         estimate: value,
       });
+      trackCityConversion(cityName, "quiz", {
+        service: serviceName,
+        estimate: value,
+      });
       onFinish?.(value);
     }
   };
