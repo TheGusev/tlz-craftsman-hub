@@ -183,6 +183,8 @@ async function main() {
     console.error(`[prerender] нет ${DIST}. Сначала запустите vite build.`);
     process.exit(1);
   }
+  cleanStaleHtml(DIST);
+  console.log(`[prerender] stale HTML очищен в ${DIST}`);
   const chromium = findChromium();
   console.log(`[prerender] Chromium: ${chromium}`);
   const routes = getAllRoutes().map((r) => r.path);
