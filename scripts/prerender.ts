@@ -72,9 +72,27 @@ if (process.env.PRERENDER === "0") {
   process.exit(0);
 }
 
+function findInPuppeteerCache(): string | undefined {
+  const base = join(process.env.HOME ?? "", ".cache/puppeteer/chrome");
+  if (!existsSync(base)) return undefined;
+  for (const rev of readdirSync(base)) {
+    const linux = join(base, rev, "chrome-linux64/chrome");
+    if (existsSync(linux)) return linux;
+    const mac = join(
+      base,
+      rev,
+      "chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+    );
+    if (existsSync(mac)) return mac;
+  }
+  return undefined;
+}
+
 function findChromium(): string {
   const env = process.env.CHROMIUM_PATH || process.env.PUPPETEER_EXECUTABLE_PATH;
   if (env && existsSync(env)) return env;
+  const cached = findInPuppeteerCache();
+  if (cached) return cached;
   const candidates = [
     "/usr/bin/chromium",
     "/usr/bin/chromium-browser",
@@ -84,7 +102,7 @@ function findChromium(): string {
   ];
   for (const c of candidates) if (existsSync(c)) return c;
   throw new Error(
-    "Не найден Chromium. Установите его или задайте CHROMIUM_PATH=/path/to/chrome",
+    "Не найден Chromium. Установите его (npx puppeteer browsers install chrome) или задайте CHROMIUM_PATH=/path/to/chrome",
   );
 }
 

@@ -1,80 +1,64 @@
 ## Диагноз
 
-React #299 (`createRoot: Target container is not a DOM element`) на `/cases`, `/faq`, `/prices`, `/regions/krym` — Puppeteer грузит уже-prerendered `dist/<route>/index.html` от прошлого прогона. Там `<div id="root">` либо удалён React-гидрацией перед сериализацией, либо заменён готовым DOM-деревом без узла с `id="root"`, на который потом пытается смонтироваться `main.tsx`.
+`TimeoutError: Timed out after 30000 ms while waiting for the WS endpoint URL to appear` — Chromium стартует на GitHub Actions runner-е, но никогда не открывает DevTools WebSocket. Причина — нехватка флагов для headless-запуска в контейнере без `/dev/shm` и без zygote-процесса. Один `puppeteer.launch` в файле (строка 196), второго нет.
 
-Почему именно эти роуты: `sirv(DIST, { single: true })` отдаёт `single: true`-fallback ТОЛЬКО когда файла нет. Если `dist/cases/index.html` существует с прошлого CI/локального прогона (а он существует — мы же его туда пишем), sirv отдаёт его как есть. `main.tsx` делает `document.getElementById("root")!` → null → `createRoot` бросает #299 → `pageerror` → таймаут на `#main` → fail.
-
-Первые маршруты («которые работают») — это те, для которых в `dist/` нет stale-файла (новые роуты или после `vite build` без предыдущего prerender). Как только CI накопил историю — падает.
+Дополнительно: на actions-runner-е Chrome обычно ставится через `npx puppeteer browsers install chrome` и кладётся в `~/.cache/puppeteer/...`, а не в `/usr/bin/chromium`. Текущий `findChromium()` не ищет в puppeteer-cache → даже если флаги починим, executablePath может указать в пустоту. Это нужно править заодно — иначе следующий прогон упрётся в «Не найден Chromium».
 
 ## План
 
 Правка одного файла: `scripts/prerender.ts`.
 
-### 1. Очистка stale HTML перед стартом
-
-После проверки `existsSync(DIST)`, до `startServer()`:
+### 1. Флаги запуска Chromium (строка 196)
 
 ```ts
-import { readdirSync, statSync, rmSync } from "node:fs";
-
-function cleanStaleHtml(dir: string) {
-  for (const entry of readdirSync(dir)) {
-    const full = join(dir, entry);
-    const st = statSync(full);
-    if (st.isDirectory()) {
-      cleanStaleHtml(full);
-      // удалить пустую папку, если осталась только index.html и её снесли
-      try { if (!readdirSync(full).length) rmSync(full, { recursive: true }); } catch {}
-    } else if (entry === "index.html" && dir !== DIST) {
-      rmSync(full);
-    } else if (entry === "404.html" && dir === DIST) {
-      rmSync(full);
-    }
-  }
-}
-cleanStaleHtml(DIST);
-```
-
-Оставляем `dist/index.html` (свежий SPA-шаблон от vite build) и все ассеты. Удаляем `dist/<route>/index.html` и `dist/404.html`.
-
-### 2. Принудительный SPA-fallback в сервере
-
-Заменить `sirv` на собственный handler, который:
-- для запросов с расширением (`.js`, `.css`, `.png`, `.svg`, `.ico`, `.json`, `.txt`, `.xml`, `.webp`, `.woff2`, …) — отдаёт файл из `dist/` или 404;
-- для всех остальных запросов (включая `/`, `/cases`, `/faq/anything`) — ВСЕГДА отдаёт содержимое `dist/index.html`, игнорируя возможные коллизии.
-
-Можно оставить `sirv` для статики и добавить fallback сверху:
-
-```ts
-const staticHandler = sirv(DIST, { dev: false, etag: true, single: false });
-const indexHtml = readFileSync(join(DIST, "index.html"));
-
-const server = http.createServer((req, res) => {
-  const url = req.url ?? "/";
-  const pathname = url.split("?")[0];
-  const hasExt = /\.[a-zA-Z0-9]+$/.test(pathname);
-  if (hasExt) {
-    return staticHandler(req, res, () => {
-      res.statusCode = 404; res.end("Not found");
-    });
-  }
-  res.setHeader("Content-Type", "text/html; charset=utf-8");
-  res.end(indexHtml);
+const browser = await puppeteer.launch({
+  executablePath: chromium,
+  headless: true,
+  args: [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+    "--no-first-run",
+    "--no-zygote",
+    "--single-process",
+  ],
+  timeout: 60_000,
 });
 ```
 
-Ключевое: `single: false` у sirv (мы сами рулим fallback), и для любого «страничного» пути — свежий `index.html`, никогда не stale.
+Ключевое: `--disable-dev-shm-usage` (на runner-е `/dev/shm` маленький, без флага Chromium падает молча) + `--no-zygote` + `--single-process` (исключает race при создании WS-эндпоинта в контейнере) + `timeout: 60_000` (даём больше времени на старт).
 
-### 3. Порядок выполнения остаётся прежним
+### 2. Поиск Chrome в puppeteer-cache
 
-`cleanStaleHtml(DIST)` → `startServer()` → `renderQueue()` пишет свежие `dist/<route>/index.html` → `render404()` пишет `dist/404.html`. Между прогонами CI лишних файлов нет.
+В `findChromium()` добавить поиск по `~/.cache/puppeteer/chrome/*/chrome-linux64/chrome` перед текущим списком кандидатов:
+
+```ts
+function findInPuppeteerCache(): string | undefined {
+  const base = join(process.env.HOME ?? "", ".cache/puppeteer/chrome");
+  if (!existsSync(base)) return undefined;
+  for (const rev of readdirSync(base)) {
+    const candidate = join(base, rev, "chrome-linux64/chrome");
+    if (existsSync(candidate)) return candidate;
+    const mac = join(base, rev, "chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing");
+    if (existsSync(mac)) return mac;
+  }
+  return undefined;
+}
+```
+
+В `findChromium()` после проверки env-переменной — вызвать `findInPuppeteerCache()`, и только если ничего не нашлось — fallback на `/usr/bin/chromium` и т.д.
+
+### 3. НЕ трогаем
+
+- `puppeteer.launch` один на весь скрипт — повторного вызова нет, `browser.newPage()` уже переиспользуется в `renderQueue`/`render404`. Подтверждено просмотром файла.
+- Xvfb в проекте не используется (`.github/workflows/deploy.yml` его не запускает).
+- `headless: true` не меняем на `"new"` — в `puppeteer-core` 22+ `true` уже = новый headless, а строка `"new"` бросает type-error.
 
 ## Файлы
 
-- `scripts/prerender.ts` — `cleanStaleHtml`, замена обработчика http-сервера на explicit SPA-fallback из in-memory `dist/index.html`.
+- `scripts/prerender.ts` — 2 точечные правки (`findInPuppeteerCache` + расширенный список args + `timeout: 60_000`).
 
-## Что НЕ делаем
+## После правки
 
-- Не трогаем `vite.config.ts`, `src/main.tsx`, `__root.tsx` — корень в исходном `index.html` есть, проблема только в сервере prerender.
-- Не меняем `WAIT_SELECTOR`, concurrency, таймауты.
-- Не удаляем ассеты из `dist/` — только HTML-страницы роутов.
+Если на CI ещё нет шага установки Chrome для puppeteer — workflow должен содержать `npx puppeteer browsers install chrome` до запуска prerender. Если шага нет, перед коммитом проверю `.github/workflows/deploy.yml` и добавлю; если есть — оставлю.
