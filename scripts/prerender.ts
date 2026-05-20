@@ -214,7 +214,16 @@ async function main() {
   const browser = await puppeteer.launch({
     executablePath: chromium,
     headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+      "--no-first-run",
+      "--no-zygote",
+      "--single-process",
+    ],
+    timeout: 60_000,
   });
 
   try {
