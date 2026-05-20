@@ -12,17 +12,19 @@ type Action = {
   bg: string;
   external?: boolean;
   goal: string;
+  conversionType: ConversionType;
 };
 
 const actions: Action[] = [
-  { label: "Позвонить", href: `tel:${SITE_PHONE_RAW}`, icon: Phone, bg: "bg-[#25D366] text-white", goal: "lead_phone_click" },
-  { label: "MAX", href: "https://max.ru/", icon: User, bg: "bg-sky-500 text-white", external: true, goal: "lead_max_click" },
-  { label: "Telegram", href: "https://t.me/", icon: Send, bg: "bg-sky-500 text-white", external: true, goal: "lead_telegram_click" },
+  { label: "Позвонить", href: `tel:${SITE_PHONE_RAW}`, icon: Phone, bg: "bg-[#25D366] text-white", goal: "lead_phone_click", conversionType: "phone" },
+  { label: "MAX", href: "https://max.ru/", icon: User, bg: "bg-sky-500 text-white", external: true, goal: "lead_max_click", conversionType: "messenger" },
+  { label: "Telegram", href: "https://t.me/", icon: Send, bg: "bg-sky-500 text-white", external: true, goal: "lead_telegram_click", conversionType: "messenger" },
 ];
 
 export function UrgentCTA() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const activeCity = useActiveCity();
 
   useEffect(() => {
     if (!open) return;
