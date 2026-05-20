@@ -23,10 +23,12 @@ export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
   loader: ({ params }) => {
     const city = getCity(params.citySlug);
     const service = getService(params.serviceSlug);
-    const sc = getServiceInCity(params.citySlug, params.serviceSlug);
-    if (!city || !service || !sc) throw notFound();
+    if (!city || !service) throw notFound();
+    const sc = getServiceInCity(params.citySlug, params.serviceSlug)
+      ?? buildDefaultServiceInCity(city, service);
     return { city, service, sc };
   },
+
   head: ({ loaderData }) => {
     if (!loaderData) return { meta: [] };
     const { city, service, sc } = loaderData;
