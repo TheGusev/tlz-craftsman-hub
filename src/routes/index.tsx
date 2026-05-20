@@ -11,7 +11,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Phone, Clock, ShieldCheck, MapPin, ArrowRight } from "lucide-react";
 import { getServiceImage } from "@/lib/serviceImages";
 import { getCaseGallery } from "@/lib/caseGallery";
-import { MobileQuickLead } from "@/components/site/MobileQuickLead";
+
 import geographyImg from "@/assets/geography.jpg";
 import heroCrimeaMountain from "@/assets/hero-crimea-mountain.png";
 import {
@@ -118,11 +118,6 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="md:hidden border-b border-border bg-surface">
-        <div className="container mx-auto px-4 py-6">
-          <MobileQuickLead />
-        </div>
-      </section>
 
       <section className="container mx-auto px-4 py-16 md:py-24">
         <div className="flex items-end justify-between gap-4">
@@ -269,7 +264,7 @@ function HomePage() {
           <div>
             <h2 className="font-display text-3xl font-bold md:text-4xl">Нужен срочный выезд?</h2>
             <p className="mt-4 text-muted-foreground">Звоните в любое время — дежурная бригада на линии 24/7. Перезвоним за 15 минут после заявки.</p>
-            <a href="tel:+78005551234" className="mt-6 inline-block font-display text-3xl font-bold text-accent">+7 (800) 555-12-34</a>
+            
           </div>
           <LeadForm />
         </div>

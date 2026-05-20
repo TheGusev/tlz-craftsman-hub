@@ -47,7 +47,7 @@ export const cities: City[] = [
     localContext:
       "В Краснодаре высокая плотность многоквартирной застройки и частые аварии в новых ЖК — потопы от прорывов труб, пожары в новостройках. Влажный климат провоцирует плесень в подвалах и санузлах.",
     popularServices: ["posle-pozhara", "posle-potopa", "udalenie-pleseni", "dezinfekciya-posle-smerti"],
-    phone: "+7 (800) 555-12-34",
+    phone: "",
     whatsapp: "+78005551234",
   },
   {
@@ -74,7 +74,7 @@ export const cities: City[] = [
     localContext:
       "Влажный субтропический климат Сочи — главный фактор. Плесень, грибок, последствия ливневых подтоплений и затопленных подвалов — самые частые обращения. Высокий сезон (май–октябрь) увеличивает нагрузку на гостиничный сектор.",
     popularServices: ["posle-potopa", "udalenie-pleseni", "fumigaciya"],
-    phone: "+7 (800) 555-12-34",
+    phone: "",
     whatsapp: "+78005551234",
   },
   {
@@ -103,7 +103,7 @@ export const cities: City[] = [
     localContext:
       "Ростов — крупный логистический хаб. Много обращений по фумигации складов и зернохранилищ, а также по аварийным выездам после пожаров в частном секторе и многоквартирных домах.",
     popularServices: ["posle-pozhara", "fumigaciya", "dezinfekciya-posle-smerti"],
-    phone: "+7 (800) 555-12-34",
+    phone: "",
     whatsapp: "+78005551234",
   },
   {
@@ -129,7 +129,7 @@ export const cities: City[] = [
     localContext:
       "Симферополь — административный центр Крыма с большим жилым фондом советской застройки. Высокий спрос на дезинфекцию и удаление плесени в старых домах с плохой вентиляцией.",
     popularServices: ["dezinfekciya-posle-smerti", "udalenie-pleseni"],
-    phone: "+7 (800) 555-12-34",
+    phone: "",
     whatsapp: "+78005551234",
   },
   {
@@ -154,7 +154,7 @@ export const cities: City[] = [
     localContext:
       "Севастополь — город с сложной топографией и историческими постройками. Частые обращения по последствиям пожаров и санитарной обработке после ЧС в старом фонде.",
     popularServices: ["posle-pozhara", "dezinfekciya-posle-smerti"],
-    phone: "+7 (800) 555-12-34",
+    phone: "",
     whatsapp: "+78005551234",
   },
   {
@@ -180,7 +180,7 @@ export const cities: City[] = [
     localContext:
       "Влажный климат ЮБК и высокая плотность гостиниц делают плесень и санобработку приоритетной задачей. В межсезонье — массовые заявки от санаторно-курортного сектора.",
     popularServices: ["udalenie-pleseni", "dezinfekciya-posle-smerti"],
-    phone: "+7 (800) 555-12-34",
+    phone: "",
     whatsapp: "+78005551234",
   },
   {
@@ -204,7 +204,7 @@ export const cities: City[] = [
     localContext:
       "Курортный город с большой долей санаторного жилфонда. Ключевые задачи — дезинфекция в межсезонье и санитарная обработка после ЧС.",
     popularServices: ["dezinfekciya-posle-smerti", "udalenie-pleseni"],
-    phone: "+7 (800) 555-12-34",
+    phone: "",
     whatsapp: "+78005551234",
   },
   {
@@ -228,7 +228,7 @@ export const cities: City[] = [
     localContext:
       "Портовый и промышленный город с большим объёмом коммерческой санобработки. Регулярные заявки на фумигацию складов и дезинфекцию объектов.",
     popularServices: ["fumigaciya", "dezinfekciya-posle-smerti"],
-    phone: "+7 (800) 555-12-34",
+    phone: "",
     whatsapp: "+78005551234",
   },
   {
@@ -244,7 +244,7 @@ export const cities: City[] = [
     arrivalTime: "1–3 часа",
     localContext: "Курортный город с высокой долей гостиничного фонда. Пиковая нагрузка — май–октябрь. Частые обращения по дезинсекции и дератизации общепита.",
     popularServices: ["dezinsekciya", "deratizaciya", "udalenie-pleseni", "obrabotka-uchastkov-ot-kleschey"],
-    phone: "+7 (800) 555-12-34",
+    phone: "",
     whatsapp: "+78005551234",
   },
   {
@@ -260,7 +260,7 @@ export const cities: City[] = [
     arrivalTime: "1–3 часа",
     localContext: "Курортный город с высокой влажностью. Плесень и дезинсекция — основной поток заявок.",
     popularServices: ["udalenie-pleseni", "dezinsekciya", "obrabotka-uchastkov-ot-kleschey"],
-    phone: "+7 (800) 555-12-34",
+    phone: "",
     whatsapp: "+78005551234",
   },
   {
@@ -276,7 +276,7 @@ export const cities: City[] = [
     arrivalTime: "1–2 часа",
     localContext: "Портовый город с большим объёмом складской инфраструктуры. Высокий спрос на дератизацию и фумигацию.",
     popularServices: ["deratizaciya", "fumigaciya", "udalenie-pleseni", "posle-pozhara"],
-    phone: "+7 (800) 555-12-34",
+    phone: "",
     whatsapp: "+78005551234",
   },
   {
@@ -292,7 +292,7 @@ export const cities: City[] = [
     arrivalTime: "2–3 часа",
     localContext: "Курортный город восточного Крыма. Активный сезон — июнь–сентябрь.",
     popularServices: ["dezinsekciya", "udalenie-pleseni", "obrabotka-uchastkov-ot-kleschey"],
-    phone: "+7 (800) 555-12-34",
+    phone: "",
     whatsapp: "+78005551234",
   },
   {
@@ -308,7 +308,7 @@ export const cities: City[] = [
     arrivalTime: "2–4 часа",
     localContext: "Курортный город ЮБК с высокой влажностью. Плесень — приоритет.",
     popularServices: ["udalenie-pleseni", "dezinsekciya", "dezinfekciya-pomeshcheniy"],
-    phone: "+7 (800) 555-12-34",
+    phone: "",
     whatsapp: "+78005551234",
   },
   {
@@ -324,7 +324,7 @@ export const cities: City[] = [
     arrivalTime: "3–5 часов",
     localContext: "Курортный город с горным рельефом. Активный сезон — лето.",
     popularServices: ["udalenie-pleseni", "dezinsekciya", "obrabotka-uchastkov-ot-kleschey"],
-    phone: "+7 (800) 555-12-34",
+    phone: "",
     whatsapp: "+78005551234",
   },
   {
@@ -340,7 +340,7 @@ export const cities: City[] = [
     arrivalTime: "2–4 часа",
     localContext: "Город-курорт с большим объёмом санаторного фонда. Высокий спрос на дезинфекцию.",
     popularServices: ["dezinfekciya-pomeshcheniy", "udalenie-pleseni", "dezinsekciya"],
-    phone: "+7 (800) 555-12-34",
+    phone: "",
     whatsapp: "+78005551234",
   },
 ];

@@ -168,10 +168,10 @@ export function Header() {
         <div className="flex items-center gap-2">
           <a
             href="tel:+78005551234"
+            aria-label="Позвонить"
             className="hidden items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-foreground hover:text-accent md:inline-flex"
           >
             <Phone className="h-4 w-4" />
-            +7 (800) 555-12-34
           </a>
           <Button
             asChild

@@ -19,7 +19,7 @@ export function buildOrganizationSchema(): JsonLdNode {
     "@id": `${SITE_URL}/#organization`,
     name: SITE_NAME,
     url: SITE_URL,
-    telephone: SITE_PHONE,
+    ...(SITE_PHONE ? { telephone: SITE_PHONE } : {}),
     email: SITE_EMAIL,
     areaServed: ["RU-KDA", "RU-ROS", "RU-STA", "RU-CR"],
     sameAs: [],
@@ -113,7 +113,7 @@ export function buildLocalBusinessSchema(opts: {
     "@id": `${url}#localbusiness`,
     name: `${SITE_NAME} — ${opts.cityName}`,
     url,
-    telephone: opts.phone ?? SITE_PHONE,
+    ...((opts.phone ?? SITE_PHONE) ? { telephone: opts.phone ?? SITE_PHONE } : {}),
     ...(opts.description ? { description: opts.description } : {}),
     ...(opts.address
       ? {
