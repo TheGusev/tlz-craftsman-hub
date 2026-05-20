@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Phone, Send, User, X } from "lucide-react";
 import { trackGoal } from "@/lib/analytics";
+import { trackCityConversion, type ConversionType } from "@/lib/conversions";
+import { useActiveCity } from "@/lib/useActiveCity";
 import { SITE_PHONE_RAW } from "@/lib/site";
 
 type Action = {
