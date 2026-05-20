@@ -24,13 +24,6 @@ export function Footer() {
             Аварийная санитарная служба по ЮФО и Крыму. Дезинфекция, фумигация, удаление плесени, очистка после ЧС.
           </p>
           <address className="mt-4 not-italic text-sm opacity-90 space-y-1">
-            <a
-              href={`tel:${SITE_PHONE_RAW}`}
-              onClick={() => trackGoal("lead_phone_click", { source: "footer" })}
-              className="block text-lg font-semibold text-accent"
-            >
-              {SITE_PHONE}
-            </a>
             <div className="text-xs opacity-80">Круглосуточно, без выходных</div>
             <a
               href={`mailto:${SITE_EMAIL}`}

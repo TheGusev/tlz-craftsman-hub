@@ -49,16 +49,22 @@ function ContactsPage() {
       <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_1fr]">
         <div className="space-y-4">
           <Card className="p-6">
-            <Phone className="h-6 w-6 text-accent" />
-            <div className="mt-3 text-sm text-muted-foreground">Единый телефон</div>
-            <a href="tel:+78005551234" className="mt-1 block font-display text-2xl font-bold">+7 (800) 555-12-34</a>
-            <div className="mt-1 text-xs text-muted-foreground">Круглосуточно, без выходных</div>
+            <a href="tel:+78005551234" aria-label="Позвонить" className="flex items-center gap-3">
+              <Phone className="h-6 w-6 text-accent" />
+              <div>
+                <div className="text-sm text-muted-foreground">Единый телефон</div>
+                <div className="text-xs text-muted-foreground">Круглосуточно, без выходных</div>
+              </div>
+            </a>
           </Card>
           <Card className="p-6">
-            <MessageCircle className="h-6 w-6 text-accent" />
-            <div className="mt-3 text-sm text-muted-foreground">WhatsApp</div>
-            <a href="https://wa.me/78005551234" className="mt-1 block font-display text-xl font-bold">+7 (800) 555-12-34</a>
-            <div className="mt-1 text-xs text-muted-foreground">Можно отправить фото и видео объекта</div>
+            <a href="https://wa.me/78005551234" aria-label="Написать в WhatsApp" className="flex items-center gap-3">
+              <MessageCircle className="h-6 w-6 text-accent" />
+              <div>
+                <div className="text-sm text-muted-foreground">WhatsApp</div>
+                <div className="text-xs text-muted-foreground">Можно отправить фото и видео объекта</div>
+              </div>
+            </a>
           </Card>
           <Card className="p-6">
             <Mail className="h-6 w-6 text-accent" />
