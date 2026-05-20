@@ -82,7 +82,7 @@ async function startServer(): Promise<{ url: string; close: () => void }> {
 
 async function renderRoute(browser: Browser, baseUrl: string, route: string) {
   const page = await browser.newPage();
-  page.on("pageerror", (e) => console.error(`  [pageerror ${route}]`, e.message));
+  page.on("pageerror", (e) => console.error(`  [pageerror ${route}]`, e.stack ?? e.message));
   page.on("console", (m) => {
     if (m.type() === "error") console.error(`  [console.error ${route}]`, m.text());
   });
