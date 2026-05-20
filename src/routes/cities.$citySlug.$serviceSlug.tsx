@@ -19,14 +19,37 @@ import {
 import { buildCanonical } from "@/lib/seo";
 import { getServiceImage } from "@/lib/serviceImages";
 
+function buildDefaultServiceInCity(city: City, service: Service): ServiceInCity {
+  const phoneSuffix = city.phone ? ` Телефон: ${city.phone}.` : "";
+  const description = `${service.name} в ${city.name}. Выезд бригады в течение ${city.arrivalTime}, гарантия, договор.${phoneSuffix}`;
+  return {
+    citySlug: city.slug,
+    serviceSlug: service.slug,
+    h1: `${service.name} ${city.nameLocative}`,
+    metaTitle: `${service.shortName} ${city.nameLocative} — выезд 24/7`.slice(0, 70),
+    metaDescription: description.slice(0, 160),
+    localOffer: `Работаем ${city.nameLocative} и пригородах. Выезд по графику: ${city.arrivalTime}. ${service.intro}`,
+    whenCalled: [],
+    priceContext: service.priceFrom
+      ? `${city.nameLocative} — от ${service.priceFrom.toLocaleString("ru-RU")} ₽. Финальная цена зависит от площади, объёма работ и срочности.`
+      : "Стоимость рассчитывается индивидуально по объёму работ. Замер и смета — бесплатно.",
+    caseScenario: { title: "", description: "" },
+    faq: service.faq.slice(0, 3),
+    popularDistricts: city.districts,
+  };
+}
+
 export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
+
   loader: ({ params }) => {
     const city = getCity(params.citySlug);
     const service = getService(params.serviceSlug);
-    const sc = getServiceInCity(params.citySlug, params.serviceSlug);
-    if (!city || !service || !sc) throw notFound();
+    if (!city || !service) throw notFound();
+    const sc = getServiceInCity(params.citySlug, params.serviceSlug)
+      ?? buildDefaultServiceInCity(city, service);
     return { city, service, sc };
   },
+
   head: ({ loaderData }) => {
     if (!loaderData) return { meta: [] };
     const { city, service, sc } = loaderData;
@@ -105,14 +128,17 @@ function ServiceInCityPage() {
       <div className="container mx-auto grid gap-10 px-4 py-12 lg:grid-cols-[2fr_1fr]">
         <div className="space-y-12">
           {sc.introAnswer && <IntroAnswer>{sc.introAnswer}</IntroAnswer>}
-          <section>
-            <h2 className="font-display text-2xl font-bold">Когда вызывают {city.nameLocative}</h2>
-            <ul className="mt-4 space-y-2">
-              {sc.whenCalled.map((it: string, i: number) => (
-                <li key={i} className="flex items-start gap-2 text-sm"><Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" />{it}</li>
-              ))}
-            </ul>
-          </section>
+          {sc.whenCalled.length > 0 && (
+            <section>
+              <h2 className="font-display text-2xl font-bold">Когда вызывают {city.nameLocative}</h2>
+              <ul className="mt-4 space-y-2">
+                {sc.whenCalled.map((it: string, i: number) => (
+                  <li key={i} className="flex items-start gap-2 text-sm"><Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" />{it}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+
 
           <section>
             <h2 className="font-display text-2xl font-bold">Этапы работ</h2>
@@ -144,13 +170,16 @@ function ServiceInCityPage() {
             </div>
           </section>
 
-          <section>
-            <h2 className="font-display text-2xl font-bold">Реальный сценарий</h2>
-            <Card className="mt-4 p-6">
-              <h3 className="font-display text-lg font-bold">{sc.caseScenario.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{sc.caseScenario.description}</p>
-            </Card>
-          </section>
+          {sc.caseScenario.title && (
+            <section>
+              <h2 className="font-display text-2xl font-bold">Реальный сценарий</h2>
+              <Card className="mt-4 p-6">
+                <h3 className="font-display text-lg font-bold">{sc.caseScenario.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{sc.caseScenario.description}</p>
+              </Card>
+            </section>
+          )}
+
 
           <section>
             <h2 className="font-display text-2xl font-bold">FAQ по {service.shortName.toLowerCase()} {city.nameLocative}</h2>
