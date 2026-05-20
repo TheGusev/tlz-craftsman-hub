@@ -1,56 +1,74 @@
-## Контекст и уточнение диагноза
+## React error #29 — расшифровка
 
-В проекте `<main id="main">` **уже отрендерен глобально** в `src/routes/__root.tsx` (строка 163) — он оборачивает `<Outlet />` и присутствует на КАЖДОМ маршруте сайта. Поэтому исходная гипотеза «на /about и /prices нет `<main id="main">`» неверна, и оборачивать содержимое страниц в ещё один `<main id="main">` нельзя: получим:
-- дубликат `id="main"` (невалидный HTML, нарушение a11y),
-- вложенный `<main>` внутри `<main>` (тоже запрещено стандартом).
+С https://react.dev/errors/29:
 
-Если selector `#main` действительно не находится за 30s на `/about` и `/prices`, это значит, что вместо `RootComponent` отрисовался **`errorComponent`** (у него нет `<main id="main">`) — то есть страница падает в рантайме при prerender. Остальные роуты успешно проходят.
+> **Accumulated items must be not be null or undefined.**
+
+Эта ошибка приходит из аккумулятора React (head / children / Children API). На наших падающих маршрутах (`/faq`, `/prices`, `/cases`, `/regions/krym`) самый вероятный кандидат — `HeadContent`: TanStack Router склеивает `meta`/`scripts` всех matched routes (root + leaf), и если хоть одна запись в `scripts[].children` или `meta[].content` имеет значение `undefined`, аккумулятор бросает #29.
+
+Что именно сейчас выглядит подозрительно:
+- `src/routes/faq.tsx` строит `buildFAQSchema(allFaq)` — функция отсутствует в показанной части `src/lib/jsonld.ts`; нужно проверить, не возвращает ли она `undefined`/массив с `undefined` для пустых `q`/`a` (в `generalFaq` или `services[].faq`).
+- `buildGraphHead([...])` на этих 4 страницах вызывается с массивом нод; если один из `build*Schema(...)` возвращает `undefined` (например, при пустом `path`), JSON-граф ломается.
+- На `/prices` и `/cases` подключаются тяжёлые компоненты (`LeadForm`, `Lightbox`) — но Lightbox рендерится только при `lightbox !== null`, а LeadForm SSR-безопасен (window guarded). Скорее всего, дело не в них, а в `scripts[].children` head.
 
 ## План
 
-### 1. Воспроизвести и поймать настоящую ошибку
-Добавить в `scripts/prerender.ts` сбор `console`/`pageerror` событий с проблемных страниц, чтобы видеть стек, а не только TimeoutError. Сейчас мы слепы: Puppeteer лишь сообщает, что селектор не появился.
-
-Конкретно — в `renderRoute()` перед `page.goto`:
+### Шаг 1 (приоритет — делаем первым). Полный стек в логах CI
+В `scripts/prerender.ts` заменить
 ```ts
 page.on("pageerror", (e) => console.error(`  [pageerror ${route}]`, e.message));
-page.on("console", (m) => {
-  if (m.type() === "error") console.error(`  [console.error ${route}]`, m.text());
+```
+на
+```ts
+page.on("pageerror", (e) => console.error(`  [pageerror ${route}]`, e.stack ?? e.message));
+```
+Это даст минифицированный, но всё-таки путь по бандлу — уже подскажет компонент.
+
+### Шаг 2. Сделать стек читаемым на проде
+В `vite.config.ts` для production-сборки включить сохранение имён функций. В TanStack Start template минификатор — esbuild по умолчанию (не terser). Правка:
+
+```ts
+// vite.config.ts
+export default defineConfig({
+  // ...
+  build: {
+    minify: "esbuild",
+    sourcemap: true,           // карты загрузятся puppeteer'ом, стек развернётся
+  },
+  esbuild: {
+    keepNames: true,            // имена компонентов сохраняются в проде
+  },
 });
 ```
 
-### 2. Сделать ожидание устойчивым
-Заменить жёсткое `waitForSelector("#main", { timeout: 30000 })` на двойное условие, чтобы prerender не висел 30s даже когда отрисовался errorComponent:
+Если в шаблоне уже есть `build.minify: "terser"` — добавить `terserOptions: { keep_fnames: true, keep_classnames: true }`. `sourcemap: true` критичен — Chromium автоматически разворачивает стек по map-файлам.
 
+### Шаг 3. Записать в `scripts/prerender.ts` комментарий-расшифровку
+В шапку файла:
 ```ts
-await Promise.race([
-  page.waitForSelector("#main", { timeout: TIMEOUT }),
-  page.waitForSelector("[data-error-boundary]", { timeout: TIMEOUT }),
-]);
+/**
+ * React minified error #29: "Accumulated items must be not be null or undefined."
+ * Источник: https://react.dev/errors/29
+ * Чаще всего ловится в head-аккумуляторе TanStack Router, когда
+ * scripts[].children или meta[].content равен undefined.
+ */
 ```
 
-И пометить `ErrorComponent` в `__root.tsx` атрибутом `data-error-boundary` у корневого `<div>`, чтобы prerender мог явно отличить «страница упала» от «селектор не дождались» и завершить шаг с понятным сообщением.
+### Шаг 4. После прогона CI с шагами 1–3 — точечный фикс
+Логи покажут конкретный модуль. Наиболее вероятные правки:
+- В `src/lib/jsonld.ts`: проверить `buildFAQSchema` (его нет в показанной части — открыть и убедиться, что он не возвращает `undefined` при пустом списке и не кладёт `undefined` в `mainEntity[].acceptedAnswer.text`).
+- На всех роутах с `head() → scripts`: убедиться, что `buildGraphHead([...])` всегда возвращает string. Если внутри один из `build*Schema` вернул `undefined`, отфильтровать.
+- Защитный фильтр в `buildGraphHead`: `nodes.filter(Boolean)` перед сериализацией.
 
-### 3. Расследовать, что именно падает на /about и /prices
-После шага 1 в логах CI появится реальный стек. Наиболее вероятные кандидаты (проверить в первую очередь):
+### Шаг 5. Чистый прогон
+После фикса CI-лог должен не содержать `[pageerror]` ни на одном из 4 маршрутов, prerender отрабатывает 100% routes.
 
-- `src/routes/prices.tsx` использует `<LeadForm />` — он может дёргать `fetch`/Telegram при mount или использовать `window`/`localStorage` без guard.
-- `src/components/site/LeadForm.tsx`, `src/lib/telegram.ts`, `src/hooks/useAnalytics.ts`, `src/lib/analytics.ts` — кандидаты на необработанное обращение к `window`/`navigator`/env-переменной, которое не падает на других страницах, но падает в комбинации с конкретной разметкой `/about` и `/prices`.
-- Возможна ошибка в JSON-LD-схеме (`buildWebPageSchema`/`buildBreadcrumbSchema`) для этих двух путей.
+## Файлы
+- `scripts/prerender.ts` — комментарий + `e.stack`.
+- `vite.config.ts` — `esbuild.keepNames: true` + `build.sourcemap: true`.
+- (после Шага 4) `src/lib/jsonld.ts` или конкретный route — точечный фикс.
 
-После того как реальная причина найдена — точечно её починить (guard `typeof window !== "undefined"`, дефолтное значение, и т.п.). Без шага 1 угадывать вслепую не имеет смысла.
-
-### 4. Стандарт `<main id="main">` на сайте
-Подтвердить, что `<main id="main">` остаётся **только** в `src/routes/__root.tsx`. Пройти по всем файлам `src/routes/*.tsx` и убедиться, что ни один из них не содержит собственного `<main ...>` (сейчас `rg 'id="main"' src/` показывает только `__root.tsx` — это уже единый стандарт, дополнительных правок не требуется).
-
-### 5. Проверка
-После правок CI-сборка с `PRERENDER=1 npm run build:prod` должна проходить все маршруты. Локально в Lovable preview prerender не запускается (нет Chromium-шага в dev), так что верификация — через следующий запуск GitHub Actions.
-
-## Что НЕ делать
-- ❌ Не оборачивать содержимое `about.tsx`/`prices.tsx` (или любых других страниц) в `<main id="main">` — это сломает HTML.
-- ❌ Не убирать `<main id="main">` из `__root.tsx` ради переноса в страницы — это потеряет skip-link и единообразие.
-
-## Технические детали (правки в файлах)
-- `scripts/prerender.ts` — добавить page.on("pageerror"/"console"), заменить waitForSelector на Promise.race с двумя селекторами.
-- `src/routes/__root.tsx` — добавить `data-error-boundary` на корневой `<div>` внутри `ErrorComponent`.
-- Файл с реальным багом — определится после шага 1 (вероятно `LeadForm.tsx` или `useAnalytics.ts`).
+## Что НЕ делаем
+- Не оборачиваем страницы в дополнительный `<main id="main">` — он уже глобально в `__root.tsx`.
+- Не отключаем минификацию целиком (только `keepNames` + sourcemap).
+- Не правим вслепую — сначала Шаг 1+2 → читаем CI → потом точечный фикс.
