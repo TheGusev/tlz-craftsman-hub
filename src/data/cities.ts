@@ -11,6 +11,7 @@ export type City = {
   localContext: string;
   popularServices: string[]; // service slugs
   phone: string;
+  phoneDisplay?: string;
   whatsapp: string;
   // Расширенные поля (опциональны)
   introAnswer?: string;
