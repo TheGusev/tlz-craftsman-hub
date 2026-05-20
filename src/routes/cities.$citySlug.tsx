@@ -97,7 +97,7 @@ function CityPage() {
             <h2 className="font-display text-2xl font-bold">Какие работы выполняем {city.nameLocative}</h2>
             <div className="mt-4 grid gap-3 md:grid-cols-2">
               {services.map((s) => (
-                <Link key={s.slug} to="/services/$serviceSlug" params={{ serviceSlug: s.slug }} className="rounded-xl border border-border bg-card p-4 hover:border-accent">
+                <Link key={s.slug} to="/cities/$citySlug/$serviceSlug" params={{ citySlug: city.slug, serviceSlug: s.slug }} className="rounded-xl border border-border bg-card p-4 hover:border-accent">
                   <div className="font-display text-base font-bold">{s.shortName}</div>
                   <div className="mt-1 text-xs text-muted-foreground">{s.cluster}</div>
                 </Link>
