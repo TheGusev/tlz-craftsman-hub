@@ -19,7 +19,15 @@
  * (см. vite.config.ts), а ниже логируется e.stack целиком.
  * ----------------------------------------------------------------
  */
-import { writeFileSync, mkdirSync, existsSync } from "node:fs";
+import {
+  writeFileSync,
+  mkdirSync,
+  existsSync,
+  readFileSync,
+  readdirSync,
+  statSync,
+  rmSync,
+} from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import http from "node:http";
@@ -27,6 +35,30 @@ import sirv from "sirv";
 import puppeteer, { type Browser } from "puppeteer-core";
 
 import { getAllRoutes } from "../src/lib/route-config";
+
+/**
+ * Удаляет stale prerender-артефакты предыдущих прогонов:
+ *   - dist/<route>/index.html (любой вложенности)
+ *   - dist/404.html
+ * Оставляет нетронутыми dist/index.html (свежий SPA-шаблон от vite build)
+ * и все ассеты.
+ */
+function cleanStaleHtml(dir: string) {
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    const st = statSync(full);
+    if (st.isDirectory()) {
+      cleanStaleHtml(full);
+      try {
+        if (!readdirSync(full).length) rmSync(full, { recursive: true });
+      } catch {}
+    } else if (entry === "index.html" && dir !== DIST) {
+      rmSync(full);
+    } else if (entry === "404.html" && dir === DIST) {
+      rmSync(full);
+    }
+  }
+}
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
