@@ -107,14 +107,17 @@ function ServiceInCityPage() {
       <div className="container mx-auto grid gap-10 px-4 py-12 lg:grid-cols-[2fr_1fr]">
         <div className="space-y-12">
           {sc.introAnswer && <IntroAnswer>{sc.introAnswer}</IntroAnswer>}
-          <section>
-            <h2 className="font-display text-2xl font-bold">Когда вызывают {city.nameLocative}</h2>
-            <ul className="mt-4 space-y-2">
-              {sc.whenCalled.map((it: string, i: number) => (
-                <li key={i} className="flex items-start gap-2 text-sm"><Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" />{it}</li>
-              ))}
-            </ul>
-          </section>
+          {sc.whenCalled.length > 0 && (
+            <section>
+              <h2 className="font-display text-2xl font-bold">Когда вызывают {city.nameLocative}</h2>
+              <ul className="mt-4 space-y-2">
+                {sc.whenCalled.map((it: string, i: number) => (
+                  <li key={i} className="flex items-start gap-2 text-sm"><Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" />{it}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+
 
           <section>
             <h2 className="font-display text-2xl font-bold">Этапы работ</h2>
