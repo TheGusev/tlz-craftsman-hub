@@ -31,7 +31,6 @@ export function Footer() {
             >
               {SITE_EMAIL}
             </a>
-            <div className="text-xs opacity-80">Московская обл., г. Одинцово, ул. Садовая, 3Б, пом. 912</div>
           </address>
         </div>
 
