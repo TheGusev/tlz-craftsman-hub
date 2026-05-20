@@ -149,13 +149,16 @@ function ServiceInCityPage() {
             </div>
           </section>
 
-          <section>
-            <h2 className="font-display text-2xl font-bold">Реальный сценарий</h2>
-            <Card className="mt-4 p-6">
-              <h3 className="font-display text-lg font-bold">{sc.caseScenario.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{sc.caseScenario.description}</p>
-            </Card>
-          </section>
+          {sc.caseScenario.title && (
+            <section>
+              <h2 className="font-display text-2xl font-bold">Реальный сценарий</h2>
+              <Card className="mt-4 p-6">
+                <h3 className="font-display text-lg font-bold">{sc.caseScenario.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{sc.caseScenario.description}</p>
+              </Card>
+            </section>
+          )}
+
 
           <section>
             <h2 className="font-display text-2xl font-bold">FAQ по {service.shortName.toLowerCase()} {city.nameLocative}</h2>
