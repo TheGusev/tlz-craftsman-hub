@@ -30,7 +30,14 @@ export default defineConfig({
   },
   build: {
     outDir: "dist",
-    sourcemap: false,
+    // sourcemap + keepNames (esbuild ниже) дают читаемый стек React-ошибок
+    // в логах prerender'а (puppeteer автоматически разворачивает по .map).
+    sourcemap: true,
     target: "es2020",
+  },
+  esbuild: {
+    // Сохраняем имена функций/компонентов в production-бандле,
+    // иначе минифицированные React ошибки (#29 и пр.) непригодны для отладки.
+    keepNames: true,
   },
 });
