@@ -133,6 +133,33 @@ export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
 function ServiceInCityPage() {
   const { city, service, sc }: { city: City; service: Service; sc: ServiceInCity } = Route.useLoaderData();
   const cover = getServiceImage(service.slug);
+  const phoneDisplay = city.phoneDisplay || city.phone;
+  const heroActions = (city.phone || city.whatsapp) ? (
+    <>
+      {city.phone && (
+        <a
+          href={`tel:${city.phone}`}
+          onClick={() => trackCityConversion(city.slug, "phone", { service: service.slug, place: "service_in_city_hero" })}
+          className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-3 font-semibold text-accent-foreground shadow-elegant transition hover:opacity-90"
+        >
+          <Phone className="h-5 w-5" />
+          <span>Позвонить {phoneDisplay}</span>
+        </a>
+      )}
+      {city.whatsapp && (
+        <a
+          href={`https://wa.me/${city.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`Здравствуйте! Нужна услуга «${service.shortName}» ${city.nameLocative}.`)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackCityConversion(city.slug, "messenger", { service: service.slug, channel: "whatsapp", place: "service_in_city_hero" })}
+          className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/30 bg-primary-foreground/10 px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary-foreground/20"
+        >
+          <MessageCircle className="h-5 w-5" />
+          <span>WhatsApp</span>
+        </a>
+      )}
+    </>
+  ) : null;
   return (
     <article>
       <PageHero
@@ -145,7 +172,9 @@ function ServiceInCityPage() {
         eyebrow={`${service.cluster} · ${city.name}`}
         title={sc.h1}
         description={sc.localOffer}
+        actions={heroActions}
       />
+
 
       <div className="container mx-auto grid gap-10 px-4 py-12 lg:grid-cols-[2fr_1fr]">
         <div className="space-y-12">
