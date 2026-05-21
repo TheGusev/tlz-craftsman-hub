@@ -89,7 +89,15 @@ function LandingPage() {
       <header className="border-b border-border bg-card/50">
         <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-3">
           <span className="text-sm font-semibold">Аварийная санслужба</span>
-          <a href={phoneHref} className="text-sm font-semibold text-primary" aria-label="Позвонить">
+          <a
+            href={phoneHref}
+            className="text-sm font-semibold text-primary"
+            aria-label="Позвонить"
+            onClick={() => {
+              trackGoal("lead_phone_click", { source: "lp_header", city: city.slug });
+              trackCityConversion(city.slug, "phone", { source: "lp_header" });
+            }}
+          >
             {phoneDisplay || <Phone className="h-4 w-4" />}
           </a>
         </div>
@@ -118,13 +126,27 @@ function LandingPage() {
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button asChild size="lg" className="font-semibold">
-                <a href={phoneHref}>
+                <a
+                  href={phoneHref}
+                  onClick={() => {
+                    trackGoal("lead_phone_click", { source: "lp_hero", city: city.slug });
+                    trackCityConversion(city.slug, "phone", { source: "lp_hero" });
+                  }}
+                >
                   <Phone className="mr-2 h-4 w-4" />
                   Позвонить
                 </a>
               </Button>
               <Button asChild size="lg" variant="secondary">
-                <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={whatsappHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    trackGoal("lead_messenger_click", { source: "lp_hero", channel: "whatsapp", city: city.slug });
+                    trackCityConversion(city.slug, "messenger", { source: "lp_hero", channel: "whatsapp" });
+                  }}
+                >
                   <MessageCircle className="mr-2 h-4 w-4" />
                   WhatsApp
                 </a>
