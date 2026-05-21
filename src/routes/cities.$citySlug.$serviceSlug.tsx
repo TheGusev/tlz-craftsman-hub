@@ -7,7 +7,8 @@ import { LeadForm } from "@/components/site/LeadForm";
 import { IntroAnswer } from "@/components/site/IntroAnswer";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Check } from "lucide-react";
+import { Check, Phone, MessageCircle } from "lucide-react";
+import { trackCityConversion } from "@/lib/conversions";
 import {
   buildGraphHead,
   buildWebPageSchema,
@@ -19,17 +20,36 @@ import {
 import { buildCanonical } from "@/lib/seo";
 import { getServiceImage } from "@/lib/serviceImages";
 
+function clamp(s: string, max: number): string {
+  if (s.length <= max) return s;
+  return s.slice(0, max - 1).trimEnd() + "…";
+}
+
 function buildDefaultServiceInCity(city: City, service: Service): ServiceInCity {
   const phoneText = city.phoneDisplay || city.phone;
-  const phoneSuffix = phoneText ? ` Телефон: ${phoneText}.` : "";
-  const description = `${service.name} в ${city.name}. Выезд бригады в течение ${city.arrivalTime}, гарантия, договор.${phoneSuffix}`;
+  const districts = city.districts.slice(0, 2).join(", ");
+  const priceTitle = service.priceFrom
+    ? `${service.shortName} ${city.nameLocative} — от ${service.priceFrom.toLocaleString("ru-RU")} ₽, выезд 24/7`
+    : `${service.shortName} ${city.nameLocative} — выезд 24/7, договор и гарантия`;
+  const metaTitle = clamp(priceTitle, 60);
+
+  const descBase = `${service.shortName} ${city.nameLocative}: выезд за ${city.arrivalTime}, договор, гарантия, СЭС-сертификаты.`;
+  const descGeo = districts ? ` Работаем по районам: ${districts}.` : "";
+  const descPhone = phoneText ? ` Тел. ${phoneText}.` : "";
+  const metaDescription = clamp(descBase + descGeo + descPhone, 160);
+
+  const introAnswer = service.priceFrom
+    ? `Вызвать ${service.shortName.toLowerCase()} ${city.nameLocative} можно круглосуточно. Цена ${service.shortName.toLowerCase()} ${city.nameLocative} — от ${service.priceFrom.toLocaleString("ru-RU")} ₽, выезд бригады — ${city.arrivalTime}. Работаем по договору, выдаём акт и гарантию.`
+    : `Вызвать ${service.shortName.toLowerCase()} ${city.nameLocative} можно круглосуточно. Выезд бригады — ${city.arrivalTime}. Работаем по договору, выдаём акт, гарантию и СЭС-сертификаты.`;
+
   return {
     citySlug: city.slug,
     serviceSlug: service.slug,
     h1: `${service.name} ${city.nameLocative}`,
-    metaTitle: `${service.shortName} ${city.nameLocative} — выезд 24/7`.slice(0, 70),
-    metaDescription: description.slice(0, 160),
-    localOffer: `Работаем ${city.nameLocative} и пригородах. Выезд по графику: ${city.arrivalTime}. ${service.intro}`,
+    metaTitle,
+    metaDescription,
+    introAnswer,
+    localOffer: `Бригада дежурит ${city.nameLocative} 24/7. Выезд по графику: ${city.arrivalTime}.`,
     whenCalled: [],
     priceContext: service.priceFrom
       ? `${city.nameLocative} — от ${service.priceFrom.toLocaleString("ru-RU")} ₽. Финальная цена зависит от площади, объёма работ и срочности.`
@@ -39,6 +59,7 @@ function buildDefaultServiceInCity(city: City, service: Service): ServiceInCity 
     popularDistricts: city.districts,
   };
 }
+
 
 export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
 
