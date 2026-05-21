@@ -32,5 +32,5 @@ Allow: /
 User-agent: ChatGPT-User
 Allow: /
 
-Sitemap: https://tlz-craftsman-hub.lovable.app/sitemap.xml
-Host: tlz-craftsman-hub.lovable.app
+Sitemap: https://sanitarnyeresheniya.ru/sitemap.xml
+Host: sanitarnyeresheniya.ru
