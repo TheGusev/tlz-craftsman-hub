@@ -1,87 +1,49 @@
-## Цель
+## Что меняю
 
-Для трёх «рекламных» городов (`simferopol`, `sevastopol`, `sochi`) собрать все конверсионные действия в одну **составную цель** Яндекс.Метрики на город. Аналитика уже подключена через `src/lib/analytics.ts` (`trackGoal` → `window.ym(YM_ID, "reachGoal", ...)`).
+### 1. Исправить телефоны 3 городов (`src/data/cities.ts`)
 
-## Архитектура целей
+Перегруппирую без потери цифр (tel остаётся прежним, меняется только `phoneDisplay`):
 
-На каждый город создаётся **одна** конверсионная цель в Метрике:
+- **Сочи**: `phoneDisplay` `"+7 (8622) 30-56-90"` → `"+7 (862) 230-56-90"` (tel `+78622305690` без изменений)
+- **Севастополь**: `"+7 (8692) 77-91-65"` → `"+7 (869) 277-91-65"` (tel `+78692779165` без изменений)
+- **Симферополь**: `"+7 (3652) 29-21-95"` — уже корректно, не трогаю
 
-- `conversion_simferopol`
-- `conversion_sevastopol`
-- `conversion_sochi`
+### 2. Показать телефон в hero на страницах /cities/{city}/{service}
 
-Эта цель срабатывает при **любом** конверсионном событии на страницах, привязанных к этому городу. Параллельно отправляются «детализирующие» цели — чтобы в отчётах было видно, какой именно канал сработал:
+В `src/routes/cities.$citySlug.$serviceSlug.tsx` передам в `<PageHero actions={...}>` блок с двумя кнопками:
+- основная — `<a href="tel:{city.phone}">Позвонить {phoneDisplay}</a>` (только если у города есть телефон)
+- вторичная — WhatsApp
 
-- `conversion_{city}_form` — успешная отправка любой формы
-- `conversion_{city}_messenger` — клик по WhatsApp / Telegram / MAX
-- `conversion_{city}_phone` — клик по `tel:`-ссылке
-- `conversion_{city}_quiz` — завершение калькулятора PriceQuiz на `/lp/`
+С обработчиком `trackConversion('phone_call', …)` через `src/lib/conversions.ts` (он уже есть), чтобы клик считался в составной цели.
 
-Что считается «страницей города»: `/cities/{city}`, `/cities/{city}/{service}`, `/lp/{city}/{service}`. Город берётся из `useActiveCity` (хук уже есть).
+Стилизация — через существующие токены (`bg-accent`, `text-accent-foreground`), без жёстких цветов.
 
-В коде город — только из `useActiveCity` (a не из formdata `defaultCity`), чтобы избежать ложных срабатываний на главной/контактах.
+### 3. Улучшить SEO-шаблон в `buildDefaultServiceInCity()` (`src/routes/cities.$citySlug.$serviceSlug.tsx`)
 
-## Что меняется в коде
+Сейчас шаблон даёт скучные одинаковые `metaTitle` и `metaDescription`. Перепишу с акцентом на коммерческие и гео-ключи:
 
-### 1. Новый помощник `src/lib/conversions.ts`
+- **metaTitle** (≤60 симв.): `«{Услуга} {в городе} — цена от {X} ₽, выезд 24/7»` или без цены, если её нет.
+  Пример Сочи/дезинсекция: `«Дезинсекция в Сочи — цена от 2 500 ₽, выезд 24/7»`
+- **metaDescription** (≤160 симв.): `«{Услуга} {в городе}: выезд за {arrivalTime}, договор, гарантия, СЭС-сертификаты. Работаем по {районы 2-3}. Тел. {phoneDisplay}.»`
+- **h1**: оставляю `«{Полное название услуги} {в городе}»` (уже норм), но добавлю в начало intro-блок с локальным усилением (через `introAnswer`): 1-2 предложения с ключами «{услуга} {город} цена», «вызвать {услугу} {в городе}».
+- **localOffer**: компактнее, без дубля с intro.
 
-```ts
-import { trackGoal } from "./analytics";
+Шаблон применится автоматически ко всем 9 страницам (Симферополь/Севастополь/Сочи × дезинсекция/дератизация/дезинфекция помещений) и ко всем будущим связкам, у которых нет ручной записи в `src/data/serviceInCity.ts`.
 
-const TRACKED_CITIES = new Set(["simferopol", "sevastopol", "sochi"]);
-type ConversionType = "form" | "messenger" | "phone" | "quiz";
+### 4. Проверка
 
-export function trackCityConversion(
-  city: string | undefined,
-  type: ConversionType,
-  params?: Record<string, unknown>,
-) {
-  if (!city || !TRACKED_CITIES.has(city)) return;
-  trackGoal(`conversion_${city}`, { type, ...params });
-  trackGoal(`conversion_${city}_${type}`, params);
-}
-```
+После изменений запрошу одну из 9 страниц через preview и проверю в DOM:
+- корректный `phoneDisplay` без лишней «8»;
+- кнопка «Позвонить» видна в hero на мобильном (393px);
+- `<title>`/`<meta name="description">` — новые осмысленные.
 
-### 2. Точки вызова (везде через `useActiveCity`)
+## Файлы
 
-| Компонент | Событие | Тип |
-|---|---|---|
-| `LeadForm.tsx` | успешный `sendLeadToTelegram` → `trackGoal("lead_form_submit", …)` | `form` |
-| `MobileQuickLead.tsx` | то же | `form` (хотя компонент сейчас не используется на 3 городах — на будущее) |
-| `PriceQuiz.tsx` | `trackGoal("lp_quiz_complete", …)` | `quiz` |
-| `UrgentCTA.tsx` | клик «Позвонить» / «MAX» / «Telegram» | `phone` / `messenger` |
-| `Header.tsx` | клик по иконке/кнопке «Срочный выезд» (tel:) | `phone` |
-| `Footer.tsx` | клик по городскому номеру (уже есть `trackGoal("lead_phone_click", …)`) | `phone` |
-| `lp.$citySlug.$serviceSlug.tsx` | кнопки «Позвонить» и «WhatsApp» в hero, плюс верхняя tel:-ссылка | `phone` / `messenger` |
-| `cities.$citySlug.tsx` | кликов по мессенджерам нет; конверсии идут через LeadForm в aside | — |
+- `src/data/cities.ts` — правка `phoneDisplay` для `sochi` и `sevastopol`
+- `src/routes/cities.$citySlug.$serviceSlug.tsx` — `buildDefaultServiceInCity()` (новый шаблон) + `<PageHero actions={...}>` с кнопкой звонка/WhatsApp
 
-В каждой из этих точек дополнительно к существующему `trackGoal(...)` вызываем `trackCityConversion(activeCity?.slug, type, { source })`. Старые названия событий (`lead_form_submit`, `lead_phone_click` и т. п.) оставляем — они полезны для общего отчёта.
+## Что НЕ трогаю
 
-### 3. Кнопки в LP-странице сейчас без аналитики
-
-В `src/routes/lp.$citySlug.$serviceSlug.tsx` кнопки `Позвонить` (`<a href={phoneHref}>`) и `WhatsApp` сейчас не вызывают `trackGoal`. Добавлю `onClick` с `trackGoal("lead_phone_click" / "lead_messenger_click", { source: "lp_hero", city: city.slug })` и одновременно `trackCityConversion(city.slug, "phone" / "messenger", …)`.
-
-### 4. Header tel:-ссылка
-
-Сейчас просто `<a href={cityPhoneHref}>` без аналитики. Добавлю `onClick` → `trackCityConversion(activeCity?.slug, "phone", { source: "header" })` + `trackGoal("lead_phone_click", …)`.
-
-## Что делает пользователь в кабинете Метрики после деплоя
-
-Для каждого из 3 городов завести **одну составную цель**:
-
-1. Метрика → Цели → «Добавить цель» → тип **«Составная»**.
-2. Название: «Конверсия Симферополь» (Севастополь / Сочи).
-3. Шаги — режим «достаточно выполнить любое из условий» (в Метрике это создаётся как одна цель типа «JavaScript-событие» с именем `conversion_simferopol` — она автоматически сработает на любое из под-событий, потому что мы шлём один и тот же reachGoal из всех точек).
-
-То есть фактически в Метрике достаточно создать **одну цель типа «JavaScript-событие»** с идентификатором `conversion_{city}` — она и есть «составная» в смысле «срабатывает на любую конверсию города». Для детализации канала можно создать ещё 4 цели `conversion_{city}_form/messenger/phone/quiz`, но это опционально.
-
-Альтернатива (если хочется именно тип «Составная» в интерфейсе): создать 4 простых цели `conversion_{city}_*` и объединить их в составную с режимом «любой шаг = достижение». Зависит от того, как удобнее в отчётах.
-
-## Проверка после правок
-
-1. `VITE_YANDEX_METRIKA_ID` установлен в окружении (без него ничего не шлётся — `trackGoal` это no-op).
-2. Открыть `/cities/sochi` → нажать в шапке кнопку «Срочный выезд» → в Метрике (вебвизор + отладчик) должны прилететь `lead_phone_click`, `conversion_sochi`, `conversion_sochi_phone`.
-3. Открыть `/lp/simferopol/obrabotka-uchastkov-ot-kleschey` → отправить форму → должны прийти `lead_form_submit`, `conversion_simferopol`, `conversion_simferopol_form`.
-4. Там же → клик «WhatsApp» в hero → `lead_messenger_click`, `conversion_simferopol`, `conversion_simferopol_messenger`.
-5. На `/` (главной), `/contacts`, `/cities/krasnodar` (не отслеживаемый город) — никакие `conversion_*` не отправляются, только базовые `lead_*`.
-6. `npm run build` — без ошибок.
+- Номера в `tel:` ссылках и WhatsApp (10 цифр после +7 сохраняются).
+- `src/data/serviceInCity.ts` — никаких ручных записей.
+- Структуру маршрутов и формы.
