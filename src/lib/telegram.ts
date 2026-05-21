@@ -24,10 +24,7 @@ export type LeadPayload = {
 };
 
 function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 function formatLead(p: LeadPayload): string {
@@ -45,9 +42,7 @@ function formatLead(p: LeadPayload): string {
   if (p.landing) lines.push(`\n<b>Страница:</b> ${escapeHtml(p.landing)}`);
   if (p.referrer) lines.push(`<b>Referrer:</b> ${escapeHtml(p.referrer)}`);
   if (p.utm && Object.keys(p.utm).length) {
-    const utm = Object.entries(p.utm)
-      .map(([k, v]) => `${k}=${v}`)
-      .join(" | ");
+    const utm = Object.entries(p.utm).map(([k, v]) => `${k}=${v}`).join(" | ");
     lines.push(`<b>UTM:</b> ${escapeHtml(utm)}`);
   }
   return lines.join("\n");
