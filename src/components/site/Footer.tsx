@@ -4,6 +4,7 @@ import { cities } from "@/data/cities";
 import { SITE_NAME, SITE_EMAIL } from "@/lib/site";
 import { trackGoal } from "@/lib/analytics";
 import { useActiveCity } from "@/lib/useActiveCity";
+import { trackCityConversion } from "@/lib/conversions";
 
 export function Footer() {
   const activeCity = useActiveCity();
