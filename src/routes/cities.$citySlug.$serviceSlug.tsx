@@ -7,7 +7,8 @@ import { LeadForm } from "@/components/site/LeadForm";
 import { IntroAnswer } from "@/components/site/IntroAnswer";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Check } from "lucide-react";
+import { Check, Phone, MessageCircle } from "lucide-react";
+import { trackCityConversion } from "@/lib/conversions";
 import {
   buildGraphHead,
   buildWebPageSchema,
@@ -19,17 +20,36 @@ import {
 import { buildCanonical } from "@/lib/seo";
 import { getServiceImage } from "@/lib/serviceImages";
 
+function clamp(s: string, max: number): string {
+  if (s.length <= max) return s;
+  return s.slice(0, max - 1).trimEnd() + "…";
+}
+
 function buildDefaultServiceInCity(city: City, service: Service): ServiceInCity {
   const phoneText = city.phoneDisplay || city.phone;
-  const phoneSuffix = phoneText ? ` Телефон: ${phoneText}.` : "";
-  const description = `${service.name} в ${city.name}. Выезд бригады в течение ${city.arrivalTime}, гарантия, договор.${phoneSuffix}`;
+  const districts = city.districts.slice(0, 2).join(", ");
+  const priceTitle = service.priceFrom
+    ? `${service.shortName} ${city.nameLocative} — от ${service.priceFrom.toLocaleString("ru-RU")} ₽, выезд 24/7`
+    : `${service.shortName} ${city.nameLocative} — выезд 24/7, договор и гарантия`;
+  const metaTitle = clamp(priceTitle, 60);
+
+  const descBase = `${service.shortName} ${city.nameLocative}: выезд за ${city.arrivalTime}, договор, гарантия, СЭС-сертификаты.`;
+  const descGeo = districts ? ` Работаем по районам: ${districts}.` : "";
+  const descPhone = phoneText ? ` Тел. ${phoneText}.` : "";
+  const metaDescription = clamp(descBase + descGeo + descPhone, 160);
+
+  const introAnswer = service.priceFrom
+    ? `Вызвать ${service.shortName.toLowerCase()} ${city.nameLocative} можно круглосуточно. Цена ${service.shortName.toLowerCase()} ${city.nameLocative} — от ${service.priceFrom.toLocaleString("ru-RU")} ₽, выезд бригады — ${city.arrivalTime}. Работаем по договору, выдаём акт и гарантию.`
+    : `Вызвать ${service.shortName.toLowerCase()} ${city.nameLocative} можно круглосуточно. Выезд бригады — ${city.arrivalTime}. Работаем по договору, выдаём акт, гарантию и СЭС-сертификаты.`;
+
   return {
     citySlug: city.slug,
     serviceSlug: service.slug,
     h1: `${service.name} ${city.nameLocative}`,
-    metaTitle: `${service.shortName} ${city.nameLocative} — выезд 24/7`.slice(0, 70),
-    metaDescription: description.slice(0, 160),
-    localOffer: `Работаем ${city.nameLocative} и пригородах. Выезд по графику: ${city.arrivalTime}. ${service.intro}`,
+    metaTitle,
+    metaDescription,
+    introAnswer,
+    localOffer: `Бригада дежурит ${city.nameLocative} 24/7. Выезд по графику: ${city.arrivalTime}.`,
     whenCalled: [],
     priceContext: service.priceFrom
       ? `${city.nameLocative} — от ${service.priceFrom.toLocaleString("ru-RU")} ₽. Финальная цена зависит от площади, объёма работ и срочности.`
@@ -39,6 +59,7 @@ function buildDefaultServiceInCity(city: City, service: Service): ServiceInCity 
     popularDistricts: city.districts,
   };
 }
+
 
 export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
 
@@ -112,6 +133,33 @@ export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
 function ServiceInCityPage() {
   const { city, service, sc }: { city: City; service: Service; sc: ServiceInCity } = Route.useLoaderData();
   const cover = getServiceImage(service.slug);
+  const phoneDisplay = city.phoneDisplay || city.phone;
+  const heroActions = (city.phone || city.whatsapp) ? (
+    <>
+      {city.phone && (
+        <a
+          href={`tel:${city.phone}`}
+          onClick={() => trackCityConversion(city.slug, "phone", { service: service.slug, place: "service_in_city_hero" })}
+          className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-3 font-semibold text-accent-foreground shadow-elegant transition hover:opacity-90"
+        >
+          <Phone className="h-5 w-5" />
+          <span>Позвонить {phoneDisplay}</span>
+        </a>
+      )}
+      {city.whatsapp && (
+        <a
+          href={`https://wa.me/${city.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`Здравствуйте! Нужна услуга «${service.shortName}» ${city.nameLocative}.`)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackCityConversion(city.slug, "messenger", { service: service.slug, channel: "whatsapp", place: "service_in_city_hero" })}
+          className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/30 bg-primary-foreground/10 px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary-foreground/20"
+        >
+          <MessageCircle className="h-5 w-5" />
+          <span>WhatsApp</span>
+        </a>
+      )}
+    </>
+  ) : null;
   return (
     <article>
       <PageHero
@@ -124,7 +172,9 @@ function ServiceInCityPage() {
         eyebrow={`${service.cluster} · ${city.name}`}
         title={sc.h1}
         description={sc.localOffer}
+        actions={heroActions}
       />
+
 
       <div className="container mx-auto grid gap-10 px-4 py-12 lg:grid-cols-[2fr_1fr]">
         <div className="space-y-12">
