@@ -28,7 +28,10 @@ export function Footer() {
             {activeCity?.phoneDisplay && cityPhoneRaw && (
               <a
                 href={`tel:${cityPhoneRaw}`}
-                onClick={() => trackGoal("lead_phone_click", { source: "footer", city: activeCity.slug })}
+                onClick={() => {
+                  trackGoal("lead_phone_click", { source: "footer", city: activeCity.slug });
+                  trackCityConversion(activeCity.slug, "phone", { source: "footer" });
+                }}
                 className="block text-lg font-semibold text-accent"
               >
                 {activeCity.phoneDisplay}
