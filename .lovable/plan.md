@@ -1,26 +1,43 @@
-## Подтверждение прав в Яндекс.Вебмастере для sanitarnyeresheniya.ru
+## Sitemap для отправки в Яндекс + ссылки на услуги в 3 городах
 
-### Изменение
+### Текущая ситуация
+В проекте **нет sitemap.xml** — ни `public/sitemap.xml`, ни `src/routes/sitemap[.]xml.ts`. Отправлять в Яндекс пока нечего.
 
-Создать файл `public/yandex_8f3e37822bd87898.html`:
+### Что сделать
+Создать server-route `src/routes/sitemap[.]xml.ts` с `BASE_URL = "https://sanitarnyeresheniya.ru"`, который генерирует все публичные URL:
 
-```html
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-    <body>Verification: 8f3e37822bd87898</body>
-</html>
+- Статика: `/`, `/about`, `/services`, `/cities`, `/prices`, `/contacts`, `/faq`, `/blog`, `/cases`, `/otzyvy`, `/garantii`, `/vyezd`, `/licenzii`, `/oplata`, `/rekvizity`, `/regions`, `/regions/krym`, `/privacy`, `/oferta`, `/soglasie`.
+- По услугам: `/services/{slug}` × 9 услуг.
+- По городам: `/cities/{slug}` × 9 городов.
+- Город × услуга: `/cities/{citySlug}/{serviceSlug}` — по `popularServices` каждого города (как сейчас рендерится в `cities.$citySlug.$serviceSlug.tsx`).
+- Блог и кейсы: `/blog/{slug}`, `/cases/{slug}` из `src/data/blog.ts` и `src/data/cases.ts`.
+- `thank-you` и `lp/*` — пропускаем (служебные/лендинги).
+
+В `public/robots.txt` добавить строку:
+```
+Sitemap: https://sanitarnyeresheniya.ru/sitemap.xml
 ```
 
-Всё, что лежит в `public/`, раздаётся из корня сайта на всех подключённых доменах.
+### Что получите после публикации
 
-### Дальше (вне кода)
+**Sitemap:** `https://sanitarnyeresheniya.ru/sitemap.xml` — её и отправите в Яндекс.Вебмастер → «Файлы Sitemap».
 
-1. Нажать **Publish / Update** — без публикации новый файл не появится на проде.
-2. Проверить, что открывается: `https://sanitarnyeresheniya.ru/yandex_8f3e37822bd87898.html` — должна быть строка `Verification: 8f3e37822bd87898`.
-3. В Яндекс.Вебмастере нажать **«Подтвердить»**.
+**Примеры страниц «город × услуга»** (3 города × 3 услуги = 9 ссылок) — можно отдельно прислать на переобход в «Индексирование → Переобход страниц»:
 
-### Запасной вариант
+Краснодар:
+- https://sanitarnyeresheniya.ru/cities/krasnodar/posle-pozhara
+- https://sanitarnyeresheniya.ru/cities/krasnodar/posle-potopa
+- https://sanitarnyeresheniya.ru/cities/krasnodar/udalenie-pleseni
 
-В `src/routes/__root.tsx` уже подключён meta-тег `yandex-verification` через переменную `VITE_YANDEX_VERIFICATION`. Если по какой-то причине файл не подойдёт, можно задать `VITE_YANDEX_VERIFICATION=8f3e37822bd87898` в `.env` и выбрать в Вебмастере способ подтверждения через meta-тег. Но при наличии HTML-файла этого не требуется.
+Сочи:
+- https://sanitarnyeresheniya.ru/cities/sochi/posle-pozhara
+- https://sanitarnyeresheniya.ru/cities/sochi/posle-potopa
+- https://sanitarnyeresheniya.ru/cities/sochi/dezinfekciya-posle-smerti
+
+Симферополь:
+- https://sanitarnyeresheniya.ru/cities/simferopol/posle-pozhara
+- https://sanitarnyeresheniya.ru/cities/simferopol/posle-potopa
+- https://sanitarnyeresheniya.ru/cities/simferopol/udalenie-pleseni
+
+### Важно
+После одобрения плана и реализации **нужно нажать Publish/Update** — иначе `/sitemap.xml` не появится на проде.
