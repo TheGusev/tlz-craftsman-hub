@@ -4,6 +4,8 @@ import { useState } from "react";
 import { services } from "@/data/services";
 import { cities } from "@/data/cities";
 import { useActiveCity } from "@/lib/useActiveCity";
+import { trackGoal } from "@/lib/analytics";
+import { trackCityConversion } from "@/lib/conversions";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -176,6 +178,10 @@ export function Header() {
           <a
             href={cityPhoneHref}
             aria-label="Позвонить"
+            onClick={() => {
+              trackGoal("lead_phone_click", { source: "header", city: activeCity?.slug });
+              trackCityConversion(activeCity?.slug, "phone", { source: "header" });
+            }}
             className="hidden items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-foreground hover:text-accent md:inline-flex"
           >
             <Phone className="h-4 w-4" />
@@ -185,7 +191,15 @@ export function Header() {
             asChild
             className="hidden md:inline-flex bg-[linear-gradient(110deg,var(--urgent),var(--accent),var(--urgent))] bg-[length:200%_auto] animate-shimmer text-urgent-foreground shadow-lg shadow-urgent/30 hover:opacity-90"
           >
-            <a href={cityPhoneHref}>Срочный выезд</a>
+            <a
+              href={cityPhoneHref}
+              onClick={() => {
+                trackGoal("lead_phone_click", { source: "header_cta", city: activeCity?.slug });
+                trackCityConversion(activeCity?.slug, "phone", { source: "header_cta" });
+              }}
+            >
+              Срочный выезд
+            </a>
           </Button>
 
           <Sheet open={open} onOpenChange={setOpen}>

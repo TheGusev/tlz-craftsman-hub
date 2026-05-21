@@ -1,37 +1,87 @@
-## Что меняем
+## Цель
 
-### 1. Убрать видимый текст номера +7 (800) 555-12-34
-Текст номера скрываем; `tel:` и `wa.me` ссылки оставляем работать (по кнопкам/иконкам можно позвонить).
+Для трёх «рекламных» городов (`simferopol`, `sevastopol`, `sochi`) собрать все конверсионные действия в одну **составную цель** Яндекс.Метрики на город. Аналитика уже подключена через `src/lib/analytics.ts` (`trackGoal` → `window.ym(YM_ID, "reachGoal", ...)`).
 
-**Файлы:**
+## Архитектура целей
 
-- `src/lib/site.ts` — `SITE_PHONE = ""` (или убрать рендер на стороне потребителей; константа остаётся для совместимости, но не выводится).
-- `src/components/site/Header.tsx` (стр. 170–174) — убрать видимый `+7 (800) 555-12-34` рядом с иконкой телефона в шапке. Саму иконку-ссылку `tel:` оставляем.
-- `src/components/site/Footer.tsx` (стр. 27–34) — убрать строку с номером в подвале. Оставить email и адрес.
-- `src/routes/index.tsx` (стр. 272) — убрать визуальный `+7 (800) 555-12-34` в финальном CTA-блоке «Нужен срочный выезд?». Сам блок и форма остаются.
-- `src/routes/contacts.tsx` (стр. 54, 60) — убрать визуальный номер у блоков «Телефон» и «WhatsApp». Подписи блоков и иконки остаются с активной `tel:`/`wa.me`-ссылкой.
-- `src/data/cities.ts` — у всех 15 городов поля `phone` заменить на пустую строку (или убрать рендер в `cities.$citySlug.tsx`, где этот номер выводится). Поле `whatsapp` оставляем — оно используется для линка.
-- `src/routes/cities.$citySlug.tsx` — найти и убрать места, где рендерится `city.phone` как текст.
-- `public/llms.txt` (стр. 31–32) — убрать строки с номером.
-- JSON-LD (`src/lib/jsonld.ts`, схема LocalBusiness) — убрать поле `telephone`, чтобы номер не уходил в поисковики.
+На каждый город создаётся **одна** конверсионная цель в Метрике:
 
-`SITE_PHONE_RAW` и `SITE_WHATSAPP` оставляем как `+78005551234` — они нужны для `tel:`/`wa.me` href и видимы только в DOM-атрибутах, не на экране.
+- `conversion_simferopol`
+- `conversion_sevastopol`
+- `conversion_sochi`
 
-### 2. Убрать «калькулятор» с главной
-В `src/routes/index.tsx` удалить секцию с `MobileQuickLead` (стр. 121–125) — это блок «Рассчитать выезд» (3 шага: город → объект → проблема), который виден только на мобильной версии главной. Также убрать импорт `MobileQuickLead` на стр. 14.
+Эта цель срабатывает при **любом** конверсионном событии на страницах, привязанных к этому городу. Параллельно отправляются «детализирующие» цели — чтобы в отчётах было видно, какой именно канал сработал:
 
-Сам компонент `src/components/site/MobileQuickLead.tsx` оставляем в проекте (не удаляем файл) — на случай если он понадобится в других местах.
+- `conversion_{city}_form` — успешная отправка любой формы
+- `conversion_{city}_messenger` — клик по WhatsApp / Telegram / MAX
+- `conversion_{city}_phone` — клик по `tel:`-ссылке
+- `conversion_{city}_quiz` — завершение калькулятора PriceQuiz на `/lp/`
 
-## Чего не трогаем
+Что считается «страницей города»: `/cities/{city}`, `/cities/{city}/{service}`, `/lp/{city}/{service}`. Город берётся из `useActiveCity` (хук уже есть).
 
-- LeadForm и финальный CTA-блок «Нужен срочный выезд?» внизу главной — это форма, не калькулятор.
-- PriceQuiz на `/lp/{город}/{услуга}` — про него речь не шла.
-- Кнопка `UrgentCTA` (плавающая снизу справа) с подменю «Позвонить / MAX / Telegram» — остаётся, ведёт на `tel:`/мессенджеры.
-- Кнопки «Срочный выезд» в hero и подобные — они дают `tel:`, без видимого номера, поэтому остаются как есть.
+В коде город — только из `useActiveCity` (a не из formdata `defaultCity`), чтобы избежать ложных срабатываний на главной/контактах.
+
+## Что меняется в коде
+
+### 1. Новый помощник `src/lib/conversions.ts`
+
+```ts
+import { trackGoal } from "./analytics";
+
+const TRACKED_CITIES = new Set(["simferopol", "sevastopol", "sochi"]);
+type ConversionType = "form" | "messenger" | "phone" | "quiz";
+
+export function trackCityConversion(
+  city: string | undefined,
+  type: ConversionType,
+  params?: Record<string, unknown>,
+) {
+  if (!city || !TRACKED_CITIES.has(city)) return;
+  trackGoal(`conversion_${city}`, { type, ...params });
+  trackGoal(`conversion_${city}_${type}`, params);
+}
+```
+
+### 2. Точки вызова (везде через `useActiveCity`)
+
+| Компонент | Событие | Тип |
+|---|---|---|
+| `LeadForm.tsx` | успешный `sendLeadToTelegram` → `trackGoal("lead_form_submit", …)` | `form` |
+| `MobileQuickLead.tsx` | то же | `form` (хотя компонент сейчас не используется на 3 городах — на будущее) |
+| `PriceQuiz.tsx` | `trackGoal("lp_quiz_complete", …)` | `quiz` |
+| `UrgentCTA.tsx` | клик «Позвонить» / «MAX» / «Telegram» | `phone` / `messenger` |
+| `Header.tsx` | клик по иконке/кнопке «Срочный выезд» (tel:) | `phone` |
+| `Footer.tsx` | клик по городскому номеру (уже есть `trackGoal("lead_phone_click", …)`) | `phone` |
+| `lp.$citySlug.$serviceSlug.tsx` | кнопки «Позвонить» и «WhatsApp» в hero, плюс верхняя tel:-ссылка | `phone` / `messenger` |
+| `cities.$citySlug.tsx` | кликов по мессенджерам нет; конверсии идут через LeadForm в aside | — |
+
+В каждой из этих точек дополнительно к существующему `trackGoal(...)` вызываем `trackCityConversion(activeCity?.slug, type, { source })`. Старые названия событий (`lead_form_submit`, `lead_phone_click` и т. п.) оставляем — они полезны для общего отчёта.
+
+### 3. Кнопки в LP-странице сейчас без аналитики
+
+В `src/routes/lp.$citySlug.$serviceSlug.tsx` кнопки `Позвонить` (`<a href={phoneHref}>`) и `WhatsApp` сейчас не вызывают `trackGoal`. Добавлю `onClick` с `trackGoal("lead_phone_click" / "lead_messenger_click", { source: "lp_hero", city: city.slug })` и одновременно `trackCityConversion(city.slug, "phone" / "messenger", …)`.
+
+### 4. Header tel:-ссылка
+
+Сейчас просто `<a href={cityPhoneHref}>` без аналитики. Добавлю `onClick` → `trackCityConversion(activeCity?.slug, "phone", { source: "header" })` + `trackGoal("lead_phone_click", …)`.
+
+## Что делает пользователь в кабинете Метрики после деплоя
+
+Для каждого из 3 городов завести **одну составную цель**:
+
+1. Метрика → Цели → «Добавить цель» → тип **«Составная»**.
+2. Название: «Конверсия Симферополь» (Севастополь / Сочи).
+3. Шаги — режим «достаточно выполнить любое из условий» (в Метрике это создаётся как одна цель типа «JavaScript-событие» с именем `conversion_simferopol` — она автоматически сработает на любое из под-событий, потому что мы шлём один и тот же reachGoal из всех точек).
+
+То есть фактически в Метрике достаточно создать **одну цель типа «JavaScript-событие»** с идентификатором `conversion_{city}` — она и есть «составная» в смысле «срабатывает на любую конверсию города». Для детализации канала можно создать ещё 4 цели `conversion_{city}_form/messenger/phone/quiz`, но это опционально.
+
+Альтернатива (если хочется именно тип «Составная» в интерфейсе): создать 4 простых цели `conversion_{city}_*` и объединить их в составную с режимом «любой шаг = достижение». Зависит от того, как удобнее в отчётах.
 
 ## Проверка после правок
 
-- Главная (desktop и mobile) — нигде не видно `8 800` или `+7 (800) 555-12-34`; на мобильной нет блока «Рассчитать выезд» под hero.
-- Шапка, подвал, страница `/contacts`, страницы городов `/cities/{slug}` — нет видимого номера, но клик по иконке телефона/WhatsApp по-прежнему открывает звонок/чат.
-- `view-source:` главной и `/llms.txt` — нет строки `+7 (800) 555-12-34` в видимом контенте и в JSON-LD `telephone`.
-- `npm run build` зелёный.
+1. `VITE_YANDEX_METRIKA_ID` установлен в окружении (без него ничего не шлётся — `trackGoal` это no-op).
+2. Открыть `/cities/sochi` → нажать в шапке кнопку «Срочный выезд» → в Метрике (вебвизор + отладчик) должны прилететь `lead_phone_click`, `conversion_sochi`, `conversion_sochi_phone`.
+3. Открыть `/lp/simferopol/obrabotka-uchastkov-ot-kleschey` → отправить форму → должны прийти `lead_form_submit`, `conversion_simferopol`, `conversion_simferopol_form`.
+4. Там же → клик «WhatsApp» в hero → `lead_messenger_click`, `conversion_simferopol`, `conversion_simferopol_messenger`.
+5. На `/` (главной), `/contacts`, `/cities/krasnodar` (не отслеживаемый город) — никакие `conversion_*` не отправляются, только базовые `lead_*`.
+6. `npm run build` — без ошибок.

@@ -4,6 +4,7 @@ import { cities } from "@/data/cities";
 import { SITE_NAME, SITE_EMAIL } from "@/lib/site";
 import { trackGoal } from "@/lib/analytics";
 import { useActiveCity } from "@/lib/useActiveCity";
+import { trackCityConversion } from "@/lib/conversions";
 
 export function Footer() {
   const activeCity = useActiveCity();
@@ -27,7 +28,10 @@ export function Footer() {
             {activeCity?.phoneDisplay && cityPhoneRaw && (
               <a
                 href={`tel:${cityPhoneRaw}`}
-                onClick={() => trackGoal("lead_phone_click", { source: "footer", city: activeCity.slug })}
+                onClick={() => {
+                  trackGoal("lead_phone_click", { source: "footer", city: activeCity.slug });
+                  trackCityConversion(activeCity.slug, "phone", { source: "footer" });
+                }}
                 className="block text-lg font-semibold text-accent"
               >
                 {activeCity.phoneDisplay}
