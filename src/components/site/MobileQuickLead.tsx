@@ -11,6 +11,7 @@ import { services } from "@/data/services";
 import { cn } from "@/lib/utils";
 import { sendLeadToTelegram, checkRateLimit } from "@/lib/telegram";
 import { trackGoal, readUtm } from "@/lib/analytics";
+import { trackCityConversion } from "@/lib/conversions";
 
 const objectTypes = [
   { value: "apartment", label: "Квартира" },
@@ -135,6 +136,7 @@ export function MobileQuickLead() {
         referrer: typeof document !== "undefined" ? document.referrer : "",
       });
       trackGoal("lead_form_submit", { source: "mobile_quick_lead" });
+      trackCityConversion(city, "form", { source: "mobile_quick_lead" });
       setCity(undefined);
       setObjectType(undefined);
       setProblem(undefined);
