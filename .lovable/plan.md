@@ -1,43 +1,20 @@
-## Sitemap для отправки в Яндекс + ссылки на услуги в 3 городах
+# План
 
-### Текущая ситуация
-В проекте **нет sitemap.xml** — ни `public/sitemap.xml`, ни `src/routes/sitemap[.]xml.ts`. Отправлять в Яндекс пока нечего.
+## 1. Калькулятор на главной
 
-### Что сделать
-Создать server-route `src/routes/sitemap[.]xml.ts` с `BASE_URL = "https://sanitarnyeresheniya.ru"`, который генерирует все публичные URL:
+**`src/routes/index.tsx`:**
+- Добавить секцию с `<MobileQuickLead />` сразу после hero-секции (как было раньше — компактный 3-шаговый калькулятор «Рассчитать выезд: город → тип объекта → проблема → телефон»). Светлый фон (`bg-surface`), контейнер с заголовком.
+- Удалить нижнюю секцию «Нужен срочный выезд?» с `<LeadForm />` (последний `<section>` файла) — именно её пользователь видит «внизу экрана».
+- Убрать неиспользуемый импорт `LeadForm`.
 
-- Статика: `/`, `/about`, `/services`, `/cities`, `/prices`, `/contacts`, `/faq`, `/blog`, `/cases`, `/otzyvy`, `/garantii`, `/vyezd`, `/licenzii`, `/oplata`, `/rekvizity`, `/regions`, `/regions/krym`, `/privacy`, `/oferta`, `/soglasie`.
-- По услугам: `/services/{slug}` × 9 услуг.
-- По городам: `/cities/{slug}` × 9 городов.
-- Город × услуга: `/cities/{citySlug}/{serviceSlug}` — по `popularServices` каждого города (как сейчас рендерится в `cities.$citySlug.$serviceSlug.tsx`).
-- Блог и кейсы: `/blog/{slug}`, `/cases/{slug}` из `src/data/blog.ts` и `src/data/cases.ts`.
-- `thank-you` и `lp/*` — пропускаем (служебные/лендинги).
+Компонент `MobileQuickLead` уже существует и не меняется — возвращаем его «в таком же виде, как и был».
 
-В `public/robots.txt` добавить строку:
-```
-Sitemap: https://sanitarnyeresheniya.ru/sitemap.xml
-```
+## 2. Яндекс.Метрика 109349736
 
-### Что получите после публикации
+Метрика уже встроена в `src/routes/__root.tsx` через `VITE_YANDEX_METRIKA_ID` (инициализация с `webvisor`, `clickmap`, `trackLinks`, `accurateTrackBounce`, `ecommerce:"dataLayer"` — соответствует присланному снипету).
 
-**Sitemap:** `https://sanitarnyeresheniya.ru/sitemap.xml` — её и отправите в Яндекс.Вебмастер → «Файлы Sitemap».
+**`.env`:** прописать `VITE_YANDEX_METRIKA_ID=109349736`, чтобы счётчик активировался на сборке. Дополнительный код в `index.html` не нужен — это создало бы дубль счётчика.
 
-**Примеры страниц «город × услуга»** (3 города × 3 услуги = 9 ссылок) — можно отдельно прислать на переобход в «Индексирование → Переобход страниц»:
-
-Краснодар:
-- https://sanitarnyeresheniya.ru/cities/krasnodar/posle-pozhara
-- https://sanitarnyeresheniya.ru/cities/krasnodar/posle-potopa
-- https://sanitarnyeresheniya.ru/cities/krasnodar/udalenie-pleseni
-
-Сочи:
-- https://sanitarnyeresheniya.ru/cities/sochi/posle-pozhara
-- https://sanitarnyeresheniya.ru/cities/sochi/posle-potopa
-- https://sanitarnyeresheniya.ru/cities/sochi/dezinfekciya-posle-smerti
-
-Симферополь:
-- https://sanitarnyeresheniya.ru/cities/simferopol/posle-pozhara
-- https://sanitarnyeresheniya.ru/cities/simferopol/posle-potopa
-- https://sanitarnyeresheniya.ru/cities/simferopol/udalenie-pleseni
-
-### Важно
-После одобрения плана и реализации **нужно нажать Publish/Update** — иначе `/sitemap.xml` не появится на проде.
+## Файлы
+- `src/routes/index.tsx` — добавить секцию с MobileQuickLead вверху, удалить нижнюю с LeadForm.
+- `.env` — задать ID Метрики.
