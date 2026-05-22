@@ -205,8 +205,18 @@ async function render404(browser: Browser, baseUrl: string) {
   const page = await browser.newPage();
   try {
     // Несуществующий путь → SPA отдаст index.html → React покажет NotFoundComponent
-    await page.goto(`${baseUrl}/__nonexistent_404__`, { waitUntil: "networkidle0", timeout: TIMEOUT });
-    await new Promise((r) => setTimeout(r, 300));
+    await page.setRequestInterception(true);
+    page.on("request", (req) => {
+      const url = req.url();
+      if (BLOCKED_HOSTS.some((h) => url.includes(h))) {
+        req.abort().catch(() => {});
+      } else {
+        req.continue().catch(() => {});
+      }
+    });
+    await page.goto(`${baseUrl}/__nonexistent_404__`, { waitUntil: "domcontentloaded", timeout: 60_000 });
+    await page.waitForSelector("main, #root > *", { timeout: 15_000 }).catch(() => {});
+    await new Promise((r) => setTimeout(r, 1500));
     const html = await page.evaluate(() => "<!doctype html>\n" + document.documentElement.outerHTML);
     writeFileSync(join(DIST, "404.html"), html, "utf8");
     console.log(`  ✓ 404 → dist/404.html (${(html.length / 1024).toFixed(1)}kb)`);
