@@ -63,9 +63,17 @@ function cleanStaleHtml(dir: string) {
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const DIST = join(ROOT, "dist");
-const CONCURRENCY = Number(process.env.PRERENDER_CONCURRENCY ?? 4);
+const CONCURRENCY = Number(process.env.PRERENDER_CONCURRENCY ?? 2);
 const WAIT_SELECTOR = process.env.PRERENDER_WAIT_SELECTOR ?? "#main";
-const TIMEOUT = Number(process.env.PRERENDER_TIMEOUT ?? 30_000);
+const TIMEOUT = Number(process.env.PRERENDER_TIMEOUT ?? 60_000);
+
+const BLOCKED_HOSTS = [
+  "mc.yandex.ru",
+  "mc.webvisor.com",
+  "googletagmanager.com",
+  "google-analytics.com",
+  "top-fwz1.mail.ru",
+];
 
 if (process.env.PRERENDER === "0") {
   console.log("[prerender] PRERENDER=0 — пропускаю.");
