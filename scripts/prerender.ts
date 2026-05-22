@@ -155,7 +155,18 @@ async function renderRoute(browser: Browser, baseUrl: string, route: string) {
     if (m.type() === "error") console.error(`  [console.error ${route}]`, m.text());
   });
   try {
-    await page.goto(`${baseUrl}${route}`, { waitUntil: "networkidle0", timeout: TIMEOUT });
+    await page.setRequestInterception(true);
+    page.on("request", (req) => {
+      const url = req.url();
+      if (BLOCKED_HOSTS.some((h) => url.includes(h))) {
+        req.abort().catch(() => {});
+      } else {
+        req.continue().catch(() => {});
+      }
+    });
+    await page.goto(`${baseUrl}${route}`, { waitUntil: "domcontentloaded", timeout: 60_000 });
+    await page.waitForSelector("main, #root > *", { timeout: 15_000 }).catch(() => {});
+    await new Promise((r) => setTimeout(r, 1500));
     const winner = await Promise.race([
       page.waitForSelector(WAIT_SELECTOR, { timeout: TIMEOUT }).then(() => "main" as const),
       page.waitForSelector("[data-error-boundary]", { timeout: TIMEOUT }).then(() => "error" as const),
