@@ -63,9 +63,17 @@ function cleanStaleHtml(dir: string) {
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const DIST = join(ROOT, "dist");
-const CONCURRENCY = Number(process.env.PRERENDER_CONCURRENCY ?? 4);
+const CONCURRENCY = Number(process.env.PRERENDER_CONCURRENCY ?? 2);
 const WAIT_SELECTOR = process.env.PRERENDER_WAIT_SELECTOR ?? "#main";
-const TIMEOUT = Number(process.env.PRERENDER_TIMEOUT ?? 30_000);
+const TIMEOUT = Number(process.env.PRERENDER_TIMEOUT ?? 60_000);
+
+const BLOCKED_HOSTS = [
+  "mc.yandex.ru",
+  "mc.webvisor.com",
+  "googletagmanager.com",
+  "google-analytics.com",
+  "top-fwz1.mail.ru",
+];
 
 if (process.env.PRERENDER === "0") {
   console.log("[prerender] PRERENDER=0 — пропускаю.");
@@ -147,7 +155,18 @@ async function renderRoute(browser: Browser, baseUrl: string, route: string) {
     if (m.type() === "error") console.error(`  [console.error ${route}]`, m.text());
   });
   try {
-    await page.goto(`${baseUrl}${route}`, { waitUntil: "networkidle0", timeout: TIMEOUT });
+    await page.setRequestInterception(true);
+    page.on("request", (req) => {
+      const url = req.url();
+      if (BLOCKED_HOSTS.some((h) => url.includes(h))) {
+        req.abort().catch(() => {});
+      } else {
+        req.continue().catch(() => {});
+      }
+    });
+    await page.goto(`${baseUrl}${route}`, { waitUntil: "domcontentloaded", timeout: 60_000 });
+    await page.waitForSelector("main, #root > *", { timeout: 15_000 }).catch(() => {});
+    await new Promise((r) => setTimeout(r, 1500));
     const winner = await Promise.race([
       page.waitForSelector(WAIT_SELECTOR, { timeout: TIMEOUT }).then(() => "main" as const),
       page.waitForSelector("[data-error-boundary]", { timeout: TIMEOUT }).then(() => "error" as const),
@@ -186,8 +205,18 @@ async function render404(browser: Browser, baseUrl: string) {
   const page = await browser.newPage();
   try {
     // Несуществующий путь → SPA отдаст index.html → React покажет NotFoundComponent
-    await page.goto(`${baseUrl}/__nonexistent_404__`, { waitUntil: "networkidle0", timeout: TIMEOUT });
-    await new Promise((r) => setTimeout(r, 300));
+    await page.setRequestInterception(true);
+    page.on("request", (req) => {
+      const url = req.url();
+      if (BLOCKED_HOSTS.some((h) => url.includes(h))) {
+        req.abort().catch(() => {});
+      } else {
+        req.continue().catch(() => {});
+      }
+    });
+    await page.goto(`${baseUrl}/__nonexistent_404__`, { waitUntil: "domcontentloaded", timeout: 60_000 });
+    await page.waitForSelector("main, #root > *", { timeout: 15_000 }).catch(() => {});
+    await new Promise((r) => setTimeout(r, 1500));
     const html = await page.evaluate(() => "<!doctype html>\n" + document.documentElement.outerHTML);
     writeFileSync(join(DIST, "404.html"), html, "utf8");
     console.log(`  ✓ 404 → dist/404.html (${(html.length / 1024).toFixed(1)}kb)`);
