@@ -118,6 +118,12 @@ function HomePage() {
         </div>
       </section>
 
+      <section className="bg-surface py-12 md:py-16">
+        <div className="container mx-auto max-w-2xl px-4">
+          <MobileQuickLead />
+        </div>
+      </section>
+
 
       <section className="container mx-auto px-4 py-16 md:py-24">
         <div className="flex items-end justify-between gap-4">
