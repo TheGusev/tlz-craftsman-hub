@@ -4,7 +4,7 @@ import { services } from "@/data/services";
 import { cities } from "@/data/cities";
 import { cases } from "@/data/cases";
 import { generalFaq } from "@/data/faq";
-import { LeadForm } from "@/components/site/LeadForm";
+import { MobileQuickLead } from "@/components/site/MobileQuickLead";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -259,16 +259,6 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 py-16 md:py-24">
-        <div className="grid gap-10 rounded-3xl border border-border bg-surface p-8 text-foreground md:grid-cols-2 md:p-14">
-          <div>
-            <h2 className="font-display text-3xl font-bold md:text-4xl">Нужен срочный выезд?</h2>
-            <p className="mt-4 text-muted-foreground">Звоните в любое время — дежурная бригада на линии 24/7. Перезвоним за 15 минут после заявки.</p>
-            
-          </div>
-          <LeadForm />
-        </div>
-      </section>
     </>
   );
 }
