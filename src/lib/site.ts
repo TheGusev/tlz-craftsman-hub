@@ -1,6 +1,9 @@
 export const SITE_URL = "https://sanitarnyeresheniya.ru";
 export const SITE_NAME = "Санитарные Решения РФ";
-export const SITE_PHONE = "";
-export const SITE_PHONE_RAW = "+78005551234";
+export const SITE_PHONE = "+7 961 911-99-19";
+export const SITE_PHONE_RAW = "+79619119919";
 export const SITE_EMAIL = "info@sanresheniya.ru";
-export const SITE_WHATSAPP = "+78005551234";
+export const SITE_WHATSAPP = "+79619119919";
+export const SITE_WHATSAPP_URL = "https://wa.me/79619119919";
+export const SITE_TELEGRAM_URL = "https://t.me/+79619119919";
+export const SITE_MAX_URL = "https://max.ru/+79619119919";
