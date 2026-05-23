@@ -11,6 +11,7 @@ import { getServiceImage } from "@/lib/serviceImages";
 import { PriceQuiz } from "@/components/site/PriceQuiz";
 import { trackGoal } from "@/lib/analytics";
 import { trackCityConversion } from "@/lib/conversions";
+import { SITE_PHONE, SITE_PHONE_RAW } from "@/lib/site";
 
 type LpSearch = {
   utm_source?: string;
@@ -78,9 +79,9 @@ function LandingPage() {
     });
   }, [city.slug, service.slug, search]);
 
-  const phoneRaw = (city.phone || "+78005551234").replace(/[^+\d]/g, "");
+  const phoneRaw = (city.phone || SITE_PHONE_RAW).replace(/[^+\d]/g, "");
   const phoneHref = `tel:${phoneRaw}`;
-  const phoneDisplay = city.phoneDisplay ?? "";
+  const phoneDisplay = city.phoneDisplay ?? SITE_PHONE;
   const whatsappHref = `https://wa.me/${city.whatsapp.replace(/[^\d]/g, "")}`;
 
   return (

@@ -48,8 +48,8 @@ export const cities: City[] = [
     localContext:
       "В Краснодаре высокая плотность многоквартирной застройки и частые аварии в новых ЖК — потопы от прорывов труб, пожары в новостройках. Влажный климат провоцирует плесень в подвалах и санузлах.",
     popularServices: ["posle-pozhara", "posle-potopa", "udalenie-pleseni", "dezinfekciya-posle-smerti"],
-    phone: "",
-    whatsapp: "+78005551234",
+    phone: "+79619119919",
+    whatsapp: "+79619119919",
   },
   {
     slug: "sochi",
@@ -77,7 +77,7 @@ export const cities: City[] = [
     popularServices: ["posle-potopa", "udalenie-pleseni", "fumigaciya"],
     phone: "+78622305690",
     phoneDisplay: "+7 (862) 230-56-90",
-    whatsapp: "+78005551234",
+    whatsapp: "+79619119919",
   },
   {
     slug: "rostov-na-donu",
@@ -105,8 +105,8 @@ export const cities: City[] = [
     localContext:
       "Ростов — крупный логистический хаб. Много обращений по фумигации складов и зернохранилищ, а также по аварийным выездам после пожаров в частном секторе и многоквартирных домах.",
     popularServices: ["posle-pozhara", "fumigaciya", "dezinfekciya-posle-smerti"],
-    phone: "",
-    whatsapp: "+78005551234",
+    phone: "+79619119919",
+    whatsapp: "+79619119919",
   },
   {
     slug: "simferopol",
@@ -133,7 +133,7 @@ export const cities: City[] = [
     popularServices: ["dezinfekciya-posle-smerti", "udalenie-pleseni"],
     phone: "+73652292195",
     phoneDisplay: "+7 (3652) 29-21-95",
-    whatsapp: "+78005551234",
+    whatsapp: "+79619119919",
   },
   {
     slug: "sevastopol",
@@ -159,7 +159,7 @@ export const cities: City[] = [
     popularServices: ["posle-pozhara", "dezinfekciya-posle-smerti"],
     phone: "+78692779165",
     phoneDisplay: "+7 (869) 277-91-65",
-    whatsapp: "+78005551234",
+    whatsapp: "+79619119919",
   },
   {
     slug: "yalta",
@@ -184,8 +184,8 @@ export const cities: City[] = [
     localContext:
       "Влажный климат ЮБК и высокая плотность гостиниц делают плесень и санобработку приоритетной задачей. В межсезонье — массовые заявки от санаторно-курортного сектора.",
     popularServices: ["udalenie-pleseni", "dezinfekciya-posle-smerti"],
-    phone: "",
-    whatsapp: "+78005551234",
+    phone: "+79619119919",
+    whatsapp: "+79619119919",
   },
   {
     slug: "evpatoriya",
@@ -208,8 +208,8 @@ export const cities: City[] = [
     localContext:
       "Курортный город с большой долей санаторного жилфонда. Ключевые задачи — дезинфекция в межсезонье и санитарная обработка после ЧС.",
     popularServices: ["dezinfekciya-posle-smerti", "udalenie-pleseni"],
-    phone: "",
-    whatsapp: "+78005551234",
+    phone: "+79619119919",
+    whatsapp: "+79619119919",
   },
   {
     slug: "kerch",
@@ -232,8 +232,8 @@ export const cities: City[] = [
     localContext:
       "Портовый и промышленный город с большим объёмом коммерческой санобработки. Регулярные заявки на фумигацию складов и дезинфекцию объектов.",
     popularServices: ["fumigaciya", "dezinfekciya-posle-smerti"],
-    phone: "",
-    whatsapp: "+78005551234",
+    phone: "+79619119919",
+    whatsapp: "+79619119919",
   },
   {
     slug: "anapa",
@@ -248,8 +248,8 @@ export const cities: City[] = [
     arrivalTime: "1–3 часа",
     localContext: "Курортный город с высокой долей гостиничного фонда. Пиковая нагрузка — май–октябрь. Частые обращения по дезинсекции и дератизации общепита.",
     popularServices: ["dezinsekciya", "deratizaciya", "udalenie-pleseni", "obrabotka-uchastkov-ot-kleschey"],
-    phone: "",
-    whatsapp: "+78005551234",
+    phone: "+79619119919",
+    whatsapp: "+79619119919",
   },
   {
     slug: "gelendzhik",
@@ -264,8 +264,8 @@ export const cities: City[] = [
     arrivalTime: "1–3 часа",
     localContext: "Курортный город с высокой влажностью. Плесень и дезинсекция — основной поток заявок.",
     popularServices: ["udalenie-pleseni", "dezinsekciya", "obrabotka-uchastkov-ot-kleschey"],
-    phone: "",
-    whatsapp: "+78005551234",
+    phone: "+79619119919",
+    whatsapp: "+79619119919",
   },
   {
     slug: "novorossiysk",
@@ -280,8 +280,8 @@ export const cities: City[] = [
     arrivalTime: "1–2 часа",
     localContext: "Портовый город с большим объёмом складской инфраструктуры. Высокий спрос на дератизацию и фумигацию.",
     popularServices: ["deratizaciya", "fumigaciya", "udalenie-pleseni", "posle-pozhara"],
-    phone: "",
-    whatsapp: "+78005551234",
+    phone: "+79619119919",
+    whatsapp: "+79619119919",
   },
   {
     slug: "feodosiya",
@@ -296,8 +296,8 @@ export const cities: City[] = [
     arrivalTime: "2–3 часа",
     localContext: "Курортный город восточного Крыма. Активный сезон — июнь–сентябрь.",
     popularServices: ["dezinsekciya", "udalenie-pleseni", "obrabotka-uchastkov-ot-kleschey"],
-    phone: "",
-    whatsapp: "+78005551234",
+    phone: "+79619119919",
+    whatsapp: "+79619119919",
   },
   {
     slug: "alushta",
@@ -312,8 +312,8 @@ export const cities: City[] = [
     arrivalTime: "2–4 часа",
     localContext: "Курортный город ЮБК с высокой влажностью. Плесень — приоритет.",
     popularServices: ["udalenie-pleseni", "dezinsekciya", "dezinfekciya-pomeshcheniy"],
-    phone: "",
-    whatsapp: "+78005551234",
+    phone: "+79619119919",
+    whatsapp: "+79619119919",
   },
   {
     slug: "sudak",
@@ -328,8 +328,8 @@ export const cities: City[] = [
     arrivalTime: "3–5 часов",
     localContext: "Курортный город с горным рельефом. Активный сезон — лето.",
     popularServices: ["udalenie-pleseni", "dezinsekciya", "obrabotka-uchastkov-ot-kleschey"],
-    phone: "",
-    whatsapp: "+78005551234",
+    phone: "+79619119919",
+    whatsapp: "+79619119919",
   },
   {
     slug: "saki",
@@ -344,8 +344,8 @@ export const cities: City[] = [
     arrivalTime: "2–4 часа",
     localContext: "Город-курорт с большим объёмом санаторного фонда. Высокий спрос на дезинфекцию.",
     popularServices: ["dezinfekciya-pomeshcheniy", "udalenie-pleseni", "dezinsekciya"],
-    phone: "",
-    whatsapp: "+78005551234",
+    phone: "+79619119919",
+    whatsapp: "+79619119919",
   },
 ];
 
