@@ -3,7 +3,7 @@ import { Phone, Send, User, X } from "lucide-react";
 import { trackGoal } from "@/lib/analytics";
 import { trackCityConversion, type ConversionType } from "@/lib/conversions";
 import { useActiveCity } from "@/lib/useActiveCity";
-import { SITE_PHONE_RAW } from "@/lib/site";
+import { SITE_PHONE_RAW, SITE_TELEGRAM_URL, SITE_MAX_URL } from "@/lib/site";
 
 type Action = {
   label: string;
@@ -17,8 +17,8 @@ type Action = {
 
 const actions: Action[] = [
   { label: "Позвонить", href: `tel:${SITE_PHONE_RAW}`, icon: Phone, bg: "bg-[#25D366] text-white", goal: "lead_phone_click", conversionType: "phone" },
-  { label: "MAX", href: "https://max.ru/", icon: User, bg: "bg-sky-500 text-white", external: true, goal: "lead_max_click", conversionType: "messenger" },
-  { label: "Telegram", href: "https://t.me/", icon: Send, bg: "bg-sky-500 text-white", external: true, goal: "lead_telegram_click", conversionType: "messenger" },
+  { label: "MAX", href: SITE_MAX_URL, icon: User, bg: "bg-sky-500 text-white", external: true, goal: "lead_max_click", conversionType: "messenger" },
+  { label: "Telegram", href: SITE_TELEGRAM_URL, icon: Send, bg: "bg-sky-500 text-white", external: true, goal: "lead_telegram_click", conversionType: "messenger" },
 ];
 
 export function UrgentCTA() {

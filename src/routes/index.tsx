@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Phone, Clock, ShieldCheck, MapPin, ArrowRight } from "lucide-react";
+import { SITE_PHONE, SITE_PHONE_RAW } from "@/lib/site";
+import { trackGoal } from "@/lib/analytics";
 import { getServiceImage } from "@/lib/serviceImages";
 import { getCaseGallery } from "@/lib/caseGallery";
 
@@ -95,7 +97,12 @@ function HomePage() {
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Button asChild size="lg" className="bg-[linear-gradient(110deg,var(--urgent),var(--accent),var(--urgent))] bg-[length:200%_auto] animate-shimmer text-urgent-foreground shadow-lg shadow-urgent/40 hover:opacity-90">
-                <a href="tel:+78005551234"><Phone className="mr-2 h-4 w-4" />Срочный выезд</a>
+                <a
+                  href={`tel:${SITE_PHONE_RAW}`}
+                  onClick={() => trackGoal("lead_phone_click", { source: "hero_urgent" })}
+                >
+                  <Phone className="mr-2 h-4 w-4" />Срочный выезд {SITE_PHONE}
+                </a>
               </Button>
               <Button asChild size="lg" variant="outline" className="border-primary-foreground/40 bg-background/10 text-primary-foreground hover:bg-primary-foreground/15 hover:text-primary-foreground">
                 <Link to="/services">Все услуги</Link>

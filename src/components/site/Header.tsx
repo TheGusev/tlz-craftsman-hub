@@ -5,6 +5,7 @@ import { services } from "@/data/services";
 import { cities } from "@/data/cities";
 import { useActiveCity } from "@/lib/useActiveCity";
 import { trackGoal } from "@/lib/analytics";
+import { SITE_PHONE, SITE_PHONE_RAW } from "@/lib/site";
 import { trackCityConversion } from "@/lib/conversions";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,8 +30,8 @@ export function Header() {
   const cityPhoneRaw = activeCity?.phone
     ? activeCity.phone.replace(/[^+\d]/g, "")
     : "";
-  const cityPhoneHref = cityPhoneRaw ? `tel:${cityPhoneRaw}` : "tel:+78005551234";
-  const cityPhoneDisplay = activeCity?.phoneDisplay;
+  const cityPhoneHref = cityPhoneRaw ? `tel:${cityPhoneRaw}` : `tel:${SITE_PHONE_RAW}`;
+  const cityPhoneDisplay = activeCity?.phoneDisplay ?? SITE_PHONE;
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85">
