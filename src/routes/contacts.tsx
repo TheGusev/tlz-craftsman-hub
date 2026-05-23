@@ -3,7 +3,8 @@ import { cities } from "@/data/cities";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Card } from "@/components/ui/card";
-import { Phone, MessageCircle, Mail, MapPin } from "lucide-react";
+import { Phone, MessageCircle, Mail, MapPin, Send, User } from "lucide-react";
+import { SITE_PHONE, SITE_PHONE_RAW, SITE_WHATSAPP_URL, SITE_TELEGRAM_URL, SITE_MAX_URL } from "@/lib/site";
 import {
   buildGraphHead,
   buildWebPageSchema,
@@ -49,20 +50,38 @@ function ContactsPage() {
       <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_1fr]">
         <div className="space-y-4">
           <Card className="p-6">
-            <a href="tel:+78005551234" aria-label="Позвонить" className="flex items-center gap-3">
+            <a href={`tel:${SITE_PHONE_RAW}`} aria-label="Позвонить" className="flex items-center gap-3">
               <Phone className="h-6 w-6 text-accent" />
               <div>
-                <div className="text-sm text-muted-foreground">Единый телефон</div>
-                <div className="text-xs text-muted-foreground">Круглосуточно, без выходных</div>
+                <div className="font-display text-xl font-bold">{SITE_PHONE}</div>
+                <div className="text-sm text-muted-foreground">Единый телефон · круглосуточно</div>
               </div>
             </a>
           </Card>
           <Card className="p-6">
-            <a href="https://wa.me/78005551234" aria-label="Написать в WhatsApp" className="flex items-center gap-3">
+            <a href={SITE_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" aria-label="Написать в WhatsApp" className="flex items-center gap-3">
               <MessageCircle className="h-6 w-6 text-accent" />
               <div>
-                <div className="text-sm text-muted-foreground">WhatsApp</div>
-                <div className="text-xs text-muted-foreground">Можно отправить фото и видео объекта</div>
+                <div className="font-display text-lg font-bold">WhatsApp</div>
+                <div className="text-xs text-muted-foreground">{SITE_PHONE} — можно отправить фото и видео</div>
+              </div>
+            </a>
+          </Card>
+          <Card className="p-6">
+            <a href={SITE_TELEGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Написать в Telegram" className="flex items-center gap-3">
+              <Send className="h-6 w-6 text-accent" />
+              <div>
+                <div className="font-display text-lg font-bold">Telegram</div>
+                <div className="text-xs text-muted-foreground">{SITE_PHONE}</div>
+              </div>
+            </a>
+          </Card>
+          <Card className="p-6">
+            <a href={SITE_MAX_URL} target="_blank" rel="noopener noreferrer" aria-label="Написать в MAX" className="flex items-center gap-3">
+              <User className="h-6 w-6 text-accent" />
+              <div>
+                <div className="font-display text-lg font-bold">MAX</div>
+                <div className="text-xs text-muted-foreground">{SITE_PHONE}</div>
               </div>
             </a>
           </Card>

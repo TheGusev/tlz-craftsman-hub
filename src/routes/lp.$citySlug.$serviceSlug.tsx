@@ -11,6 +11,7 @@ import { getServiceImage } from "@/lib/serviceImages";
 import { PriceQuiz } from "@/components/site/PriceQuiz";
 import { trackGoal } from "@/lib/analytics";
 import { trackCityConversion } from "@/lib/conversions";
+import { SITE_PHONE, SITE_PHONE_RAW } from "@/lib/site";
 
 type LpSearch = {
   utm_source?: string;
