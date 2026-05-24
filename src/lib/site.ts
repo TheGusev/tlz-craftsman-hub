@@ -5,5 +5,6 @@ export const SITE_PHONE_RAW = "+79619119919";
 export const SITE_EMAIL = "info@sanresheniya.ru";
 export const SITE_WHATSAPP = "+79619119919";
 export const SITE_WHATSAPP_URL = "https://wa.me/79619119919";
-export const SITE_TELEGRAM_URL = "https://t.me/+79619119919";
+export const SITE_TELEGRAM_USERNAME = "@expert_dendrologist";
+export const SITE_TELEGRAM_URL = "https://t.me/expert_dendrologist";
 export const SITE_MAX_URL = "https://max.ru/+79619119919";
