@@ -4,7 +4,7 @@ import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Card } from "@/components/ui/card";
 import { Phone, MessageCircle, Mail, MapPin, Send, User } from "lucide-react";
-import { SITE_PHONE, SITE_PHONE_RAW, SITE_WHATSAPP_URL, SITE_TELEGRAM_URL, SITE_MAX_URL } from "@/lib/site";
+import { SITE_PHONE, SITE_PHONE_RAW, SITE_WHATSAPP_URL, SITE_TELEGRAM_URL, SITE_TELEGRAM_USERNAME, SITE_MAX_URL } from "@/lib/site";
 import {
   buildGraphHead,
   buildWebPageSchema,
