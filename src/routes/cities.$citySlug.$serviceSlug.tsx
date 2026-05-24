@@ -139,7 +139,7 @@ function ServiceInCityPage() {
       {city.phone && (
         <a
           href={`tel:${city.phone}`}
-          onClick={() => trackCityConversion(city.slug, "phone", { service: service.slug, place: "service_in_city_hero" })}
+          onClick={() => trackCityConversion(city.slug, service.slug, "phone", { place: "service_in_city_hero" })}
           className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-3 font-semibold text-accent-foreground shadow-elegant transition hover:opacity-90"
         >
           <Phone className="h-5 w-5" />
@@ -151,7 +151,7 @@ function ServiceInCityPage() {
           href={`https://wa.me/${city.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`Здравствуйте! Нужна услуга «${service.shortName}» ${city.nameLocative}.`)}`}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() => trackCityConversion(city.slug, "messenger", { service: service.slug, channel: "whatsapp", place: "service_in_city_hero" })}
+          onClick={() => trackCityConversion(city.slug, service.slug, "messenger", { channel: "whatsapp", place: "service_in_city_hero" })}
           className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/30 bg-primary-foreground/10 px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary-foreground/20"
         >
           <MessageCircle className="h-5 w-5" />

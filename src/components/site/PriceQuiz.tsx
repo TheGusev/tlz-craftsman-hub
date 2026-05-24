@@ -72,8 +72,7 @@ export function PriceQuiz({
         urgency: u,
         estimate: value,
       });
-      trackCityConversion(cityName, "quiz", {
-        service: serviceName,
+      trackCityConversion(cityName, serviceName, "quiz", {
         estimate: value,
       });
       onFinish?.(value);
