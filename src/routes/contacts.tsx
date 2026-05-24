@@ -72,7 +72,7 @@ function ContactsPage() {
               <Send className="h-6 w-6 text-accent" />
               <div>
                 <div className="font-display text-lg font-bold">Telegram</div>
-                <div className="text-xs text-muted-foreground">{SITE_PHONE}</div>
+                <div className="text-xs text-muted-foreground">{SITE_TELEGRAM_USERNAME}</div>
               </div>
             </a>
           </Card>
