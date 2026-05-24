@@ -1,41 +1,14 @@
-## Что меняем
+## Заменить ссылки Telegram на username
 
-Делаем номер `+7 961 911-99-19` единым контактом сайта: звонок, WhatsApp, Telegram, MAX, кнопка «Срочный вызов» на главной.
+Используем `https://t.me/expert_dendrologist` вместо ссылки по номеру.
 
-Формат:
-- raw для tel/wa: `+79619119919`
-- отображаемый: `+7 961 911-99-19`
+**`src/lib/site.ts`:**
+- `SITE_TELEGRAM_URL = "https://t.me/expert_dendrologist"`
+- `SITE_TELEGRAM_USERNAME = "@expert_dendrologist"` (для отображения).
 
-## Файлы и правки
+**`src/routes/contacts.tsx`:**
+- В карточке Telegram заменить подпись с `{SITE_PHONE}` на `{SITE_TELEGRAM_USERNAME}`.
 
-1. **`src/lib/site.ts`** — задать реальные значения:
-   - `SITE_PHONE = "+7 961 911-99-19"`
-   - `SITE_PHONE_RAW = "+79619119919"`
-   - `SITE_WHATSAPP = "+79619119919"`
-   - Добавить `SITE_TELEGRAM = "https://t.me/+79619119919"` и `SITE_MAX = "https://max.ru/+79619119919"` (открытие чата по номеру).
+Остальные использования (`UrgentCTA`) уже берут `SITE_TELEGRAM_URL` — автоматически подхватят новый линк.
 
-2. **`src/components/site/UrgentCTA.tsx`** — заменить заглушки `https://max.ru/` и `https://t.me/` на `SITE_MAX` и `SITE_TELEGRAM` (импорт из `@/lib/site`). «Позвонить» уже берёт `SITE_PHONE_RAW`.
-
-3. **`src/routes/index.tsx`** (стр. 98) — кнопка «Срочный выезд» в hero: заменить `tel:+78005551234` на `tel:${SITE_PHONE_RAW}`, добавить трекинг `trackGoal("lead_phone_click", { source: "hero_urgent" })` как в Header.
-
-4. **`src/routes/contacts.tsx`** (стр. 52, 61) — `tel:+78005551234` → `tel:${SITE_PHONE_RAW}`, `wa.me/78005551234` → `wa.me/79619119919`, отображать `SITE_PHONE`. Добавить строки Telegram и MAX со ссылками `SITE_TELEGRAM` / `SITE_MAX`.
-
-5. **`src/components/site/Header.tsx`** (стр. 32) — фолбэк `tel:+78005551234` → `tel:${SITE_PHONE_RAW}`.
-
-6. **`src/routes/lp.$citySlug.$serviceSlug.tsx`** (стр. 81) — фолбэк `+78005551234` → `SITE_PHONE_RAW`.
-
-7. **`src/data/cities.ts`** — у всех 15 городов поле `whatsapp: "+78005551234"` → `"+79619119919"`. Поле `phone` оставляем как есть (если у города уже свой реальный номер) — иначе тоже подставим общий. Проверю при правке: где значение совпадает с дефолтом-заглушкой `+78005551234`, заменю на новый общий номер; где номер уникальный городской — оставлю.
-
-## После правки
-
-`SITE_PHONE` станет непустым → автоматически:
-- появится в шапке (Header показывает `cityPhoneDisplay` или общий);
-- в `jsonld.ts` подставится `telephone` в Organization / LocalBusiness schema;
-- в `rekvizity.tsx` отобразится в реквизитах;
-- `HeroCTA` покажет номер рядом с кнопками.
-
-Скоупом: только подмена номера и линков. Никакой бизнес-логики, форм и стилей не трогаем.
-
-## Открытый вопрос
-
-Для **Telegram** и **MAX** ссылки по номеру (`t.me/+7...`, `max.ru/+7...`) работают как «найти контакт по телефону» — пользователь должен быть зарегистрирован в этих мессенджерах под этим номером. Если есть **username** аккаунтов в TG и MAX — дайте, поставлю их вместо ссылок по номеру (это надёжнее).
+Для **MAX** username не дан — оставляю ссылку по номеру `https://max.ru/+79619119919`. Если есть отдельный username для MAX — пришлите, заменю.
