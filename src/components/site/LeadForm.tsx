@@ -75,9 +75,8 @@ export function LeadForm({
         referrer: typeof document !== "undefined" ? document.referrer : "",
       });
       trackGoal("lead_form_submit", { source, service: service ?? null });
-      trackCityConversion(activeCity?.slug ?? defaultCity ?? cityVal, "form", {
+      trackCityConversion(activeCity?.slug ?? defaultCity ?? cityVal, service, "form", {
         source,
-        service: service ?? null,
       });
       (e.target as HTMLFormElement).reset();
       navigate({ to: "/thank-you" });

@@ -136,7 +136,7 @@ export function MobileQuickLead() {
         referrer: typeof document !== "undefined" ? document.referrer : "",
       });
       trackGoal("lead_form_submit", { source: "mobile_quick_lead" });
-      trackCityConversion(city, "form", { source: "mobile_quick_lead" });
+      trackCityConversion(city, problem, "form", { source: "mobile_quick_lead" });
       setCity(undefined);
       setObjectType(undefined);
       setProblem(undefined);

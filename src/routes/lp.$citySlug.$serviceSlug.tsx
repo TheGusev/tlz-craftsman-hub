@@ -96,7 +96,7 @@ function LandingPage() {
             aria-label="Позвонить"
             onClick={() => {
               trackGoal("lead_phone_click", { source: "lp_header", city: city.slug });
-              trackCityConversion(city.slug, "phone", { source: "lp_header" });
+              trackCityConversion(city.slug, service.slug, "phone", { source: "lp_header" });
             }}
           >
             {phoneDisplay || <Phone className="h-4 w-4" />}
@@ -131,7 +131,7 @@ function LandingPage() {
                   href={phoneHref}
                   onClick={() => {
                     trackGoal("lead_phone_click", { source: "lp_hero", city: city.slug });
-                    trackCityConversion(city.slug, "phone", { source: "lp_hero" });
+                    trackCityConversion(city.slug, service.slug, "phone", { source: "lp_hero" });
                   }}
                 >
                   <Phone className="mr-2 h-4 w-4" />
@@ -145,7 +145,7 @@ function LandingPage() {
                   rel="noopener noreferrer"
                   onClick={() => {
                     trackGoal("lead_messenger_click", { source: "lp_hero", channel: "whatsapp", city: city.slug });
-                    trackCityConversion(city.slug, "messenger", { source: "lp_hero", channel: "whatsapp" });
+                    trackCityConversion(city.slug, service.slug, "messenger", { source: "lp_hero", channel: "whatsapp" });
                   }}
                 >
                   <MessageCircle className="mr-2 h-4 w-4" />
