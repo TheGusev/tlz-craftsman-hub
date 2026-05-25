@@ -1,39 +1,61 @@
 ## Цель
 
-Заменить одну составную цель `conversion_{city}` на 9 целей вида `conversion_{city}_{service}` для:
-- городов: `simferopol`, `sevastopol`, `sochi`
-- услуг: `ochistka-uchastkov`, `unichtozhenie-tarakanov`, `posle-pozhara`
+Перевести отправку заявок с прямого вызова `api.telegram.org` из браузера на PHP-прокси `/send.php`, который будет лежать рядом с собранным фронтом на Beget. Это скроет токен бота из бандла.
 
-## Изменения
+## Контекст
 
-### `src/lib/conversions.ts`
-- Добавить `TRACKED_SERVICES = new Set(["ochistka-uchastkov", "unichtozhenie-tarakanov", "posle-pozhara"])`.
-- Расширить сигнатуру: `trackCityConversion(city, type, params?)` → `trackCityConversion(city, service, type, params?)`.
-- Логика: если `city` не в `TRACKED_CITIES` или `service` не в `TRACKED_SERVICES` — ничего не шлём.
-- Иначе отправляем одну цель: `conversion_{city}_{service}` (тип канала и прочее идут в params).
-- Старые `conversion_{city}` и `conversion_{city}_{type}` удаляем.
+- Проект на TanStack Start, собирается в статику и выгружается на Beget рядом с `send.php`.
+- Вся отправка сейчас инкапсулирована в `src/lib/telegram.ts` и используется из двух форм: `src/components/site/LeadForm.tsx` и `src/components/site/MobileQuickLead.tsx`. Других форм с отправкой в Telegram в проекте нет (проверено `rg`).
+- Контактный телефон для сообщений об ошибке: **+7 961 911 9919**.
 
-### Обновить вызовы (передать `service`)
-- `src/routes/cities.$citySlug.$serviceSlug.tsx` — `service.slug` уже есть.
-- `src/routes/lp.$citySlug.$serviceSlug.tsx` — взять `service.slug` (уже в скоупе).
-- `src/components/site/PriceQuiz.tsx` — пробросить `service` (квиз привязан к LP-странице, проверю и подставлю).
-- `src/components/site/UrgentCTA.tsx` — компонент общий: вызовы будут no-op (услуга неизвестна), убираем там `trackCityConversion`, оставляем только `trackGoal`.
-- `src/components/site/LeadForm.tsx` — передаёт `service` пропсом; передавать его в conversion.
-- `src/components/site/Header.tsx`, `Footer.tsx`, `MobileQuickLead.tsx` — услуги нет → убрать вызов `trackCityConversion` (по решению «Не считать»). Оставить обычный `trackGoal`.
+## Что делаем
 
-## Что нужно сделать в Метрике (вручную, вне кода)
-Создать 9 составных целей: для каждой пары `{city} × {service}` — JS-событие `conversion_{city}_{service}`. Названия:
+### 1. `public/send.php` (новый файл)
+Файл из ТЗ один-в-один. Файлы из `public/` копируются в корень билда, на Beget он окажется по `/send.php`. PHP-плейсхолдеры `PASTE_TOKEN_HERE` / `PASTE_CHAT_ID_HERE` пользователь заполняет вручную после выгрузки (значения уже есть в текущем `.env`: токен `8273064302:AAF4...`, чат `-5240648574`). В плане их не подставляем, чтобы не коммитить секрет — оставим короткий комментарий в начале файла «впишите токен и chat_id».
 
-```
-conversion_simferopol_ochistka-uchastkov
-conversion_simferopol_unichtozhenie-tarakanov
-conversion_simferopol_posle-pozhara
-conversion_sevastopol_ochistka-uchastkov
-conversion_sevastopol_unichtozhenie-tarakanov
-conversion_sevastopol_posle-pozhara
-conversion_sochi_ochistka-uchastkov
-conversion_sochi_unichtozhenie-tarakanov
-conversion_sochi_posle-pozhara
-```
+### 2. `src/lib/telegram.ts` — переписать
+- Убрать чтение `VITE_TG_BOT_TOKEN` / `VITE_TG_CHAT_ID` и любой вызов `api.telegram.org`.
+- `sendLeadToTelegram(payload)` теперь делает:
+  ```ts
+  await fetch('/send.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      phone, name, city, objectType, problem, service,
+      urgency, comment,
+      formName: payload.source,
+      page: typeof window !== 'undefined' ? window.location.href : '',
+    }),
+  });
+  ```
+- Сохранить текущий `checkRateLimit()` (30 сек, localStorage) — он уже работает.
+- Бросать ошибку, если `res.ok === false` или `json.ok === false`.
 
-Старую составную `conversion_{city}` можно архивировать.
+### 3. Тексты в формах
+В `LeadForm.tsx` и `MobileQuickLead.tsx` сейчас при успехе делается `navigate({ to: '/thank-you' })`. По ТЗ нужно показать toast вместо/перед редиректом:
+- успех: `toast.success("Заявка отправлена! Мы перезвоним в течение 5 минут.")` — оставляем редирект на `/thank-you` (страница уже есть и используется в воронке/целях Метрики), просто добавляем toast перед `navigate`.
+- ошибка: заменить текущий `toast.error("Не удалось отправить. Позвоните нам напрямую.")` на `toast.error("Ошибка отправки. Позвоните: +7 961 911 9919")`.
+
+### 4. Чистка
+- `.env` и `.env.example`: удалить `VITE_TG_BOT_TOKEN` и `VITE_TG_CHAT_ID`, обновить комментарий (сейчас он уже намекает на серверный роут — заменим на «отправка идёт через PHP-прокси `/send.php` на Beget»).
+- `supabase.functions.invoke` в проекте не используется (проверено) — удалять нечего.
+- Серверный роут `src/routes/api/public/lead.ts`, упомянутый в `.env.example`, физически не существует — удалять нечего.
+
+## Что НЕ трогаем
+
+- Цели Яндекс.Метрики и `trackCityConversion` (9 составных целей из прошлой итерации) — формы по-прежнему вызывают их после успешной отправки.
+- Honeypot-поле `website`, rate-limit, редирект на `/thank-you`.
+- Все остальные компоненты, CTA и роуты.
+
+## Технические детали
+
+- На Lovable preview (Cloudflare Workers) `/send.php` отдастся как 404/текст — отправка заработает только после выгрузки сборки на Beget. Это ожидаемо, форма покажет toast с ошибкой и телефоном.
+- Никаких новых npm-зависимостей.
+
+## Файлы
+
+- `public/send.php` — создать
+- `src/lib/telegram.ts` — переписать
+- `src/components/site/LeadForm.tsx` — поменять текст success/error toast
+- `src/components/site/MobileQuickLead.tsx` — поменять текст error toast, добавить success toast
+- `.env`, `.env.example` — убрать `VITE_TG_*`
