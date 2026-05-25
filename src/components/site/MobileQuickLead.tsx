@@ -143,10 +143,11 @@ export function MobileQuickLead() {
       setPhone("");
       setAgree(false);
       setOpenStep(1);
+      toast.success("Заявка отправлена! Мы перезвоним в течение 5 минут.");
       navigate({ to: "/thank-you" });
     } catch (err) {
       console.error(err);
-      toast.error("Не удалось отправить. Позвоните нам напрямую.");
+      toast.error("Ошибка отправки. Позвоните: +7 961 911 9919");
     } finally {
       setLoading(false);
     }
