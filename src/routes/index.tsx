@@ -101,7 +101,7 @@ function HomePage() {
                   href={`tel:${SITE_PHONE_RAW}`}
                   onClick={() => trackGoal("lead_phone_click", { source: "hero_urgent" })}
                 >
-                  <Phone className="mr-2 h-4 w-4" />Срочный выезд {SITE_PHONE}
+                  <Phone className="mr-2 h-4 w-4" />Срочный выезд
                 </a>
               </Button>
               <Button asChild size="lg" variant="outline" className="border-primary-foreground/40 bg-background/10 text-primary-foreground hover:bg-primary-foreground/15 hover:text-primary-foreground">
