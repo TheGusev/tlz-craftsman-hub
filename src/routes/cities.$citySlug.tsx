@@ -179,10 +179,12 @@ function CityPage() {
               {cityLinks.map((sc) => {
                 const s = getService(sc.serviceSlug);
                 if (!s) return null;
+                const price = getCityServicePrice(city.slug, s);
                 return (
                   <Link key={sc.serviceSlug} to="/cities/$citySlug/$serviceSlug" params={{ citySlug: city.slug, serviceSlug: sc.serviceSlug }} className="rounded-xl border border-border bg-card p-4 hover:border-accent">
                     <div className="font-display text-sm font-bold">{s.shortName}</div>
                     <div className="mt-1 text-xs text-muted-foreground">{city.nameLocative}</div>
+                    {price && <div className="mt-2 text-sm font-semibold text-accent">{formatPriceFrom(price)}</div>}
                   </Link>
                 );
               })}
