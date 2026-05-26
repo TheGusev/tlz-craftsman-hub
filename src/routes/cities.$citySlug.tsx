@@ -114,12 +114,17 @@ function CityPage() {
             <h2 className="font-display text-2xl font-bold">Популярные услуги {city.nameLocative}</h2>
             <p className="mt-2 text-sm text-muted-foreground">{city.localContext}</p>
             <div className="mt-4 grid gap-3 md:grid-cols-2">
-              {popular.map((s: Service | undefined) => s && (
-                <Link key={s.slug} to="/cities/$citySlug/$serviceSlug" params={{ citySlug: city.slug, serviceSlug: s.slug }} className="rounded-xl border border-accent/40 bg-accent/5 p-4 hover:border-accent">
-                  <div className="font-display text-base font-bold">{s.shortName} {city.nameLocative}</div>
-                  <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">{s.intro}</div>
-                </Link>
-              ))}
+              {popular.map((s: Service | undefined) => {
+                if (!s) return null;
+                const price = getCityServicePrice(city.slug, s);
+                return (
+                  <Link key={s.slug} to="/cities/$citySlug/$serviceSlug" params={{ citySlug: city.slug, serviceSlug: s.slug }} className="rounded-xl border border-accent/40 bg-accent/5 p-4 hover:border-accent">
+                    <div className="font-display text-base font-bold">{s.shortName} {city.nameLocative}</div>
+                    <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">{s.intro}</div>
+                    {price && <div className="mt-2 text-sm font-semibold text-accent">{formatPriceFrom(price)}</div>}
+                  </Link>
+                );
+              })}
             </div>
           </section>
 
