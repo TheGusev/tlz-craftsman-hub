@@ -10,6 +10,7 @@ import { IntroAnswer } from "@/components/site/IntroAnswer";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock } from "lucide-react";
+import { getCityServicePrice, formatPriceFrom } from "@/lib/cityPricing";
 import {
   buildGraphHead,
   buildWebPageSchema,
@@ -96,12 +97,16 @@ function CityPage() {
           <section>
             <h2 className="font-display text-2xl font-bold">Какие работы выполняем {city.nameLocative}</h2>
             <div className="mt-4 grid gap-3 md:grid-cols-2">
-              {services.map((s) => (
-                <Link key={s.slug} to="/cities/$citySlug/$serviceSlug" params={{ citySlug: city.slug, serviceSlug: s.slug }} className="rounded-xl border border-border bg-card p-4 hover:border-accent">
-                  <div className="font-display text-base font-bold">{s.shortName}</div>
-                  <div className="mt-1 text-xs text-muted-foreground">{s.cluster}</div>
-                </Link>
-              ))}
+              {services.map((s) => {
+                const price = getCityServicePrice(city.slug, s);
+                return (
+                  <Link key={s.slug} to="/cities/$citySlug/$serviceSlug" params={{ citySlug: city.slug, serviceSlug: s.slug }} className="rounded-xl border border-border bg-card p-4 hover:border-accent">
+                    <div className="font-display text-base font-bold">{s.shortName}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">{s.cluster}</div>
+                    {price && <div className="mt-2 text-sm font-semibold text-accent">{formatPriceFrom(price)}</div>}
+                  </Link>
+                );
+              })}
             </div>
           </section>
 
@@ -109,12 +114,17 @@ function CityPage() {
             <h2 className="font-display text-2xl font-bold">Популярные услуги {city.nameLocative}</h2>
             <p className="mt-2 text-sm text-muted-foreground">{city.localContext}</p>
             <div className="mt-4 grid gap-3 md:grid-cols-2">
-              {popular.map((s: Service | undefined) => s && (
-                <Link key={s.slug} to="/cities/$citySlug/$serviceSlug" params={{ citySlug: city.slug, serviceSlug: s.slug }} className="rounded-xl border border-accent/40 bg-accent/5 p-4 hover:border-accent">
-                  <div className="font-display text-base font-bold">{s.shortName} {city.nameLocative}</div>
-                  <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">{s.intro}</div>
-                </Link>
-              ))}
+              {popular.map((s: Service | undefined) => {
+                if (!s) return null;
+                const price = getCityServicePrice(city.slug, s);
+                return (
+                  <Link key={s.slug} to="/cities/$citySlug/$serviceSlug" params={{ citySlug: city.slug, serviceSlug: s.slug }} className="rounded-xl border border-accent/40 bg-accent/5 p-4 hover:border-accent">
+                    <div className="font-display text-base font-bold">{s.shortName} {city.nameLocative}</div>
+                    <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">{s.intro}</div>
+                    {price && <div className="mt-2 text-sm font-semibold text-accent">{formatPriceFrom(price)}</div>}
+                  </Link>
+                );
+              })}
             </div>
           </section>
 
@@ -169,10 +179,12 @@ function CityPage() {
               {cityLinks.map((sc) => {
                 const s = getService(sc.serviceSlug);
                 if (!s) return null;
+                const price = getCityServicePrice(city.slug, s);
                 return (
                   <Link key={sc.serviceSlug} to="/cities/$citySlug/$serviceSlug" params={{ citySlug: city.slug, serviceSlug: sc.serviceSlug }} className="rounded-xl border border-border bg-card p-4 hover:border-accent">
                     <div className="font-display text-sm font-bold">{s.shortName}</div>
                     <div className="mt-1 text-xs text-muted-foreground">{city.nameLocative}</div>
+                    {price && <div className="mt-2 text-sm font-semibold text-accent">{formatPriceFrom(price)}</div>}
                   </Link>
                 );
               })}
