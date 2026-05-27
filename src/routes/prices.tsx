@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Card } from "@/components/ui/card";
+import { PriceNote } from "@/components/site/PriceNote";
 import {
   buildGraphHead,
   buildWebPageSchema,
