@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock } from "lucide-react";
 import { getCityServicePrice, formatPriceFrom } from "@/lib/cityPricing";
+import { PriceNote } from "@/components/site/PriceNote";
 import {
   buildGraphHead,
   buildWebPageSchema,
@@ -103,7 +104,12 @@ function CityPage() {
                   <Link key={s.slug} to="/cities/$citySlug/$serviceSlug" params={{ citySlug: city.slug, serviceSlug: s.slug }} className="rounded-xl border border-border bg-card p-4 hover:border-accent">
                     <div className="font-display text-base font-bold">{s.shortName}</div>
                     <div className="mt-1 text-xs text-muted-foreground">{s.cluster}</div>
-                    {price && <div className="mt-2 text-sm font-semibold text-accent">{formatPriceFrom(price)}</div>}
+                    {price && (
+                      <div className="mt-2 text-sm font-semibold text-accent">
+                        {formatPriceFrom(price)}
+                        <PriceNote className="mt-0.5" />
+                      </div>
+                    )}
                   </Link>
                 );
               })}
@@ -121,7 +127,12 @@ function CityPage() {
                   <Link key={s.slug} to="/cities/$citySlug/$serviceSlug" params={{ citySlug: city.slug, serviceSlug: s.slug }} className="rounded-xl border border-accent/40 bg-accent/5 p-4 hover:border-accent">
                     <div className="font-display text-base font-bold">{s.shortName} {city.nameLocative}</div>
                     <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">{s.intro}</div>
-                    {price && <div className="mt-2 text-sm font-semibold text-accent">{formatPriceFrom(price)}</div>}
+                    {price && (
+                      <div className="mt-2 text-sm font-semibold text-accent">
+                        {formatPriceFrom(price)}
+                        <PriceNote className="mt-0.5" />
+                      </div>
+                    )}
                   </Link>
                 );
               })}
@@ -184,7 +195,12 @@ function CityPage() {
                   <Link key={sc.serviceSlug} to="/cities/$citySlug/$serviceSlug" params={{ citySlug: city.slug, serviceSlug: sc.serviceSlug }} className="rounded-xl border border-border bg-card p-4 hover:border-accent">
                     <div className="font-display text-sm font-bold">{s.shortName}</div>
                     <div className="mt-1 text-xs text-muted-foreground">{city.nameLocative}</div>
-                    {price && <div className="mt-2 text-sm font-semibold text-accent">{formatPriceFrom(price)}</div>}
+                    {price && (
+                      <div className="mt-2 text-sm font-semibold text-accent">
+                        {formatPriceFrom(price)}
+                        <PriceNote className="mt-0.5" />
+                      </div>
+                    )}
                   </Link>
                 );
               })}

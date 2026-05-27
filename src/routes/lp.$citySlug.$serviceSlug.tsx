@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Phone, MessageCircle, Check, Clock, ShieldCheck, BadgeCheck } from "lucide-react";
 import { getServiceImage } from "@/lib/serviceImages";
 import { PriceQuiz } from "@/components/site/PriceQuiz";
+import { PriceNote } from "@/components/site/PriceNote";
 import { trackGoal } from "@/lib/analytics";
 import { trackCityConversion } from "@/lib/conversions";
 import { SITE_PHONE, SITE_PHONE_RAW } from "@/lib/site";
@@ -216,9 +217,10 @@ function LandingPage() {
         <p className="mt-4 max-w-2xl text-muted-foreground">
           {sc?.priceContext ??
             (service.priceFrom
-              ? `Стоимость от ${service.priceFrom.toLocaleString("ru-RU")} ₽. Точная цена — после осмотра.`
+              ? `Стоимость — ${service.priceFrom.toLocaleString("ru-RU")} ₽.`
               : "Цена зависит от площади и типа объекта.")}
         </p>
+        <PriceNote className="mt-2" />
       </section>
 
       {/* Кейсы */}

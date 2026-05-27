@@ -19,6 +19,7 @@ import {
 } from "@/lib/jsonld";
 import { buildCanonical } from "@/lib/seo";
 import { getServiceImage } from "@/lib/serviceImages";
+import { PriceNote } from "@/components/site/PriceNote";
 
 function clamp(s: string, max: number): string {
   if (s.length <= max) return s;
@@ -29,7 +30,7 @@ function buildDefaultServiceInCity(city: City, service: Service): ServiceInCity 
   const phoneText = city.phoneDisplay || city.phone;
   const districts = city.districts.slice(0, 2).join(", ");
   const priceTitle = service.priceFrom
-    ? `${service.shortName} ${city.nameLocative} — от ${service.priceFrom.toLocaleString("ru-RU")} ₽, выезд 24/7`
+    ? `${service.shortName} ${city.nameLocative} — ${service.priceFrom.toLocaleString("ru-RU")} ₽, выезд 24/7`
     : `${service.shortName} ${city.nameLocative} — выезд 24/7, договор и гарантия`;
   const metaTitle = clamp(priceTitle, 60);
 
@@ -39,7 +40,7 @@ function buildDefaultServiceInCity(city: City, service: Service): ServiceInCity 
   const metaDescription = clamp(descBase + descGeo + descPhone, 160);
 
   const introAnswer = service.priceFrom
-    ? `Вызвать ${service.shortName.toLowerCase()} ${city.nameLocative} можно круглосуточно. Цена ${service.shortName.toLowerCase()} ${city.nameLocative} — от ${service.priceFrom.toLocaleString("ru-RU")} ₽, выезд бригады — ${city.arrivalTime}. Работаем по договору, выдаём акт и гарантию.`
+    ? `Вызвать ${service.shortName.toLowerCase()} ${city.nameLocative} можно круглосуточно. Цена ${service.shortName.toLowerCase()} ${city.nameLocative} — ${service.priceFrom.toLocaleString("ru-RU")} ₽ (точная — после осмотра), выезд бригады — ${city.arrivalTime}. Работаем по договору, выдаём акт и гарантию.`
     : `Вызвать ${service.shortName.toLowerCase()} ${city.nameLocative} можно круглосуточно. Выезд бригады — ${city.arrivalTime}. Работаем по договору, выдаём акт, гарантию и СЭС-сертификаты.`;
 
   return {
@@ -52,7 +53,7 @@ function buildDefaultServiceInCity(city: City, service: Service): ServiceInCity 
     localOffer: `Бригада дежурит ${city.nameLocative} 24/7. Выезд по графику: ${city.arrivalTime}.`,
     whenCalled: [],
     priceContext: service.priceFrom
-      ? `${city.nameLocative} — от ${service.priceFrom.toLocaleString("ru-RU")} ₽. Финальная цена зависит от площади, объёма работ и срочности.`
+      ? `${city.nameLocative} — ${service.priceFrom.toLocaleString("ru-RU")} ₽. Точная цена после осмотра — зависит от площади, объёма работ и срочности.`
       : "Стоимость рассчитывается индивидуально по объёму работ. Замер и смета — бесплатно.",
     caseScenario: { title: "", description: "" },
     faq: service.faq.slice(0, 3),
@@ -207,6 +208,7 @@ function ServiceInCityPage() {
           <section>
             <h2 className="font-display text-2xl font-bold">Что влияет на цену {city.nameLocative}</h2>
             <p className="mt-3 text-sm text-muted-foreground">{sc.priceContext}</p>
+            <PriceNote className="mt-2" />
             <ul className="mt-3 space-y-1">
               {service.priceFactors.map((it: string, i: number) => <li key={i} className="text-sm">— {it}</li>)}
             </ul>

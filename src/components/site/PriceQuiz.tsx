@@ -159,7 +159,7 @@ export function PriceQuiz({
         <div>
           <p className="text-sm text-muted-foreground">Предварительная оценка</p>
           <p className="mt-2 text-3xl font-bold text-primary">
-            от {estimate.toLocaleString("ru-RU")} ₽
+            {estimate.toLocaleString("ru-RU")} ₽
           </p>
           <p className="mt-2 text-xs text-muted-foreground">
             Точная цена — после короткого звонка и осмотра. Расчёт носит ориентировочный характер.

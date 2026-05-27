@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Card } from "@/components/ui/card";
+import { PriceNote } from "@/components/site/PriceNote";
 import {
   buildGraphHead,
   buildWebPageSchema,
@@ -39,15 +40,15 @@ export const Route = createFileRoute("/prices")({
 });
 
 const rows = [
-  { service: "Уборка после пожара", from: "от 35 000 ₽", note: "квартира 50 м²" },
-  { service: "Уборка после потопа, просушка", from: "от 25 000 ₽", note: "квартира 50 м²" },
-  { service: "Удаление запаха гари (озонирование)", from: "от 12 000 ₽", note: "помещение до 50 м²" },
-  { service: "Дезинфекция после смерти", from: "от 22 000 ₽", note: "1-комн. квартира" },
-  { service: "Удаление трупного запаха", from: "от 15 000 ₽", note: "комната" },
-  { service: "Фумигация", from: "от 80 000 ₽", note: "склад 500 м³" },
-  { service: "Удаление плесени", from: "от 7 500 ₽", note: "санузел" },
-  { service: "Санобработка помещений (дезинсекция)", from: "от 4 500 ₽", note: "квартира до 50 м²" },
-  { service: "Очистка участков, вывоз мусора", from: "от 18 000 ₽", note: "до 100 м²" },
+  { service: "Уборка после пожара", from: "26 000 ₽", note: "квартира 50 м²" },
+  { service: "Уборка после потопа, просушка", from: "25 000 ₽", note: "квартира 50 м²" },
+  { service: "Удаление запаха гари (озонирование)", from: "9 000 ₽", note: "помещение до 50 м²" },
+  { service: "Дезинфекция после смерти", from: "22 000 ₽", note: "1-комн. квартира" },
+  { service: "Удаление трупного запаха", from: "15 000 ₽", note: "комната" },
+  { service: "Фумигация", from: "60 000 ₽", note: "склад 500 м³" },
+  { service: "Удаление плесени", from: "7 500 ₽", note: "санузел" },
+  { service: "Санобработка помещений (дезинсекция)", from: "4 500 ₽", note: "квартира до 50 м²" },
+  { service: "Очистка участков, вывоз мусора", from: "18 000 ₽", note: "до 100 м²" },
 ];
 
 function PricesPage() {
@@ -70,7 +71,10 @@ function PricesPage() {
               {rows.map((r, i) => (
                 <tr key={i} className="border-t border-border">
                   <td className="px-4 py-3">{r.service}</td>
-                  <td className="px-4 py-3 font-semibold text-accent">{r.from}</td>
+                  <td className="px-4 py-3 font-semibold text-accent">
+                    {r.from}
+                    <PriceNote className="mt-1" />
+                  </td>
                   <td className="px-4 py-3 text-muted-foreground">{r.note}</td>
                 </tr>
               ))}
