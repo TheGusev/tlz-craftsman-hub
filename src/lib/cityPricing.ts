@@ -7,7 +7,8 @@ import type { Service } from "@/data/services";
  */
 export function extractMinPriceFromContext(text: string | undefined): number | null {
   if (!text) return null;
-  const match = text.match(/от\s+([\d\s\u00A0]+?)\s*₽/i);
+  // Поддерживаем и старый формат "от 2 500 ₽", и новый "2 500 ₽"
+  const match = text.match(/(?:от\s+)?([\d\s\u00A0]+?)\s*₽/i);
   if (!match) return null;
   const digits = match[1].replace(/\D/g, "");
   if (!digits) return null;
@@ -15,12 +16,6 @@ export function extractMinPriceFromContext(text: string | undefined): number | n
   return Number.isFinite(value) && value > 0 ? value : null;
 }
 
-/**
- * Возвращает минимальную цену услуги в конкретном городе:
- * 1) парсит из priceContext в serviceInCity,
- * 2) иначе берёт service.priceFrom,
- * 3) иначе null.
- */
 export function getCityServicePrice(
   citySlug: string,
   service: Pick<Service, "slug" | "priceFrom">,
@@ -37,5 +32,6 @@ export function getCityServicePrice(
 }
 
 export function formatPriceFrom(price: number): string {
-  return `от ${price.toLocaleString("ru-RU")} ₽`;
+  return `${price.toLocaleString("ru-RU")} ₽`;
 }
+
