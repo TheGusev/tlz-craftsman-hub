@@ -45,12 +45,23 @@ export const Route = createFileRoute("/")({
           type: "application/ld+json",
           children: buildGraphHead([
             buildWebPageSchema({ path: "/", name: title, description }),
+            buildBreadcrumbSchema([]),
             buildLocalBusinessSchema({
               path: "/",
               cityName: "ЮФО и Крым",
               description,
               areaServed: "ЮФО и Республика Крым",
             }),
+            ...services.map((s) =>
+              buildServiceSchema({
+                path: `/services/${s.slug}`,
+                name: s.name,
+                description: s.metaDescription,
+                serviceType: s.cluster,
+                priceFrom: s.priceFrom,
+                areaServed: "ЮФО и Республика Крым",
+              }),
+            ),
             buildFAQSchema(generalFaq),
           ]),
         },
