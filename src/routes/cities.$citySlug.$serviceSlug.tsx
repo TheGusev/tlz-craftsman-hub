@@ -208,6 +208,7 @@ function ServiceInCityPage() {
           <section>
             <h2 className="font-display text-2xl font-bold">Что влияет на цену {city.nameLocative}</h2>
             <p className="mt-3 text-sm text-muted-foreground">{sc.priceContext}</p>
+            <PriceNote className="mt-2" />
             <ul className="mt-3 space-y-1">
               {service.priceFactors.map((it: string, i: number) => <li key={i} className="text-sm">— {it}</li>)}
             </ul>
