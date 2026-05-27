@@ -217,9 +217,10 @@ function LandingPage() {
         <p className="mt-4 max-w-2xl text-muted-foreground">
           {sc?.priceContext ??
             (service.priceFrom
-              ? `Стоимость — ${service.priceFrom.toLocaleString("ru-RU")} ₽. Точная цена — после осмотра.`
-              : "Цена зависит от площади и типа объекта. Точная цена — после осмотра.")}
+              ? `Стоимость — ${service.priceFrom.toLocaleString("ru-RU")} ₽.`
+              : "Цена зависит от площади и типа объекта.")}
         </p>
+        <PriceNote className="mt-2" />
       </section>
 
       {/* Кейсы */}
