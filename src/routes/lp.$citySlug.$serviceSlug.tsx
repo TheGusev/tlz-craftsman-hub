@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Phone, MessageCircle, Check, Clock, ShieldCheck, BadgeCheck } from "lucide-react";
 import { getServiceImage } from "@/lib/serviceImages";
 import { PriceQuiz } from "@/components/site/PriceQuiz";
+import { PriceNote } from "@/components/site/PriceNote";
 import { trackGoal } from "@/lib/analytics";
 import { trackCityConversion } from "@/lib/conversions";
 import { SITE_PHONE, SITE_PHONE_RAW } from "@/lib/site";
