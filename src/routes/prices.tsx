@@ -71,7 +71,10 @@ function PricesPage() {
               {rows.map((r, i) => (
                 <tr key={i} className="border-t border-border">
                   <td className="px-4 py-3">{r.service}</td>
-                  <td className="px-4 py-3 font-semibold text-accent">{r.from}</td>
+                  <td className="px-4 py-3 font-semibold text-accent">
+                    {r.from}
+                    <PriceNote className="mt-1" />
+                  </td>
                   <td className="px-4 py-3 text-muted-foreground">{r.note}</td>
                 </tr>
               ))}
