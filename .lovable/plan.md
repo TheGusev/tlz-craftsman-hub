@@ -1,37 +1,33 @@
-## Что сделаю
+## Контекст
 
-На страницах `/cities/sevastopol`, `/cities/simferopol`, `/cities/sochi` (и всех остальных городов) к каждой карточке услуги добавлю подпись «от N ₽». Источник цены — текст `priceContext` из `src/data/serviceInCity.ts` (там у Севастополя, Симферополя, Сочи уже прописаны конкретные числа вроде «от 2 500 ₽»).
+Отчёт по `sanitarnyeresheniya.ru` показывает Schema.org Score 65/100. Сканер проверял главную страницу и не нашёл:
+- **BreadcrumbList** (−15)
+- **Product / Service** (−20)
 
-## Где появится цена
+Эти схемы уже есть в проекте (`src/lib/jsonld.ts`) и используются на внутренних страницах, но на главной (`/`) в `@graph` сейчас только `WebPage`, `LocalBusiness`, `FAQPage`. Добавим недостающие два типа на главную — после следующего скана балл вырастет до 100/100.
 
-На странице города (`src/routes/cities.$citySlug.tsx`) в трёх блоках карточек:
+## Что меняю
 
-1. «Какие работы выполняем {city.nameLocative}» — полный список услуг.
-2. «Популярные услуги {city.nameLocative}» — выделенные услуги города.
-3. «Приоритетные направления {city.nameLocative}» — нижний блок ссылок.
+Только `src/routes/index.tsx`, в блоке `head() → scripts → buildGraphHead([...])`.
 
-В каждой карточке под названием услуги появится строка вида `от 2 500 ₽`, оформленная акцентным цветом.
+1. **Импортирую** дополнительно `buildBreadcrumbSchema` и `buildServiceSchema` из `@/lib/jsonld`.
+2. **BreadcrumbList**: добавляю `buildBreadcrumbSchema([])` — генератор сам кладёт «Главная → SITE_URL» как единственный элемент списка. Валидно и достаточно для проверки.
+3. **Service**: маплю массив `services` (8 услуг) в отдельные узлы `Service` через `buildServiceSchema(...)`, по одному на услугу:
+   - `path: \`/services/${s.slug}\`` (даёт уникальный `@id`),
+   - `name: s.name`,
+   - `description: s.metaDescription`,
+   - `serviceType: s.cluster`,
+   - `priceFrom: s.priceFrom` (если есть → автоматически добавится `offers`),
+   - `areaServed: "ЮФО и Республика Крым"`.
 
-## Как берём цену
-
-Новый хелпер `getCityServicePrice(citySlug, service)`:
-
-1. Ищет запись в `serviceInCity` по паре (citySlug, serviceSlug).
-2. Если запись есть — парсит из `priceContext` первое число формата `от 2 500 ₽` (учёт неразрывных пробелов и обычных пробелов) → возвращает это число.
-3. Если в `priceContext` числа нет, но у самой услуги есть `service.priceFrom` — возвращает его.
-4. Иначе возвращает `null` → подпись не рисуем (карточка без цены, как сейчас).
-
-Это даёт цены для всех услуг, где они уже описаны в тексте, и не показывает «пустое» там, где цены действительно нет.
-
-## Технические детали
-
-- Новый файл `src/lib/cityPricing.ts` с функциями `extractMinPriceFromContext(text)` и `getCityServicePrice(citySlug, service)`.
-- Регекс: `/от\s+([\d\s\u00A0]+)\s*₽/i`, затем `parseInt(match[1].replace(/\D/g, ''), 10)`.
-- Форматирование: `price.toLocaleString('ru-RU') + ' ₽'`.
-- Изменения только в `src/routes/cities.$citySlug.tsx` (вёрстка карточек) и новом `src/lib/cityPricing.ts`. Данные `services.ts` и `serviceInCity.ts` не трогаю.
+Итоговый `@graph` на главной: `WebPage`, `BreadcrumbList`, `LocalBusiness`, 8 × `Service`, `FAQPage`.
 
 ## Что НЕ меняю
 
-- Страницы услуги в городе (`/cities/{city}/{service}`) — там цена уже есть в блоке «Что влияет на цену».
-- LP-страницы, общие страницы услуг, главная.
-- Сами тексты `priceContext`.
+- `src/lib/jsonld.ts` — функции уже корректные.
+- Остальные роуты — там BreadcrumbList и Service уже подключены.
+- Тексты, дизайн, формы заявок.
+
+## Проверка
+
+После деплоя на Beget и пересканирования отчёта строки «BreadcrumbList» и «Product / Service» должны стать зелёными. Локально можно проверить через DevTools → View source главной: в `<script type="application/ld+json">` должны появиться `"@type":"BreadcrumbList"` и 8 узлов `"@type":"Service"`.
