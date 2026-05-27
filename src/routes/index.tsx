@@ -21,6 +21,8 @@ import {
   buildWebPageSchema,
   buildLocalBusinessSchema,
   buildFAQSchema,
+  buildBreadcrumbSchema,
+  buildServiceSchema,
 } from "@/lib/jsonld";
 import { buildCanonical } from "@/lib/seo";
 
