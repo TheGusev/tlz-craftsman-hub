@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock } from "lucide-react";
 import { getCityServicePrice, formatPriceFrom } from "@/lib/cityPricing";
+import { PriceNote } from "@/components/site/PriceNote";
 import {
   buildGraphHead,
   buildWebPageSchema,
