@@ -10,7 +10,7 @@ export const Route = createFileRoute("/thank-you")({
     meta: [
       { title: "Заявка принята — Санитарные Решения РФ" },
       { name: "robots", content: "noindex, nofollow" },
-      { name: "description", content: "Спасибо! Ваша заявка принята, перезвоним в течение 15 минут." },
+      { name: "description", content: "Спасибо! Ваша заявка принята — диспетчер Санитарных Решений РФ перезвонит в течение 15 минут, уточнит детали выезда и согласует время прибытия бригады." },
       { property: "og:url", content: `${SITE_URL}/thank-you` },
     ],
     links: [{ rel: "canonical", href: `${SITE_URL}/thank-you` }],

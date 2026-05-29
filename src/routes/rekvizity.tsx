@@ -5,7 +5,7 @@ import { SITE_NAME, SITE_PHONE, SITE_EMAIL } from "@/lib/site";
 
 const PATH = "/rekvizity";
 const TITLE = `Реквизиты ИП Посохова А. Н. — ${SITE_NAME}`;
-const DESC = "Реквизиты индивидуального предпринимателя Посоховой А. Н. (ИНН 503220067144, ОГРНИП 324508100153350) и данные лицензии Роспотребнадзора для договоров и оплаты по безналу.";
+const DESC = "Реквизиты ИП Посоховой А. Н.: ИНН 503220067144, ОГРНИП 324508100153350, лицензия Роспотребнадзора. Для договоров и оплаты по безналичному расчёту.";
 
 export const Route = createFileRoute("/rekvizity")({
   component: RekvizityPage,

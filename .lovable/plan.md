@@ -1,51 +1,42 @@
-## Что меняю
+## Что фиксим (по чек-листу GEO-отчёта)
 
-### 1. Убираю слово «от» во всех отображаемых ценах
-Меняю формат цены с `от 2 500 ₽` на просто `2 500 ₽` везде, где цена выводится в UI:
-- `src/lib/cityPricing.ts` → `formatPriceFrom()` возвращает `2 500 ₽` (без «от»).
-- `src/components/site/PriceQuiz.tsx` (строка 162) — убираю «от».
-- `src/routes/cities.$citySlug.$serviceSlug.tsx` (hero title, introAnswer, priceContext fallback) — убираю «от» в шаблонах.
-- `src/routes/lp.$citySlug.$serviceSlug.tsx` (description строка 219) — убираю «от».
-- `src/routes/prices.tsx` — в таблице цен убираю префикс «от » у всех 9 позиций.
-- `src/data/serviceInCity.ts` — заменяю все `— от N ₽` на `— N ₽` (≈ 45 строк priceContext). Регулярка `— от ` → `— `. Это безопасно: «от» в смыслах «зависит от», «защита от вредителей» остаётся (другой контекст).
+### 1. Техническая база (27 → 30): добавить HSTS
 
-В `cityPricing.ts` регулярка извлечения цены (`/от\s+([\d\s\u00A0]+?)\s*₽/i`) будет искать обновлённые тексты — поправлю её, чтобы «от» был опциональным: `/(?:от\s+)?([\d\s\u00A0]+?)\s*₽/i`.
-
-### 2. Снижение цен на 25%
-- `posle-pozhara` в `prices.tsx`: 35 000 → **26 000 ₽**
-- `udalenie-zapaha-gari` в `prices.tsx`: 12 000 → **9 000 ₽**
-- `fumigaciya` в `prices.tsx`: 80 000 → **60 000 ₽**
-
-В `serviceInCity.ts` пересчитываю все числа в `priceContext` для этих трёх услуг (Краснодар/Сочи/Ростов/Симферополь/Севастополь, где встречаются):
-- posle-pozhara: 35 000→26 000, 32 000→24 000 и т.п. (округление до ближайших 500₽).
-- udalenie-zapaha-gari: 8 000→6 000, 15 000→11 000, и пр.
-- fumigaciya: 80 000→60 000, 350 000→260 000.
-
-Цены остальных услуг не трогаю.
-
-### 3. Подпись «Точная цена после осмотра» под каждой ценой/бейджем
-
-Создаю единый микро-компонент `src/components/site/PriceNote.tsx`:
-```tsx
-export const PriceNote = ({ className }: { className?: string }) => (
-  <span className={cn("block text-xs text-muted-foreground mt-1", className)}>
-    Точная цена после осмотра
-  </span>
-);
+В `public/.htaccess` в блок `mod_headers.c` добавить:
+```
+Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
 ```
 
-Подключаю под каждым местом, где выводится сумма с ₽:
-- В `formatPriceFrom` оставляю чистую строку, но в местах использования (3 блока в `cities.$citySlug.tsx`) добавляю `<PriceNote />` после бейджа.
-- В `PriceQuiz.tsx` под результатом сметы.
-- В `lp.$citySlug.$serviceSlug.tsx` под `PriceQuiz` и в hero-карточке цены.
-- В `prices.tsx` — отдельная колонка/строка под каждой ценой (или один общий подзаголовок ниже таблицы + микро-подпись в каждой строке `Цена / Точная — после осмотра`). Сделаю строкой ниже цены в той же ячейке.
-- В `cities.$citySlug.$serviceSlug.tsx` hero — после цены.
-- В `services.$serviceSlug.tsx` — если выводится цена, под ней.
+### 2. Производительность (13 → 20): убрать блокирующий CSS шрифтов + lazy/decoding
 
-Не трогаю JSON-LD (`offers.price`) — для поисковиков остаётся числовое значение.
+- В `index.html` заменить `<link rel="stylesheet" href="...fonts...">` на неблокирующую загрузку:
+  ```html
+  <link rel="preload" as="style" href="...&display=swap" />
+  <link rel="stylesheet" href="...&display=swap" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="...&display=swap"/></noscript>
+  ```
+  (`display=swap` уже стоит — это закрывает пункт `font-display`).
+- Пробежаться по `<img>` без `loading`/`decoding` (главным образом карточки кейсов/услуг, hero-картинки кроме первой) и проставить `loading="lazy"` + `decoding="async"`. Hero на главной уже корректный.
 
-## Что НЕ меняю
-- Дизайн, цвета, структуру страниц.
-- Тексты услуг, FAQ.
-- Цены остальных услуг (дезинфекция, дезинсекция и пр.).
-- Логику форм заявок, телефон.
+### 3. Контент-минимум (22 → 25): нормализовать длины title/description
+
+Проверить и поправить страницы, где `title` вне 30–70 или `description` вне 120–160:
+- `src/routes/thank-you.tsx` — description короткий (~70), расширить до 120–160.
+- `src/routes/privacy.tsx`, `oferta.tsx`, `soglasie.tsx`, `rekvizity.tsx`, `oplata.tsx`, `garantii.tsx`, `licenzii.tsx`, `vyezd.tsx`, `otzyvy.tsx`, `about.tsx`, `regions.krym.tsx` — пройтись по `TITLE`/`DESC` константам, привести к диапазону.
+- Главная (`index.tsx`) — title 96 символов, обрезать до ≤70: «Санитарные Решения РФ — служба 24/7 по ЮФО и Крыму».
+- В `__root.tsx` оставить дефолт, но убедиться, что он не перетирает leaf-страницы.
+
+Менять только текстовые значения meta — структура и компоненты не трогаются.
+
+### 4. Проверка
+
+После правок: визуально не меняется ничего. Сборка должна пройти. Schema.org (15/15) и Индексация (10/10) уже зелёные — не трогаем.
+
+### Файлы
+
+- `public/.htaccess` — добавить HSTS-заголовки
+- `index.html` — неблокирующая загрузка шрифтов
+- ~10 route-файлов в `src/routes/` — подровнять длины title/description
+- Возможные `<img>` в `src/routes/cities.$citySlug.tsx`, `services.$serviceSlug.tsx`, `cases.tsx`, `blog.tsx` — добавить `loading="lazy"` где нет
