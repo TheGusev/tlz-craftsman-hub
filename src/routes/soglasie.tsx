@@ -5,7 +5,7 @@ import { SITE_NAME, SITE_EMAIL } from "@/lib/site";
 
 const PATH = "/soglasie";
 const TITLE = `Согласие на обработку персональных данных — ${SITE_NAME}`;
-const DESC = "Согласие на обработку персональных данных в соответствии с ФЗ-152 «О персональных данных».";
+const DESC = "Согласие на обработку персональных данных в соответствии с Федеральным законом № 152-ФЗ «О персональных данных»: цели, состав сведений, срок действия и порядок отзыва.";
 
 export const Route = createFileRoute("/soglasie")({
   component: SoglasiePage,
