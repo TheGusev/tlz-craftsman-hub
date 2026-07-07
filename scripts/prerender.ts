@@ -148,6 +148,36 @@ async function startServer(): Promise<{ url: string; close: () => void }> {
   };
 }
 
+/**
+ * TanStack Router file-based routing склеивает `head()` родителя и ребёнка.
+ * У `<meta name/property>` браузер дедуплицирует по атрибуту, а у `<link>` и
+ * `<title>` — нет. Поэтому в prerendered HTML появляются два `<link
+ * rel="canonical">` (родительский + детский) и два `<title>`. Оставляем
+ * ПОСЛЕДНЕЕ вхождение — это тег дочернего роута.
+ *
+ * Также страхуемся для og:image/twitter:image (историчный дубль из index.html).
+ */
+function dedupeHead(html: string): string {
+  const patterns: RegExp[] = [
+    /<link\b[^>]*\brel=["']canonical["'][^>]*>\s*/gi,
+    /<meta\b[^>]*\bproperty=["']og:image["'][^>]*>\s*/gi,
+    /<meta\b[^>]*\bname=["']twitter:image["'][^>]*>\s*/gi,
+    /<title>[^<]*<\/title>\s*/gi,
+  ];
+  for (const re of patterns) {
+    const matches = [...html.matchAll(re)];
+    if (matches.length <= 1) continue;
+    const keepIdx = matches.length - 1;
+    let removed = 0;
+    html = html.replace(re, (m) => {
+      const i = removed++;
+      return i === keepIdx ? m : "";
+    });
+  }
+  return html;
+}
+
+
 async function renderRoute(browser: Browser, baseUrl: string, route: string) {
   const page = await browser.newPage();
   page.on("pageerror", (e) => console.error(`  [pageerror ${route}]`, e.stack ?? e.message));
@@ -176,7 +206,8 @@ async function renderRoute(browser: Browser, baseUrl: string, route: string) {
     }
     // Дать TanStack Router время дописать head/JSON-LD
     await new Promise((r) => setTimeout(r, 300));
-    const html = await page.evaluate(() => "<!doctype html>\n" + document.documentElement.outerHTML);
+    const rawHtml = await page.evaluate(() => "<!doctype html>\n" + document.documentElement.outerHTML);
+    const html = dedupeHead(rawHtml);
     const fp = routeToFsPath(route);
     mkdirSync(dirname(fp), { recursive: true });
     writeFileSync(fp, html, "utf8");
@@ -217,7 +248,8 @@ async function render404(browser: Browser, baseUrl: string) {
     await page.goto(`${baseUrl}/__nonexistent_404__`, { waitUntil: "domcontentloaded", timeout: 60_000 });
     await page.waitForSelector("main, #root > *", { timeout: 15_000 }).catch(() => {});
     await new Promise((r) => setTimeout(r, 1500));
-    const html = await page.evaluate(() => "<!doctype html>\n" + document.documentElement.outerHTML);
+    const rawHtml = await page.evaluate(() => "<!doctype html>\n" + document.documentElement.outerHTML);
+    const html = dedupeHead(rawHtml);
     writeFileSync(join(DIST, "404.html"), html, "utf8");
     console.log(`  ✓ 404 → dist/404.html (${(html.length / 1024).toFixed(1)}kb)`);
   } finally {

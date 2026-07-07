@@ -1,43 +1,104 @@
-## Что нашёл на скринах и в коде
+## Что нашёл — реальный ответ сервера vs ожидания
 
-Яндекс.Вебмастер показывает **13 дублирующихся description** (и 3 рекомендации — это некритичные подсказки, отдельно). Диагностика: HTTP-ошибок нет, обход идёт нормально (200 OK).
+Скачал все 134 URL из `sitemap.xml`, распарсил `<head>`. Основные проблемы — на уровне `<link rel="canonical">`, а не robots.
 
-Скачал live-версию всех 134 URL из `sitemap.xml` и распарсил `<head>`. В **каждой** странице по **два** тега `<meta name="description">`:
+### 1. Критично: 115 страниц имеют по 2 `<link rel="canonical">`
 
-1. Статичный — из `index.html` (одинаковый на всех 134 страницах):
-   > «Профессиональная санитарная обработка. Ликвидация последствий пожаров…»
-2. Правильный, свой для каждого маршрута — который дописывает TanStack Router при гидрации (его и захватывает prerender):
-   > «Аварийная уборка после пожара: вывоз гари…»
+Первый указывает на **родительский листинг**, второй — на саму страницу. Яндекс/Google читают первый → все дочерние URL «схлопываются» в родительский. Это и есть настоящая причина жалоб на индексацию.
 
-То же самое с `<title>`: два тега на каждой странице.
+Затронуто (примеры из живого сайта):
 
-Яндекс читает **первый** `description` в порядке DOM → видит один и тот же текст на 134 страницах → в консоли всплывает "13 дублирующихся description" (Вебмастер показывает не все, а верх выборки).
+| URL | 1-й canonical (что видит Яндекс) | 2-й canonical (правильный) |
+|---|---|---|
+| `/blog/chto-delat-posle-pozhara-v-kvartire` | `/blog` | `/blog/chto-delat-posle-pozhara-v-kvartire` |
+| `/cases/pozhar-zhk-samolet-krasnodar` | `/cases` | `/cases/pozhar-zhk-samolet-krasnodar` |
+| `/cities/krasnodar` | `/cities` | `/cities/krasnodar` |
+| `/cities/krasnodar/posle-pozhara` | `/cities` | `/cities/krasnodar/posle-pozhara` |
 
-**Причина:** `index.html` при prerender'е попадает в итоговый HTML целиком, а роутовые `head()` из TanStack не заменяют существующие теги, а добавляют новые. Дубли — артефакт prerender-конвейера.
+Всего: 4 блоговых + 12 кейсов + 16 городов + 82 город×услуга + `/regions/*` = **115 страниц**.
+
+**Причина.** В TanStack file-based routing при рендере `/cases/foo` активны сразу оба матча (`cases.tsx` + `cases.$slug.tsx`), их `head().links` **конкатенируются**, а `<link>` в отличие от `<meta name=...>` не дедуплицируется по атрибутам. Родитель одновременно и layout, и index-страница, поэтому у него правомерно есть свой canonical на `/cases` — но он «протекает» в детей.
+
+### 2. Средне: `og:image` и `twitter:image` дублируются на всех 134 страницах
+
+Первый — `/og-default.jpg` из `index.html` (относительный, не резолвится соцсетями), второй — правильный от route/root. Пример на `/cases/pozhar-zhk-samolet-krasnodar`:
+```
+<meta property="og:image" content="/og-default.jpg">
+<meta property="og:image" content="https://sanitarnyeresheniya.ru/assets/pozhar-zhk-samolet-krasnodar-before-…jpg">
+```
+
+### 3. Мелко
+
+- `src/routes/oferta.tsx`: robots перезаписан на `index,follow` (без `max-image-preview:large,max-snippet:-1`). Все остальные — с полным набором.
+- `src/routes/lp.$citySlug.$serviceSlug.tsx`: canonical хардкодит домен `tlz-craftsman-hub.lovable.app`. LP-роуты у нас `noindex,nofollow`, но canonical всё равно надо строить через `SITE_URL`.
+
+### Что уже ок
+
+- **`<meta name="robots">`** — на всех страницах ровно один тег. Значения корректные:
+  - 132 страницы — `index,follow,max-image-preview:large,max-snippet:-1` (из `__root.tsx`).
+  - `oferta` — `index,follow` (см. пункт 3).
+  - `privacy` — `noindex, follow` (намеренно, служебная).
+- `<meta property="og:url"/og:title/og:description>` — по одному тегу на страницу (эти mata-теги дедуплицируются).
+- `<title>` — по одному валидному значению у всех.
 
 ## Что сделаю
 
-Убрать из `index.html` теги, которые перезаписываются каждым маршрутом:
+**A. Убрать из `index.html` теги, которые перезаписываются роутами и порождают дубли:**
+- `<meta property="og:image" content="/og-default.jpg">` (строка 32)
+- `<meta name="twitter:image" content="/og-default.jpg">` (строка 34)
 
-- `<title>…</title>` (строка 26) — удалить
-- `<meta name="description" …>` (строки 27–30) — удалить
+Оставить `og:type`, `og:site_name`, `og:locale`, `twitter:card` — они не дублируются на уровне значений и полезны как фолбэк для соц-краулеров, не выполняющих JS.
 
-Оставить:
-- `<meta charset>`, `<meta viewport>`, `<link rel="icon">`, preconnect/preload шрифтов, `og:type/og:site_name/og:locale/og:image`, `twitter:card/twitter:image` — они общие и не дублируются на уровне значений либо не флагируются Вебмастером как «дубли description».
+**B. Добавить пост-обработку в `scripts/prerender.ts`** перед `writeFileSync(fp, html)`:
 
-Почему это безопасно:
-- `dist/index.html` реально отдаётся только для маршрута `/` (см. `.htaccess`), а `/` тоже проходит prerender и получает свой `<title>` и `<meta name="description">` из `src/routes/index.tsx` → страница не останется без title/description.
-- 404 отдаётся из `dist/404.html`, который тоже prerender'ится (см. `render404` в `scripts/prerender.ts`) — свой title/desc там тоже проставится.
-- Остальные 132 маршрута лежат в `dist/<route>/index.html`, каждый со своим head — там дубль просто исчезнет.
+```ts
+function dedupeHead(html: string): string {
+  // Для каждого «уникального» ключа оставляем ПОСЛЕДНЕЕ вхождение,
+  // потому что child-роут пишет head позже родителя.
+  const rules = [
+    { re: /<link\b[^>]*\brel=["']canonical["'][^>]*>/gi, key: () => "canonical" },
+    { re: /<meta\b[^>]*\bproperty=["']og:image["'][^>]*>/gi, key: () => "og:image" },
+    { re: /<meta\b[^>]*\bname=["']twitter:image["'][^>]*>/gi, key: () => "twitter:image" },
+    { re: /<title>[^<]*<\/title>/gi, key: () => "title" },
+  ];
+  for (const { re } of rules) {
+    const matches = [...html.matchAll(re)];
+    if (matches.length <= 1) continue;
+    // Удаляем все, кроме последнего.
+    for (let i = 0; i < matches.length - 1; i++) {
+      const m = matches[i];
+      html = html.slice(0, m.index) + html.slice(m.index + m[0].length);
+      // сдвиг индексов последующих — matchAll на исходной строке, пересчитывать:
+      // проще заново вычислить в цикле:
+      // (заменю на цикл через `replace` — см. ниже)
+    }
+  }
+  return html;
+}
+```
 
-## После деплоя
+Финальную реализацию сделаю без ловушки со сдвигом индексов (либо через повторный `matchAll` до сходимости, либо `html.replace(re, (m, i, all) => i === lastIndex ? m : "")`).
 
-1. Пересобрать (`vite build` → prerender) и задеплоить.
-2. Проверить любой URL из sitemap curl'ом — должен остаться **один** `<meta name="description">` с уникальным текстом.
-3. В Яндекс.Вебмастере: «Диагностика → Дубли заголовков и описаний → Пересканировать» (или подождать очередного обхода — Яндекс сам увидит).
+Это самый безопасный фикс: не трогаем файловую структуру роутов, не рискуем сломать логику TanStack, и правило «оставить последний» естественно потому, что child-`head()` эмитится после parent-`head()`.
 
-## Технические детали
+**C. Мелкие правки в роутах:**
+- `src/routes/oferta.tsx`: robots → `index,follow,max-image-preview:large,max-snippet:-1` (как у всех).
+- `src/routes/lp.$citySlug.$serviceSlug.tsx`: заменить хардкод домена на `${SITE_URL}/lp/${params.citySlug}/${params.serviceSlug}`.
 
-Файл: `index.html`, строки 26–30 — удалить. Ничего в prerender-скрипте и роутах менять не нужно, TanStack head-функции уже возвращают правильные `title`/`meta` для всех страниц.
+## Проверка после деплоя
 
-Рекомендации из Вебмастера (3 шт., скрытые) — обычно это отсутствие фавикона нужных размеров / отсутствие мобильной версии / нет турбо-страниц. Они некритичны и не влияют на индексацию; их разберём отдельно, если раскроете список.
+1. `curl -s https://sanitarnyeresheniya.ru/cases/pozhar-zhk-samolet-krasnodar | grep -c 'rel="canonical"'` → **1**.
+2. То же для `/blog/*`, `/cities/*`, `/cities/:city/:service`.
+3. `grep -c 'og:image'` на любой странице → **1**.
+4. `<meta name="robots">` — по-прежнему один тег, `index,follow,max-image-preview:large,max-snippet:-1`.
+5. В Яндекс.Вебмастере отправить на переобход:
+   - `/cases`, `/blog`, `/cities`, `/regions` и все их дочерние URL (те же 115, что были со сбитым canonical).
+
+## Файлы, которые меняю
+
+- `index.html` — удалить `og:image` и `twitter:image`.
+- `scripts/prerender.ts` — добавить функцию `dedupeHead` и вызвать её перед записью `fp` (и `dist/404.html`).
+- `src/routes/oferta.tsx` — выровнять `robots`.
+- `src/routes/lp.$citySlug.$serviceSlug.tsx` — canonical через `SITE_URL`.
+
+Роуты `cases.tsx`, `blog.tsx`, `cities.tsx`, `cities.$citySlug.tsx` **не трогаю**: их собственный canonical (для `/cases`, `/blog`, `/cities`, `/cities/:city`) корректный, дедуп в prerender'е снимет только лишние дубли у детей.

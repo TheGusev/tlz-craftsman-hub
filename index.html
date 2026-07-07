@@ -29,9 +29,9 @@
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Санитарные Решения РФ" />
     <meta property="og:locale" content="ru_RU" />
-    <meta property="og:image" content="/og-default.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="/og-default.jpg" />
+    <!-- og:image и twitter:image задаются per-route (__root.tsx + конкретные роуты),
+         чтобы не было дублей в prerendered HTML. -->
   </head>
   <body>
     <div id="root"></div>

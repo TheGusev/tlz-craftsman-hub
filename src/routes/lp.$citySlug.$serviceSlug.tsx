@@ -12,7 +12,7 @@ import { PriceQuiz } from "@/components/site/PriceQuiz";
 import { PriceNote } from "@/components/site/PriceNote";
 import { trackGoal } from "@/lib/analytics";
 import { trackCityConversion } from "@/lib/conversions";
-import { SITE_PHONE, SITE_PHONE_RAW } from "@/lib/site";
+import { SITE_PHONE, SITE_PHONE_RAW, SITE_URL } from "@/lib/site";
 
 type LpSearch = {
   utm_source?: string;
@@ -38,7 +38,7 @@ export const Route = createFileRoute("/lp/$citySlug/$serviceSlug")({
     return { city, service, sc };
   },
   head: ({ params, loaderData }) => {
-    const canonical = `https://tlz-craftsman-hub.lovable.app/lp/${params.citySlug}/${params.serviceSlug}`;
+    const canonical = `${SITE_URL}/lp/${params.citySlug}/${params.serviceSlug}`;
     if (!loaderData)
       return {
         meta: [{ name: "robots", content: "noindex,nofollow" }],
