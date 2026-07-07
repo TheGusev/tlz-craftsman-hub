@@ -1,42 +1,70 @@
-## Что фиксим (по чек-листу GEO-отчёта)
+## Что проверяем
 
-### 1. Техническая база (27 → 30): добавить HSTS
+На сайте есть несколько точек контакта с клиентом:
 
-В `public/.htaccess` в блок `mod_headers.c` добавить:
-```
-Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
-Header always set X-Content-Type-Options "nosniff"
-Header always set Referrer-Policy "strict-origin-when-cross-origin"
-```
+1. **Формы заявок** (отправка через `/send.php` → Telegram):
+   - `LeadForm` — основная форма (главная, услуги, города, LP)
+   - `MobileQuickLead` — мобильный пошаговый визард
+   - `PriceQuiz` — квиз с расчётом цены
+   - `HeroCTA` / `UrgentCTA` — короткие формы в героях
+   - Форма на `/contacts`, `/vyezd`, `/thank-you` (если есть)
 
-### 2. Производительность (13 → 20): убрать блокирующий CSS шрифтов + lazy/decoding
+2. **Мессенджеры и звонки** (внешние ссылки):
+   - WhatsApp `wa.me/79619119919`
+   - Telegram `t.me/...`
+   - `tel:+79619119919`
 
-- В `index.html` заменить `<link rel="stylesheet" href="...fonts...">` на неблокирующую загрузку:
-  ```html
-  <link rel="preload" as="style" href="...&display=swap" />
-  <link rel="stylesheet" href="...&display=swap" media="print" onload="this.media='all'" />
-  <noscript><link rel="stylesheet" href="...&display=swap"/></noscript>
-  ```
-  (`display=swap` уже стоит — это закрывает пункт `font-display`).
-- Пробежаться по `<img>` без `loading`/`decoding` (главным образом карточки кейсов/услуг, hero-картинки кроме первой) и проставить `loading="lazy"` + `decoding="async"`. Hero на главной уже корректный.
+## Проблема со средой
 
-### 3. Контент-минимум (22 → 25): нормализовать длины title/description
+`/send.php` — это **PHP-прокси, лежащий на Beget** (production). Токен бота и chat_id вписаны в `public/send.php` **только на боевом хостинге** — в репозитории там плейсхолдеры `PASTE_TOKEN_HERE`. Значит:
 
-Проверить и поправить страницы, где `title` вне 30–70 или `description` вне 120–160:
-- `src/routes/thank-you.tsx` — description короткий (~70), расширить до 120–160.
-- `src/routes/privacy.tsx`, `oferta.tsx`, `soglasie.tsx`, `rekvizity.tsx`, `oplata.tsx`, `garantii.tsx`, `licenzii.tsx`, `vyezd.tsx`, `otzyvy.tsx`, `about.tsx`, `regions.krym.tsx` — пройтись по `TITLE`/`DESC` константам, привести к диапазону.
-- Главная (`index.tsx`) — title 96 символов, обрезать до ≤70: «Санитарные Решения РФ — служба 24/7 по ЮФО и Крыму».
-- В `__root.tsx` оставить дефолт, но убедиться, что он не перетирает leaf-страницы.
+- На preview (`*.lovable.app`) и в dev-сэндбоксе `/send.php` **не работает** — там нет PHP-рантайма, только статика TanStack. Тестовые заявки отсюда до Telegram не дойдут физически.
+- Реальную сквозную проверку «форма → Telegram» можно сделать **только на `https://sanitarnyeresheniya.ru`**, где развёрнут PHP.
 
-Менять только текстовые значения meta — структура и компоненты не трогаются.
+## План проверки
 
-### 4. Проверка
+### 1. Статический аудит форм (в этом чате, без отправки)
+- Пройти по всем формам и убедиться, что:
+  - `sendLeadToTelegram` вызывается с корректным `source` и данными
+  - Honeypot `website` работает (не блокирует людей, ловит ботов)
+  - Rate limit 30 сек включён
+  - `trackGoal` + `trackCityConversion` вызываются
+  - Редирект на `/thank-you` после успеха
+  - Ссылки WhatsApp/Telegram/tel ведут на правильный номер во всех местах (Header, Footer, HeroCTA, UrgentCTA, MobileQuickLead, страницы городов)
 
-После правок: визуально не меняется ничего. Сборка должна пройти. Schema.org (15/15) и Индексация (10/10) уже зелёные — не трогаем.
+### 2. Playwright-прогон по preview
+Запустить headless-браузер и по каждой ключевой странице:
+- открыть, дождаться формы
+- заполнить валидными данными (телефон, имя, город, услуга)
+- сабмитнуть
+- проверить, что `POST /send.php` ушёл (network) и UI показал состояние (toast/редирект)
 
-### Файлы
+Список маршрутов для прогона (по 1 форме на тип):
+- `/` — HeroCTA + LeadForm
+- `/vyezd` — UrgentCTA / LeadForm
+- `/contacts` — LeadForm
+- `/services/unichtozhenie-tarakanov` — LeadForm с `service`
+- `/cities/simferopol` — LeadForm с `defaultCity`
+- `/cities/simferopol/unichtozhenie-tarakanov` — LeadForm город+услуга
+- `/lp/sochi/posle-pozhara` — LP LeadForm
+- `/prices` — PriceQuiz
+- Мобильный viewport (`/`) — MobileQuickLead (3 шага + телефон)
 
-- `public/.htaccess` — добавить HSTS-заголовки
-- `index.html` — неблокирующая загрузка шрифтов
-- ~10 route-файлов в `src/routes/` — подровнять длины title/description
-- Возможные `<img>` в `src/routes/cities.$citySlug.tsx`, `services.$serviceSlug.tsx`, `cases.tsx`, `blog.tsx` — добавить `loading="lazy"` где нет
+Для preview `POST /send.php` вернёт 404/HTML (PHP нет) — это **ожидаемо**. Задача Playwright — подтвердить, что запрос уходит с правильным телом и что UI корректно отработает ошибку (toast «Ошибка отправки. Позвоните…»).
+
+### 3. Проверка боевого `send.php`
+С помощью `curl` из сэндбокса отправить тестовый JSON на `https://sanitarnyeresheniya.ru/send.php` с пометкой `[TEST]` в поле `name`/`comment`, чтобы:
+- убедиться, что PHP отвечает 200 и `{"ok":true}`
+- реальное сообщение прилетело в Telegram-чат (это подтвердит только владелец)
+
+По каждому городу из `cities` (Симферополь, Севастополь, Сочи и остальные) отправить по одной тестовой заявке с уникальным `formName=TEST_{city}_{service}`, чтобы вы могли пересчитать их в чате.
+
+### 4. Отчёт
+Сводная таблица: форма × страница × статус (network OK, UI OK, боевой прокси OK). Отдельно — список расхождений (если найдутся: разные номера телефона, битые ссылки WA/TG, несогласованные `source`).
+
+## Что нужно от вас до старта
+
+1. **Разрешение слать тестовые заявки в реальный Telegram** (шаг 3). Если да — сколько городов пробить (3 ключевых `simferopol/sevastopol/sochi` или все ~15 из `src/data/cities.ts`)? Каждая заявка = отдельное сообщение в вашем чате.
+2. Тег для тестовых сообщений — предлагаю `[TEST-{дата}]` в поле «Имя», чтобы вы могли отличить их от реальных лидов и удалить.
+
+Если тестовые сообщения в боевой Telegram слать не нужно, ограничусь шагами 1–2 (аудит + Playwright по preview) и отчётом.
