@@ -176,7 +176,8 @@ async function renderRoute(browser: Browser, baseUrl: string, route: string) {
     }
     // Дать TanStack Router время дописать head/JSON-LD
     await new Promise((r) => setTimeout(r, 300));
-    const html = await page.evaluate(() => "<!doctype html>\n" + document.documentElement.outerHTML);
+    const rawHtml = await page.evaluate(() => "<!doctype html>\n" + document.documentElement.outerHTML);
+    const html = dedupeHead(rawHtml);
     const fp = routeToFsPath(route);
     mkdirSync(dirname(fp), { recursive: true });
     writeFileSync(fp, html, "utf8");
