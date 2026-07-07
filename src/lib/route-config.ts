@@ -24,6 +24,7 @@ const staticEntries: RouteEntry[] = [
   { path: "/cities", priority: "0.9", changefreq: "weekly" },
   { path: "/regions", priority: "0.7", changefreq: "monthly" },
   { path: "/regions/krym", priority: "0.7", changefreq: "monthly" },
+  { path: "/regions/moskva-mo", priority: "0.7", changefreq: "monthly" },
   { path: "/cases", priority: "0.7", changefreq: "monthly" },
   { path: "/faq", priority: "0.6", changefreq: "monthly" },
   { path: "/prices", priority: "0.6", changefreq: "monthly" },

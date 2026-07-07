@@ -41,6 +41,14 @@ export const Route = createFileRoute("/regions")({
 
 const regions = [
   {
+    slug: "moskva-mo",
+    name: "Москва и Московская область",
+    description:
+      "Столичный филиал и региональные бригады по Подмосковью. Выезд по всем округам Москвы и городам МО 24/7.",
+    cities: ["Москва", "Химки", "Балашиха", "Мытищи", "Подольск", "Королёв", "Одинцово", "Красногорск"],
+    to: "/regions/moskva-mo" as const,
+  },
+  {
     slug: "krym",
     name: "Республика Крым",
     description:

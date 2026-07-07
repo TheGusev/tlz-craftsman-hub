@@ -29,8 +29,8 @@ import { buildCanonical } from "@/lib/seo";
 export const Route = createFileRoute("/")({
   head: () => {
     const canonical = buildCanonical("/");
-    const title = "Санитарные Решения РФ — аварийная санитарная служба 24/7 по ЮФО и Крыму";
-    const description = "Аварийная санитарная очистка, дезинфекция, удаление плесени, фумигация. Краснодар, Сочи, Ростов-на-Дону, Крым. Выезд бригады 24/7.";
+    const title = "Санитарные Решения РФ — аварийная санитарная служба 24/7 по Москве, МО, ЮФО и Крыму";
+    const description = "Аварийная санитарная очистка, дезинфекция, удаление плесени, фумигация. Москва и МО, Краснодар, Сочи, Ростов-на-Дону, Крым. Выезд бригады 24/7.";
     return {
       meta: [
         { title },
@@ -48,9 +48,9 @@ export const Route = createFileRoute("/")({
             buildBreadcrumbSchema([]),
             buildLocalBusinessSchema({
               path: "/",
-              cityName: "ЮФО и Крым",
+              cityName: "Москва, МО, ЮФО и Крым",
               description,
-              areaServed: "ЮФО и Республика Крым",
+              areaServed: "Москва, Московская область, ЮФО и Республика Крым",
             }),
             ...services.map((s) =>
               buildServiceSchema({
@@ -59,7 +59,7 @@ export const Route = createFileRoute("/")({
                 description: s.metaDescription,
                 serviceType: s.cluster,
                 priceFrom: s.priceFrom,
-                areaServed: "ЮФО и Республика Крым",
+                areaServed: "Москва, Московская область, ЮФО и Республика Крым",
               }),
             ),
             buildFAQSchema(generalFaq),
@@ -103,7 +103,7 @@ function HomePage() {
               <span className="h-2 w-2 animate-pulse rounded-full bg-primary-foreground" /> Аварийная служба 24/7
             </div>
             <h1 className="mt-6 font-display text-[2rem] font-bold leading-[1.1] sm:text-4xl md:text-6xl">
-              Срочные санитарные работы по ЮФО и Крыму
+              Срочные санитарные работы по Москве, МО, ЮФО и Крыму
             </h1>
             <p className="mt-5 max-w-xl text-base opacity-90 md:text-lg">
               Уборка после пожара и потопа, дезинфекция, удаление плесени, фумигация. Выезд бригады в течение 1–3 часов. Лицензия, сертифицированные препараты, гарантия результата.
@@ -125,7 +125,7 @@ function HomePage() {
               {[
                 { icon: Clock, t: "1–3 часа", s: "до приезда бригады" },
                 { icon: ShieldCheck, t: "Гарантия", s: "до 12 месяцев" },
-                { icon: MapPin, t: "8 городов", s: "ЮФО и Крым" },
+                { icon: MapPin, t: "Москва и МО", s: "+ ЮФО и Крым" },
               ].map((b, i) => (
                 <div key={i} className="flex flex-col gap-1">
                   <b.icon className="h-5 w-5 text-accent" />
@@ -182,18 +182,18 @@ function HomePage() {
       <section className="relative overflow-hidden bg-surface py-16 md:py-24">
         <div className="container mx-auto grid gap-10 px-4 md:grid-cols-2 md:items-center">
           <div className="relative order-2 overflow-hidden rounded-2xl shadow-2xl md:order-1">
-            <img src={geographyImg} alt="Побережье ЮФО и Крыма с воздуха" loading="lazy" className="aspect-[4/3] w-full object-cover" />
+            <img src={geographyImg} alt="Москва, МО, ЮФО и Крым с воздуха" loading="lazy" className="aspect-[4/3] w-full object-cover" />
             <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
               <div className="rounded-xl bg-background/95 px-3 py-2 text-foreground shadow-lg">
-                <div className="font-display text-xl font-bold">8 городов</div>
-                <div className="text-xs text-muted-foreground">Дежурные бригады 24/7</div>
+                <div className="font-display text-xl font-bold">Москва и МО</div>
+                <div className="text-xs text-muted-foreground">+ ЮФО и Крым, 24/7</div>
               </div>
-              <div className="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground shadow-lg">ЮФО + Крым</div>
+              <div className="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground shadow-lg">Москва и МО</div>
             </div>
           </div>
           <div className="order-1 md:order-2">
             <h2 className="font-display text-3xl font-bold md:text-4xl">География присутствия</h2>
-            <p className="mt-3 text-muted-foreground">Дежурные бригады в Краснодаре, Сочи, Ростове-на-Дону. Региональный хаб по Крыму с выездом в Симферополь, Севастополь, Ялту, Евпаторию и Керчь.</p>
+            <p className="mt-3 text-muted-foreground">Столичный филиал по Москве и МО — выезд по всем округам и городам Подмосковья. Дежурные бригады в Краснодаре, Сочи, Ростове-на-Дону. Региональный хаб по Крыму с выездом в Симферополь, Севастополь, Ялту, Евпаторию и Керчь.</p>
             <div className="mt-6 grid gap-2 sm:grid-cols-2">
               {cities.map((c) => (
                 <Link key={c.slug} to="/cities/$citySlug" params={{ citySlug: c.slug }} className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3 transition hover:border-accent active:scale-[0.99]">
