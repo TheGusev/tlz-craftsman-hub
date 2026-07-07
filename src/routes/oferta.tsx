@@ -14,7 +14,7 @@ export const Route = createFileRoute("/oferta")({
     meta: [
       { title: TITLE },
       { name: "description", content: DESC },
-      { name: "robots", content: "index,follow" },
+      { name: "robots", content: "index,follow,max-image-preview:large,max-snippet:-1" },
       { property: "og:url", content: buildCanonical(PATH) },
     ],
     links: [{ rel: "canonical", href: buildCanonical(PATH) }],
