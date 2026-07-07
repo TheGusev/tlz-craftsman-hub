@@ -30,6 +30,7 @@ import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ServicesServiceSlugRouteImport } from './routes/services.$serviceSlug'
+import { Route as RegionsMoskvaMoRouteImport } from './routes/regions.moskva-mo'
 import { Route as RegionsKrymRouteImport } from './routes/regions.krym'
 import { Route as CitiesCitySlugRouteImport } from './routes/cities.$citySlug'
 import { Route as CasesSlugRouteImport } from './routes/cases.$slug'
@@ -142,6 +143,11 @@ const ServicesServiceSlugRoute = ServicesServiceSlugRouteImport.update({
   path: '/$serviceSlug',
   getParentRoute: () => ServicesRoute,
 } as any)
+const RegionsMoskvaMoRoute = RegionsMoskvaMoRouteImport.update({
+  id: '/moskva-mo',
+  path: '/moskva-mo',
+  getParentRoute: () => RegionsRoute,
+} as any)
 const RegionsKrymRoute = RegionsKrymRouteImport.update({
   id: '/krym',
   path: '/krym',
@@ -199,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/cases/$slug': typeof CasesSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
   '/regions/krym': typeof RegionsKrymRoute
+  '/regions/moskva-mo': typeof RegionsMoskvaMoRoute
   '/services/$serviceSlug': typeof ServicesServiceSlugRoute
   '/cities/$citySlug/$serviceSlug': typeof CitiesCitySlugServiceSlugRoute
   '/lp/$citySlug/$serviceSlug': typeof LpCitySlugServiceSlugRoute
@@ -228,6 +235,7 @@ export interface FileRoutesByTo {
   '/cases/$slug': typeof CasesSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
   '/regions/krym': typeof RegionsKrymRoute
+  '/regions/moskva-mo': typeof RegionsMoskvaMoRoute
   '/services/$serviceSlug': typeof ServicesServiceSlugRoute
   '/cities/$citySlug/$serviceSlug': typeof CitiesCitySlugServiceSlugRoute
   '/lp/$citySlug/$serviceSlug': typeof LpCitySlugServiceSlugRoute
@@ -258,6 +266,7 @@ export interface FileRoutesById {
   '/cases/$slug': typeof CasesSlugRoute
   '/cities/$citySlug': typeof CitiesCitySlugRouteWithChildren
   '/regions/krym': typeof RegionsKrymRoute
+  '/regions/moskva-mo': typeof RegionsMoskvaMoRoute
   '/services/$serviceSlug': typeof ServicesServiceSlugRoute
   '/cities/$citySlug/$serviceSlug': typeof CitiesCitySlugServiceSlugRoute
   '/lp/$citySlug/$serviceSlug': typeof LpCitySlugServiceSlugRoute
@@ -289,6 +298,7 @@ export interface FileRouteTypes {
     | '/cases/$slug'
     | '/cities/$citySlug'
     | '/regions/krym'
+    | '/regions/moskva-mo'
     | '/services/$serviceSlug'
     | '/cities/$citySlug/$serviceSlug'
     | '/lp/$citySlug/$serviceSlug'
@@ -318,6 +328,7 @@ export interface FileRouteTypes {
     | '/cases/$slug'
     | '/cities/$citySlug'
     | '/regions/krym'
+    | '/regions/moskva-mo'
     | '/services/$serviceSlug'
     | '/cities/$citySlug/$serviceSlug'
     | '/lp/$citySlug/$serviceSlug'
@@ -347,6 +358,7 @@ export interface FileRouteTypes {
     | '/cases/$slug'
     | '/cities/$citySlug'
     | '/regions/krym'
+    | '/regions/moskva-mo'
     | '/services/$serviceSlug'
     | '/cities/$citySlug/$serviceSlug'
     | '/lp/$citySlug/$serviceSlug'
@@ -525,6 +537,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesServiceSlugRouteImport
       parentRoute: typeof ServicesRoute
     }
+    '/regions/moskva-mo': {
+      id: '/regions/moskva-mo'
+      path: '/moskva-mo'
+      fullPath: '/regions/moskva-mo'
+      preLoaderRoute: typeof RegionsMoskvaMoRouteImport
+      parentRoute: typeof RegionsRoute
+    }
     '/regions/krym': {
       id: '/regions/krym'
       path: '/krym'
@@ -615,10 +634,12 @@ const CitiesRouteWithChildren =
 
 interface RegionsRouteChildren {
   RegionsKrymRoute: typeof RegionsKrymRoute
+  RegionsMoskvaMoRoute: typeof RegionsMoskvaMoRoute
 }
 
 const RegionsRouteChildren: RegionsRouteChildren = {
   RegionsKrymRoute: RegionsKrymRoute,
+  RegionsMoskvaMoRoute: RegionsMoskvaMoRoute,
 }
 
 const RegionsRouteWithChildren =
