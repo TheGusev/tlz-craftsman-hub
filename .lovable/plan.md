@@ -1,104 +1,159 @@
-## Что нашёл — реальный ответ сервера vs ожидания
+## Цель
 
-Скачал все 134 URL из `sitemap.xml`, распарсил `<head>`. Основные проблемы — на уровне `<link rel="canonical">`, а не robots.
+Прогнать сайт `sanitarnyeresheniya.ru` через полный аудит: техническое SEO, гео-SEO (для Москвы/МО, Краснодара, Крыма и т.д.), структурированные данные, производительность, доступность, безопасность, визуал/UX. На выходе — балльная оценка по 8 категориям (0–100 в каждой + сводный балл) с конкретными «что чинить, чтобы стало 100».
 
-### 1. Критично: 115 страниц имеют по 2 `<link rel="canonical">`
+Аудит **только чтение** — правки не делаю, сначала показываю отчёт. После вашего одобрения фикшу все находки одним заходом.
 
-Первый указывает на **родительский листинг**, второй — на саму страницу. Яндекс/Google читают первый → все дочерние URL «схлопываются» в родительский. Это и есть настоящая причина жалоб на индексацию.
+## Что и как проверю
 
-Затронуто (примеры из живого сайта):
+### 1. Технический SEO (crawl-аудит, вес 20)
+- Скачиваю все 134 URL из `sitemap.xml` (прод), парсю `<head>`.
+- На каждой странице проверяю:
+  - **1 `<title>`**, длина 30–65 симв., уникальность по всему сайту.
+  - **1 `<meta name="description">`**, 120–170 симв., уникальность.
+  - **1 `<link rel="canonical">`**, самореференс (URL страницы = URL канона).
+  - **1 `<meta name="robots">`**, значение `index,follow,…` (кроме `/privacy`).
+  - `og:title/og:description/og:url/og:image` — по одному, `og:url == canonical`, `og:image` — абсолютный URL, 1200×630.
+  - `twitter:card = summary_large_image`, `twitter:image` абсолютный.
+  - `<html lang="ru">`, `<meta charset>`, `<meta viewport>`.
+  - HTTP-ответ 200, редиректы (`www` → без `www`, `http` → `https`), нет 4xx/5xx.
+  - `X-Robots-Tag` заголовок не противоречит meta robots.
+- `robots.txt`: доступен, разрешает индексацию, ссылка на sitemap.
+- `sitemap.xml`: валиден, все URL отвечают 200, `lastmod` есть.
+- Хлебные крошки: `BreadcrumbList` JSON-LD на всех вложенных страницах.
+- 404-страница: отдаётся с корректным кодом 404 и мета `noindex`.
 
-| URL | 1-й canonical (что видит Яндекс) | 2-й canonical (правильный) |
-|---|---|---|
-| `/blog/chto-delat-posle-pozhara-v-kvartire` | `/blog` | `/blog/chto-delat-posle-pozhara-v-kvartire` |
-| `/cases/pozhar-zhk-samolet-krasnodar` | `/cases` | `/cases/pozhar-zhk-samolet-krasnodar` |
-| `/cities/krasnodar` | `/cities` | `/cities/krasnodar` |
-| `/cities/krasnodar/posle-pozhara` | `/cities` | `/cities/krasnodar/posle-pozhara` |
+### 2. Структурированные данные / Schema.org (вес 15)
+- Для каждой страницы вытаскиваю все `<script type="application/ld+json">` и валидирую JSON.
+- Проверяю наличие нужных типов по типу страницы:
+  - Главная: `Organization` + `WebSite` (с `SearchAction`).
+  - `/cities/:city`: `LocalBusiness` (или `EmergencyService`) с `address`, `geo`, `areaServed`, `telephone`, `openingHoursSpecification 24/7`, `priceRange`, `aggregateRating` если есть отзывы.
+  - `/cities/:city/:service`: `Service` со ссылкой на `LocalBusiness` + `areaServed`.
+  - `/services/:slug`: `Service` + `FAQPage` если есть FAQ.
+  - `/cases/:slug`: `Article` + `BreadcrumbList` + `ImageObject`.
+  - `/blog/:slug`: `Article` с `datePublished/dateModified/author/image`.
+  - `/faq`, `/prices`: `FAQPage`, `PriceSpecification`.
+- Прогоняю каждую разметку через Google Rich Results Test API (или локальный `schema-dts`-валидатор).
 
-Всего: 4 блоговых + 12 кейсов + 16 городов + 82 город×услуга + `/regions/*` = **115 страниц**.
+### 3. Гео-SEO (вес 15)
+- В сайдбаре сборной инфы: **где** мы упоминаем каждый регион (title/H1/canonical), **сколько раз** название города встречается в тексте (нормально 3–8 на 1000 знаков, спам > 15).
+- `LocalBusiness.address` с `addressLocality` для каждого города.
+- `geo` с координатами (lat/lng) на каждой city-странице.
+- `areaServed` перечисляет все районы города (у нас в `cities.ts` есть `districts`).
+- NAP-консистентность: телефон/адрес/название совпадают везде (`SITE_PHONE`, `SITE_NAME`).
+- `hreflang` — не нужен (одноязычный сайт).
+- Sitemap разбит логично; для крупных городов (Москва, Краснодар) — есть ли internal linking из главной/regions.
 
-**Причина.** В TanStack file-based routing при рендере `/cases/foo` активны сразу оба матча (`cases.tsx` + `cases.$slug.tsx`), их `head().links` **конкатенируются**, а `<link>` в отличие от `<meta name=...>` не дедуплицируется по атрибутам. Родитель одновременно и layout, и index-страница, поэтому у него правомерно есть свой canonical на `/cases` — но он «протекает» в детей.
+### 4. Контент-SEO (вес 10)
+- Уникальность H1 на страницу (один H1, содержит основной ключ).
+- Иерархия `H1 → H2 → H3` без скачков.
+- Плотность ключей (город + услуга) в title/H1/URL/первом абзаце/alt.
+- Длина текста на посадочных city×service: минимум 800–1200 слов для конкурентных запросов ( «дезинфекция после смерти Москва» и т.п.).
+- Внутренние ссылки: у city-страницы → на 9 service-in-city; у service — на все города; у cases/blog — обратно на профильные посадочные.
+- `alt` атрибуты на всех `<img>` (проверю HTML всех 134 страниц).
 
-### 2. Средне: `og:image` и `twitter:image` дублируются на всех 134 страницах
+### 5. Производительность (Core Web Vitals, вес 15)
+- Прогоняю `unlighthouse` или `lighthouse` на выборке из ~10 представительных URL (главная, city, city×service, case, blog, services). Метрики:
+  - **LCP** ≤ 2.5s
+  - **CLS** ≤ 0.1
+  - **INP** ≤ 200ms
+  - TBT ≤ 200ms
+  - Total transfer size, JS size.
+- Проверю:
+  - Preload LCP-картинки (`<link rel="preload" as="image">`).
+  - Формат картинок (WebP/AVIF vs JPEG/PNG).
+  - Ленивая загрузка нехайлайтных `<img loading="lazy">`.
+  - `fetchpriority="high"` на LCP, `low` на прочих.
+  - Font-display swap, preconnect к CDN шрифтов.
+  - Отсутствие render-blocking скриптов; аналитика с `async/defer`.
+  - Кэширование статики: `Cache-Control: public, max-age=31536000, immutable` на `/assets/*`.
 
-Первый — `/og-default.jpg` из `index.html` (относительный, не резолвится соцсетями), второй — правильный от route/root. Пример на `/cases/pozhar-zhk-samolet-krasnodar`:
+### 6. Доступность (a11y, вес 10)
+- axe-core через Playwright на выборке из 10 страниц.
+- Контрастность (WCAG AA ≥ 4.5:1 для основного текста, 3:1 для крупного).
+- Все кнопки/ссылки имеют доступное имя (`aria-label` на icon-only).
+- Формы: `<label for>`, `aria-invalid`, обязательные поля помечены.
+- Один `<main>`, landmark-регионы, tab-порядок логичный.
+- Focus-visible виден.
+
+### 7. Безопасность (вес 5)
+- HTTPS, HSTS.
+- CSP-заголовок (если есть — валиден; если нет — предложу).
+- `Referrer-Policy`, `X-Content-Type-Options: nosniff`, `X-Frame-Options` или `frame-ancestors`.
+- Утечки: нет `.env`, `.git`, source maps на проде.
+- Формы: honeypot / rate-limit, CSRF (нам нужен?).
+
+### 8. Визуал / UX / GEO-UX (вес 10)
+- Playwright-скриншоты в трёх вьюпортах (375×812 mobile, 768×1024 tablet, 1440×900 desktop) на ~10 страниц.
+- Что смотрю:
+  - Hero без «обрезки» текста, CTA виден без прокрутки.
+  - Единая типографика, единый тон.
+  - Формы заявки — фокус, состояние отправки, подтверждение.
+  - Все ссылки на TG/WA/Max/телефон — рабочие (кликаю Playwright'ом, проверяю URL).
+  - Единый tone для новых МО-страниц по сравнению со старыми (Крым/Краснодар).
+  - Липкие CTA и «позвонить»-кнопка на mobile.
+  - Отсутствие layout shift, дребезга шрифтов, «плавания» картинок.
+
+### 9. GEO / Локальные каталоги (бонус, вне общего балла)
+Не проверяется автоматически, но добавлю в отчёт чек-лист:
+- Яндекс.Бизнес / Google Business Profile для каждого города?
+- Отзывы на Яндекс.Картах, 2GIS, Otzovik?
+- Единый NAP во всех каталогах?
+
+## Что получит пользователь
+
+Один markdown-отчёт со структурой:
+
+```text
+Итоговый балл: XX/100
+
+┌─ 1. Технический SEO           XX/20  [P0 issues: N]
+├─ 2. Structured data            XX/15
+├─ 3. Гео-SEO                    XX/15
+├─ 4. Контент-SEO                XX/10
+├─ 5. Performance (CWV)          XX/15
+├─ 6. Accessibility              XX/10
+├─ 7. Security                    X/5
+└─ 8. Visual / UX                XX/10
+
+--- Что мешает 100/100 ---
+P0 (индексация / краш):
+  1. …
+P1 (страдает SEO / CWV):
+  1. …
+P2 (мелочи, косметика):
+  1. …
+
+--- Что уже отлично ---
+  • …
 ```
-<meta property="og:image" content="/og-default.jpg">
-<meta property="og:image" content="https://sanitarnyeresheniya.ru/assets/pozhar-zhk-samolet-krasnodar-before-…jpg">
-```
 
-### 3. Мелко
+Плюс:
+- CSV-таблицу «URL × проверка» для всех 134 страниц с колонками title/description/canonical/robots/schema.
+- Скриншоты выборки страниц (mobile+desktop) с пометками проблемных мест.
 
-- `src/routes/oferta.tsx`: robots перезаписан на `index,follow` (без `max-image-preview:large,max-snippet:-1`). Все остальные — с полным набором.
-- `src/routes/lp.$citySlug.$serviceSlug.tsx`: canonical хардкодит домен `tlz-craftsman-hub.lovable.app`. LP-роуты у нас `noindex,nofollow`, но canonical всё равно надо строить через `SITE_URL`.
+## Инструменты, которые задействую
 
-### Что уже ок
+- `curl` + `python3` для скачивания и парсинга (`beautifulsoup4`, `json`).
+- **Playwright** для рендеринга, скриншотов, click-through проверки форм и кнопок.
+- **Lighthouse CLI** (`nix run nixpkgs#lighthouse -- ...`) для CWV на выборке.
+- **axe-core** через Playwright для a11y.
+- Валидаторы:
+  - `xmllint` для `sitemap.xml`.
+  - Google Rich Results Test API (открытый) для schema.
+  - `curl -I` для заголовков (HSTS, CSP, cache-control).
+- Semrush-инструменты (уже подключены) для внешнего взгляда: `domain_analysis`, `top_pages`, `serp_analysis` на ключевые запросы — покажет, как нас видит Google относительно конкурентов, ставлю отдельным блоком в отчёте.
 
-- **`<meta name="robots">`** — на всех страницах ровно один тег. Значения корректные:
-  - 132 страницы — `index,follow,max-image-preview:large,max-snippet:-1` (из `__root.tsx`).
-  - `oferta` — `index,follow` (см. пункт 3).
-  - `privacy` — `noindex, follow` (намеренно, служебная).
-- `<meta property="og:url"/og:title/og:description>` — по одному тегу на страницу (эти mata-теги дедуплицируются).
-- `<title>` — по одному валидному значению у всех.
+## Что НЕ входит в этот заход
 
-## Что сделаю
+- **Правки кода.** Отдам только отчёт. После вашего «ок, чиним» — второй заход с фиксами по списку P0 → P1 → P2.
+- **Тексты «под ключ».** Если контент-SEO покажет тонкий текст на конкретных city×service (< 800 слов) — предложу расширить, но переписывать буду отдельным запросом (это большая работа с копирайтом).
+- **Внешние ссылки и каталоги.** Только чек-лист, регистрация в Я.Бизнес/2GIS — вручную.
 
-**A. Убрать из `index.html` теги, которые перезаписываются роутами и порождают дубли:**
-- `<meta property="og:image" content="/og-default.jpg">` (строка 32)
-- `<meta name="twitter:image" content="/og-default.jpg">` (строка 34)
+## Оценка объёма
 
-Оставить `og:type`, `og:site_name`, `og:locale`, `twitter:card` — они не дублируются на уровне значений и полезны как фолбэк для соц-краулеров, не выполняющих JS.
+Аудит займёт ~15–25 tool calls (Lighthouse, Playwright, парсинг). Ничего не деплою, прод не трогаю.
 
-**B. Добавить пост-обработку в `scripts/prerender.ts`** перед `writeFileSync(fp, html)`:
+## Готов начать?
 
-```ts
-function dedupeHead(html: string): string {
-  // Для каждого «уникального» ключа оставляем ПОСЛЕДНЕЕ вхождение,
-  // потому что child-роут пишет head позже родителя.
-  const rules = [
-    { re: /<link\b[^>]*\brel=["']canonical["'][^>]*>/gi, key: () => "canonical" },
-    { re: /<meta\b[^>]*\bproperty=["']og:image["'][^>]*>/gi, key: () => "og:image" },
-    { re: /<meta\b[^>]*\bname=["']twitter:image["'][^>]*>/gi, key: () => "twitter:image" },
-    { re: /<title>[^<]*<\/title>/gi, key: () => "title" },
-  ];
-  for (const { re } of rules) {
-    const matches = [...html.matchAll(re)];
-    if (matches.length <= 1) continue;
-    // Удаляем все, кроме последнего.
-    for (let i = 0; i < matches.length - 1; i++) {
-      const m = matches[i];
-      html = html.slice(0, m.index) + html.slice(m.index + m[0].length);
-      // сдвиг индексов последующих — matchAll на исходной строке, пересчитывать:
-      // проще заново вычислить в цикле:
-      // (заменю на цикл через `replace` — см. ниже)
-    }
-  }
-  return html;
-}
-```
-
-Финальную реализацию сделаю без ловушки со сдвигом индексов (либо через повторный `matchAll` до сходимости, либо `html.replace(re, (m, i, all) => i === lastIndex ? m : "")`).
-
-Это самый безопасный фикс: не трогаем файловую структуру роутов, не рискуем сломать логику TanStack, и правило «оставить последний» естественно потому, что child-`head()` эмитится после parent-`head()`.
-
-**C. Мелкие правки в роутах:**
-- `src/routes/oferta.tsx`: robots → `index,follow,max-image-preview:large,max-snippet:-1` (как у всех).
-- `src/routes/lp.$citySlug.$serviceSlug.tsx`: заменить хардкод домена на `${SITE_URL}/lp/${params.citySlug}/${params.serviceSlug}`.
-
-## Проверка после деплоя
-
-1. `curl -s https://sanitarnyeresheniya.ru/cases/pozhar-zhk-samolet-krasnodar | grep -c 'rel="canonical"'` → **1**.
-2. То же для `/blog/*`, `/cities/*`, `/cities/:city/:service`.
-3. `grep -c 'og:image'` на любой странице → **1**.
-4. `<meta name="robots">` — по-прежнему один тег, `index,follow,max-image-preview:large,max-snippet:-1`.
-5. В Яндекс.Вебмастере отправить на переобход:
-   - `/cases`, `/blog`, `/cities`, `/regions` и все их дочерние URL (те же 115, что были со сбитым canonical).
-
-## Файлы, которые меняю
-
-- `index.html` — удалить `og:image` и `twitter:image`.
-- `scripts/prerender.ts` — добавить функцию `dedupeHead` и вызвать её перед записью `fp` (и `dist/404.html`).
-- `src/routes/oferta.tsx` — выровнять `robots`.
-- `src/routes/lp.$citySlug.$serviceSlug.tsx` — canonical через `SITE_URL`.
-
-Роуты `cases.tsx`, `blog.tsx`, `cities.tsx`, `cities.$citySlug.tsx` **не трогаю**: их собственный canonical (для `/cases`, `/blog`, `/cities`, `/cities/:city`) корректный, дедуп в prerender'е снимет только лишние дубли у детей.
+Одобрите план — переключу в build mode и запущу все проверки, затем верну единый отчёт с баллами и списком фиксов. После — вторым сообщением ("чиним") прогоню все P0/P1.
