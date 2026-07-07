@@ -148,6 +148,36 @@ async function startServer(): Promise<{ url: string; close: () => void }> {
   };
 }
 
+/**
+ * TanStack Router file-based routing склеивает `head()` родителя и ребёнка.
+ * У `<meta name/property>` браузер дедуплицирует по атрибуту, а у `<link>` и
+ * `<title>` — нет. Поэтому в prerendered HTML появляются два `<link
+ * rel="canonical">` (родительский + детский) и два `<title>`. Оставляем
+ * ПОСЛЕДНЕЕ вхождение — это тег дочернего роута.
+ *
+ * Также страхуемся для og:image/twitter:image (историчный дубль из index.html).
+ */
+function dedupeHead(html: string): string {
+  const patterns: RegExp[] = [
+    /<link\b[^>]*\brel=["']canonical["'][^>]*>\s*/gi,
+    /<meta\b[^>]*\bproperty=["']og:image["'][^>]*>\s*/gi,
+    /<meta\b[^>]*\bname=["']twitter:image["'][^>]*>\s*/gi,
+    /<title>[^<]*<\/title>\s*/gi,
+  ];
+  for (const re of patterns) {
+    const matches = [...html.matchAll(re)];
+    if (matches.length <= 1) continue;
+    const keepIdx = matches.length - 1;
+    let removed = 0;
+    html = html.replace(re, (m) => {
+      const i = removed++;
+      return i === keepIdx ? m : "";
+    });
+  }
+  return html;
+}
+
+
 async function renderRoute(browser: Browser, baseUrl: string, route: string) {
   const page = await browser.newPage();
   page.on("pageerror", (e) => console.error(`  [pageerror ${route}]`, e.stack ?? e.message));
