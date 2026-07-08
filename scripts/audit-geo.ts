@@ -24,10 +24,18 @@ function tokenize(text: string): string[] {
     .filter(Boolean);
 }
 
+const RU_ENDINGS = ["ями", "ами", "ого", "ому", "ыми", "ыми", "ыми", "ая", "ой", "ую", "ое", "ые", "ий", "ов", "ом", "ах", "ам", "ей", "ям", "ям", "ах", "у", "ы", "е", "ю", "и", "а", "я", "ь"];
+function stem(t: string): string {
+  for (const end of RU_ENDINGS) {
+    if (t.length - end.length >= 4 && t.endsWith(end)) return t.slice(0, t.length - end.length);
+  }
+  return t;
+}
+
 function countMatches(tokens: string[], needles: string[]): number {
-  const set = new Set(needles.map((n) => n.toLowerCase().replace(/ё/g, "е")));
+  const set = new Set(needles.map((n) => stem(n.toLowerCase().replace(/ё/g, "е"))));
   let n = 0;
-  for (const t of tokens) if (set.has(t)) n++;
+  for (const t of tokens) if (set.has(stem(t))) n++;
   return n;
 }
 

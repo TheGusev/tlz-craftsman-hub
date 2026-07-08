@@ -1,6 +1,6 @@
 # GEO-frequency audit
 
-Generated: 2026-07-08T06:48:29.637Z
+Generated: 2026-07-08T06:48:48.747Z
 
 Thresholds: city ≤ 2.5%, service ≤ 3%, top-bigram ≤ 1%.
 
@@ -313,25 +313,25 @@ Thresholds: city ≤ 2.5%, service ≤ 3%, top-bigram ≤ 1%.
 | /cities/moskva/ozonirovanie-pomescheniy | 979 | 0.61 | 1.12 | в москве (7) | ok |
 | /cities/moskva/obrabotka-uchastkov-ot-kleschey | 1138 | 0.44 | 0.97 | в москве (10) | ok |
 | /cities/moskva/obrabotka-ot-grizunov-na-uchastke | 959 | 0.63 | 1.46 | в москве (7) | ok |
-| /cities/moskovskaya-oblast/posle-pozhara | 1294 | 0.00 | 1.85 | московской области (9) | GEO_HEAD_MISSING |
-| /cities/moskovskaya-oblast/posle-potopa | 1250 | 0.00 | 1.68 | после потопа (9) | GEO_HEAD_MISSING |
-| /cities/moskovskaya-oblast/udalenie-zapaha-gari | 1069 | 0.00 | 1.96 | запах гари (9) | GEO_HEAD_MISSING |
-| /cities/moskovskaya-oblast/dezinfekciya-posle-smerti | 1187 | 0.00 | 1.68 | после смерти (9) | GEO_HEAD_MISSING |
-| /cities/moskovskaya-oblast/udalenie-trupnogo-zapaha | 1029 | 0.00 | 1.94 | в московской (7) | GEO_HEAD_MISSING |
-| /cities/moskovskaya-oblast/fumigaciya | 1146 | 0.00 | 1.48 | в московской (8) | GEO_HEAD_MISSING |
-| /cities/moskovskaya-oblast/udalenie-pleseni | 1186 | 0.00 | 1.77 | в московской (8) | GEO_HEAD_MISSING |
-| /cities/moskovskaya-oblast/sanitarnaya-obrabotka-pomeshcheniy | 1027 | 0.00 | 1.36 | в московской (7) | GEO_HEAD_MISSING |
-| /cities/moskovskaya-oblast/ochistka-uchastkov | 1023 | 0.00 | 1.37 | в московской (7) | GEO_HEAD_MISSING |
-| /cities/moskovskaya-oblast/dezinfekciya-pomeshcheniy | 1114 | 0.00 | 1.26 | в московской (8) | GEO_HEAD_MISSING |
-| /cities/moskovskaya-oblast/dezinsekciya | 1100 | 0.00 | 1.09 | в московской (8) | GEO_HEAD_MISSING |
-| /cities/moskovskaya-oblast/deratizaciya | 1101 | 0.00 | 1.18 | в московской (8) | GEO_HEAD_MISSING |
-| /cities/moskovskaya-oblast/unichtozhenie-tarakanov | 994 | 0.00 | 0.70 | в московской (7) | GEO_HEAD_MISSING |
-| /cities/moskovskaya-oblast/unichtozhenie-klopov | 1003 | 0.00 | 0.80 | в московской (7) | GEO_HEAD_MISSING |
-| /cities/moskovskaya-oblast/unichtozhenie-blokh | 993 | 0.00 | 0.81 | в московской (7) | GEO_HEAD_MISSING |
-| /cities/moskovskaya-oblast/unichtozhenie-muravev | 959 | 0.00 | 0.73 | в московской (7) | GEO_HEAD_MISSING |
-| /cities/moskovskaya-oblast/ozonirovanie-pomescheniy | 987 | 0.00 | 1.11 | в московской (7) | GEO_HEAD_MISSING |
-| /cities/moskovskaya-oblast/obrabotka-uchastkov-ot-kleschey | 1114 | 0.00 | 0.72 | в московской (8) | GEO_HEAD_MISSING |
-| /cities/moskovskaya-oblast/obrabotka-ot-grizunov-na-uchastke | 967 | 0.00 | 1.45 | в московской (7) | GEO_HEAD_MISSING |
+| /cities/moskovskaya-oblast/posle-pozhara | 1294 | 0.62 | 1.85 | московской области (9) | ok |
+| /cities/moskovskaya-oblast/posle-potopa | 1250 | 0.64 | 1.68 | после потопа (9) | ok |
+| /cities/moskovskaya-oblast/udalenie-zapaha-gari | 1069 | 0.75 | 1.96 | запах гари (9) | ok |
+| /cities/moskovskaya-oblast/dezinfekciya-posle-smerti | 1187 | 0.67 | 1.68 | после смерти (9) | ok |
+| /cities/moskovskaya-oblast/udalenie-trupnogo-zapaha | 1029 | 0.78 | 1.94 | в московской (7) | ok |
+| /cities/moskovskaya-oblast/fumigaciya | 1146 | 0.70 | 1.48 | в московской (8) | ok |
+| /cities/moskovskaya-oblast/udalenie-pleseni | 1186 | 0.67 | 1.77 | в московской (8) | ok |
+| /cities/moskovskaya-oblast/sanitarnaya-obrabotka-pomeshcheniy | 1027 | 0.78 | 1.36 | в московской (7) | ok |
+| /cities/moskovskaya-oblast/ochistka-uchastkov | 1023 | 0.78 | 1.37 | в московской (7) | ok |
+| /cities/moskovskaya-oblast/dezinfekciya-pomeshcheniy | 1114 | 0.72 | 1.26 | в московской (8) | ok |
+| /cities/moskovskaya-oblast/dezinsekciya | 1100 | 0.73 | 1.09 | в московской (8) | ok |
+| /cities/moskovskaya-oblast/deratizaciya | 1101 | 0.73 | 1.18 | в московской (8) | ok |
+| /cities/moskovskaya-oblast/unichtozhenie-tarakanov | 994 | 0.80 | 0.70 | в московской (7) | ok |
+| /cities/moskovskaya-oblast/unichtozhenie-klopov | 1003 | 0.80 | 0.80 | в московской (7) | ok |
+| /cities/moskovskaya-oblast/unichtozhenie-blokh | 993 | 0.81 | 0.81 | в московской (7) | ok |
+| /cities/moskovskaya-oblast/unichtozhenie-muravev | 959 | 0.83 | 0.73 | в московской (7) | ok |
+| /cities/moskovskaya-oblast/ozonirovanie-pomescheniy | 987 | 0.81 | 1.11 | в московской (7) | ok |
+| /cities/moskovskaya-oblast/obrabotka-uchastkov-ot-kleschey | 1114 | 0.72 | 0.72 | в московской (8) | ok |
+| /cities/moskovskaya-oblast/obrabotka-ot-grizunov-na-uchastke | 967 | 0.83 | 1.45 | в московской (7) | ok |
 
 ## blog
 
@@ -339,33 +339,12 @@ Thresholds: city ≤ 2.5%, service ≤ 3%, top-bigram ≤ 1%.
 |---|---|---|---|---|---|
 | /blog/chem-opasna-plesen-posle-zatopleniya | 1251 | 1.68 | 0.48 | и крыму (6) | ok |
 | /blog/chto-delat-posle-pozhara-v-kvartire | 1202 | 0.83 | 2.91 | после пожара (6) | ok |
-| /blog/kogda-nuzhna-fumigaciya | 1188 | 2.10 | 0.67 | и крыму (5) | ok |
+| /blog/kogda-nuzhna-fumigaciya | 1188 | 2.10 | 0.76 | и крыму (5) | ok |
 | /blog/kak-ubrat-zapah-posle-smerti | 1176 | 1.19 | 1.87 | при необходимости (5) | ok |
 
 ## Summary
 
-Total findings: 19
+Total findings: 0
 
-- GEO_HEAD_MISSING: 19
 
 ### First 40 findings
-
-- `/cities/moskovskaya-oblast/posle-pozhara` — GEO_HEAD_MISSING — city=0.00% service=1.85% bg="московской области"×9
-- `/cities/moskovskaya-oblast/posle-potopa` — GEO_HEAD_MISSING — city=0.00% service=1.68% bg="после потопа"×9
-- `/cities/moskovskaya-oblast/udalenie-zapaha-gari` — GEO_HEAD_MISSING — city=0.00% service=1.96% bg="запах гари"×9
-- `/cities/moskovskaya-oblast/dezinfekciya-posle-smerti` — GEO_HEAD_MISSING — city=0.00% service=1.68% bg="после смерти"×9
-- `/cities/moskovskaya-oblast/udalenie-trupnogo-zapaha` — GEO_HEAD_MISSING — city=0.00% service=1.94% bg="в московской"×7
-- `/cities/moskovskaya-oblast/fumigaciya` — GEO_HEAD_MISSING — city=0.00% service=1.48% bg="в московской"×8
-- `/cities/moskovskaya-oblast/udalenie-pleseni` — GEO_HEAD_MISSING — city=0.00% service=1.77% bg="в московской"×8
-- `/cities/moskovskaya-oblast/sanitarnaya-obrabotka-pomeshcheniy` — GEO_HEAD_MISSING — city=0.00% service=1.36% bg="в московской"×7
-- `/cities/moskovskaya-oblast/ochistka-uchastkov` — GEO_HEAD_MISSING — city=0.00% service=1.37% bg="в московской"×7
-- `/cities/moskovskaya-oblast/dezinfekciya-pomeshcheniy` — GEO_HEAD_MISSING — city=0.00% service=1.26% bg="в московской"×8
-- `/cities/moskovskaya-oblast/dezinsekciya` — GEO_HEAD_MISSING — city=0.00% service=1.09% bg="в московской"×8
-- `/cities/moskovskaya-oblast/deratizaciya` — GEO_HEAD_MISSING — city=0.00% service=1.18% bg="в московской"×8
-- `/cities/moskovskaya-oblast/unichtozhenie-tarakanov` — GEO_HEAD_MISSING — city=0.00% service=0.70% bg="в московской"×7
-- `/cities/moskovskaya-oblast/unichtozhenie-klopov` — GEO_HEAD_MISSING — city=0.00% service=0.80% bg="в московской"×7
-- `/cities/moskovskaya-oblast/unichtozhenie-blokh` — GEO_HEAD_MISSING — city=0.00% service=0.81% bg="в московской"×7
-- `/cities/moskovskaya-oblast/unichtozhenie-muravev` — GEO_HEAD_MISSING — city=0.00% service=0.73% bg="в московской"×7
-- `/cities/moskovskaya-oblast/ozonirovanie-pomescheniy` — GEO_HEAD_MISSING — city=0.00% service=1.11% bg="в московской"×7
-- `/cities/moskovskaya-oblast/obrabotka-uchastkov-ot-kleschey` — GEO_HEAD_MISSING — city=0.00% service=0.72% bg="в московской"×8
-- `/cities/moskovskaya-oblast/obrabotka-ot-grizunov-na-uchastke` — GEO_HEAD_MISSING — city=0.00% service=1.45% bg="в московской"×7
