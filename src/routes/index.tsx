@@ -14,8 +14,8 @@ import { trackGoal } from "@/lib/analytics";
 import { getServiceImage } from "@/lib/serviceImages";
 import { getCaseGallery } from "@/lib/caseGallery";
 
-import geographyImg from "@/assets/geography.jpg";
-import heroCrimeaMountain from "@/assets/hero-crimea-mountain.png";
+import geographyImg from "@/assets/geography.webp";
+import heroCrimeaMountain from "@/assets/hero-crimea-mountain.webp";
 import {
   buildGraphHead,
   buildWebPageSchema,
