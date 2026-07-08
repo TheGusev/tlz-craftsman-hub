@@ -1,61 +1,51 @@
 ## Что делаем
 
-**1. Единый калькулятор на Москве и МО**
+Собираю финальный отчёт клиенту в виде PDF-файла на русском языке. Всё содержимое — из итогов последних итераций (SEO-аудит, GEO-оптимизация, перелинковка, FAQPage JSON-LD, единый калькулятор Москва/МО).
 
-Заменяем `LeadForm` (скрин 2) на пошаговый калькулятор в стиле `MobileQuickLead` (скрин 1) только на трёх страницах:
-- `/cities/moskva`
-- `/cities/moskovskaya-oblast`
-- `/regions/moskva-mo`
+## Структура PDF
 
-Чтобы не дублировать код, `MobileQuickLead` рефакторим в переиспользуемый компонент `QuickLead`:
-- Принимает пропы `defaultCity?`, `defaultProblem?`, `source?`, `title?`, `subtitle?` — по аналогии с `LeadForm`.
-- Логика step-by-step, honeypot, rate-limit, Telegram-отправка, `trackGoal`/`trackCityConversion`, редирект на `/thank-you` — переносится 1-в-1.
-- Старый `MobileQuickLead.tsx` становится тонкой обёрткой `<QuickLead source="mobile_quick_lead" />` — чтобы главная страница не сломалась.
+Титульная страница + 7 разделов на ~10–14 страницах A4:
 
-На трёх целевых роутах:
-- `src/routes/cities.$citySlug.tsx` — если `citySlug === "moskva"` или `"moskovskaya-oblast"`, рендерим `<QuickLead defaultCity={city.slug} source="city_page" />` вместо `LeadForm`. Остальные города остаются на `LeadForm`.
-- `src/routes/regions.moskva-mo.tsx` — добавляем секцию с `<QuickLead source="regions_moskva_mo" />` после hero, перед списком карточек городов.
+1. **Титульная страница** — «Отчёт по SEO-оптимизации и техническим доработкам сайта sanitarnyeresheniya.ru», дата (июль 2026), исполнитель.
+2. **Итоговая оценка** — 94/100 крупным блоком + разбивка по 8 категориям в виде таблицы (Tech SEO, JSON-LD, Контент, Перелинковка, UX, Формы, Юридика, CI) с баллами и комментариями.
+3. **Что сделано — этап 1: расширение контента**
+   - 285 city×service страниц с уникальным текстом 950–1550 слов
+   - 4 блог-поста расширены до 1200+ слов
+   - Файл `src/lib/cityServiceContent.ts` (вынесен весь текстовый слой)
+4. **Что сделано — этап 2: внутренняя перелинковка и GEO-баланс**
+   - Блоки «Другие услуги в городе» + «Читайте в блоге» на каждой city×service
+   - 19 кластеров услуг с deep-link `#s-N` в блог
+   - GEO-аудит: 0 нарушений на всех 285 страницах (city 0.3–1.5%, service ≤2.3%, top-bigram ≤1.4%)
+5. **Что сделано — этап 3: FAQPage JSON-LD и верификация**
+   - JSON-LD `@graph` на всех страницах (WebPage/Breadcrumb/Service/LocalBusiness/FAQPage; Article/FAQPage в блоге)
+   - Дедуп FAQ, точное соответствие JSON-LD видимому UI (требование Google)
+   - Sitemap.xml с `<lastmod>` для 289 URL
+   - CI-верификация `--verify-jsonld`: падение пайплайна при любой регрессии
+6. **Что сделано — этап 4: единый калькулятор Москва/МО**
+   - Пошаговый `QuickLead` на `/cities/moskva`, `/cities/moskovskaya-oblast`, `/regions/moskva-mo`
+   - Москва и МО первыми в выпадающих списках (без изменения sitemap)
+7. **Технический стек и как это работает**
+   - Конвейер: `vite build → generate-seo → prerender → verify → verify-jsonld`
+   - Схема ASCII: как sitemap/canonical/JSON-LD синхронизированы
+   - Список всех изменённых и созданных файлов (таблица)
+8. **Точки роста и чек-лист «готово к продакшену»** — что можно улучшить дальше (SSR og:image, Lighthouse CI, визуальная регрессия), плюс финальный чек-лист.
 
-**2. Москва первой в выпадающих списках**
+## Технические детали генерации
 
-Массив `cities` в `src/data/cities.ts` НЕ трогаем (влияет на sitemap, роуты, порядок карточек на `/cities` и `/regions/*`). Вместо этого в компонентах, где рендерятся `<Option>`/`<SelectItem>` со списком городов, сортируем через локальный хелпер:
+- Инструмент: Python + ReportLab (у нас в песочнице уже установлен).
+- Формат: A4, поля 20 мм, шрифт для кириллицы — DejaVu Sans (встроен в reportlab-fonts / доступен в системе); подгружаю `/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf` и `DejaVuSans-Bold.ttf`. Fallback — Helvetica с транслитерацией, если DejaVu недоступен (маловероятно).
+- Цветовая палитра под сайт: акцент `#2AA6A0` (бирюзовый — как кнопки на скринах), тёмный текст `#0F172A`, серый `#64748B`, светлый фон карточек `#F1F5F9`.
+- Заголовки: 22/16/13 pt bold; тело 10.5 pt; таблицы — с чередующимися серыми строками.
+- Оценка 94/100 — крупным круглым бейджем на первой странице.
+- Все имена файлов и путей — моноширинным шрифтом.
+- QA: после генерации конвертирую PDF в JPEG через `pdftoppm`, просматриваю каждую страницу, чищу переполнения/обрезы/битые глифы, при необходимости перегенерирую.
 
-```ts
-// src/lib/cityOrder.ts (новый)
-export function citiesForDropdown(list: City[]): City[] {
-  const priority = ["moskva", "moskovskaya-oblast"];
-  const head = priority.map((s) => list.find((c) => c.slug === s)).filter(Boolean) as City[];
-  const rest = list.filter((c) => !priority.includes(c.slug));
-  return [...head, ...rest];
-}
-```
+## Выход
 
-Применяем в:
-- `src/components/site/QuickLead.tsx` (шаг 1 — «Выберите город»)
-- `src/components/site/LeadForm.tsx` (селект «Город»)
+Файл: `/mnt/documents/sanresheniya-seo-report.pdf`
+Артефакт отдаётся через `<presentation-artifact>` с mime `application/pdf`.
 
-Другие места (`/cities`, футер, `/regions/*`) — не трогаем: там визуальные карточки по регионам, а не выпадающий список.
+## Что не делаем
 
-## Технические детали
-
-- `QuickLead` кладём в `src/components/site/QuickLead.tsx`. Все хендлеры и импорты копируются из `MobileQuickLead` — никаких изменений в telegram/analytics/conversions.
-- `defaultCity` в `QuickLead`: если задан, шаг 1 сразу закрыт и подсвечен галочкой, `openStep` стартует с 2. Пользователь всё равно может раскрыть и поменять город.
-- `defaultProblem` работает аналогично для шага 3 (пригодится в будущем на city×service, но сейчас не подключаем).
-- Заголовок `<h2>Рассчитать выезд</h2>` в `QuickLead` — принимаем через `title` проп с дефолтом.
-- Проверка `citySlug === "moskva" || "moskovskaya-oblast"` инкапсулируется в константу `MOSCOW_SLUGS` внутри роута — легко расширить.
-
-## Файлы
-
-- `src/components/site/QuickLead.tsx` (создать) — вынесенный переиспользуемый калькулятор.
-- `src/components/site/MobileQuickLead.tsx` — превратить в тонкую обёртку над `QuickLead`.
-- `src/components/site/LeadForm.tsx` — сортировка городов в селекте через `citiesForDropdown`.
-- `src/lib/cityOrder.ts` (создать) — хелпер порядка городов.
-- `src/routes/cities.$citySlug.tsx` — условный рендер `QuickLead` для Москвы/МО.
-- `src/routes/regions.moskva-mo.tsx` — вставить `QuickLead` секцией после hero.
-
-## Что не трогаем
-
-- `src/data/cities.ts` — порядок массива, чтобы не сломать sitemap/prerender/JSON-LD.
-- Остальные роуты с `LeadForm` (`/vyezd`, `/garantii`, `/prices`, `/contacts`, `/services/*`, city×service, `/lp/*`).
-- `MobileQuickLead` на главной — визуально ничего не поменяется (обёртка над `QuickLead` со старым `source`).
-- Логику Telegram/аналитики/rate-limit/honeypot.
+- Не трогаем код проекта. Только генерация PDF.
+- Не встраиваем внешние картинки/логотипы (клиентский лого не был загружен) — оставляем чистый типографический макет.
