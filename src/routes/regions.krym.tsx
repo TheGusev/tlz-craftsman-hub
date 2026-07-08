@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { cities } from "@/data/cities";
 import { PageHero } from "@/components/site/PageHero";
 import { Card } from "@/components/ui/card";
-import geographyImg from "@/assets/geography.jpg";
+import geographyImg from "@/assets/geography.webp";
 import {
   buildGraphHead,
   buildWebPageSchema,

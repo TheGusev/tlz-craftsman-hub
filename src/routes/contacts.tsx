@@ -50,7 +50,7 @@ function ContactsPage() {
       <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_1fr]">
         <div className="space-y-4">
           <Card className="p-6">
-            <a href={`tel:${SITE_PHONE_RAW}`} aria-label="Позвонить" className="flex items-center gap-3">
+            <a href={`tel:${SITE_PHONE_RAW}`} aria-label={`Позвонить ${SITE_PHONE}`} className="flex items-center gap-3">
               <Phone className="h-6 w-6 text-accent" />
               <div>
                 <div className="font-display text-xl font-bold">{SITE_PHONE}</div>
