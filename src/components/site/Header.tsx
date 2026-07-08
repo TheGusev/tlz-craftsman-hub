@@ -178,7 +178,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           <a
             href={cityPhoneHref}
-            aria-label="Позвонить"
+            aria-label={cityPhoneDisplay ? `Позвонить ${cityPhoneDisplay}` : "Позвонить"}
             onClick={() => {
               trackGoal("lead_phone_click", { source: "header", city: activeCity?.slug });
             }}
