@@ -1,11 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { Phone, Menu, X, ChevronDown } from "lucide-react";
+import { Phone, Menu, X, ChevronDown, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { services } from "@/data/services";
 import { cities } from "@/data/cities";
 import { useActiveCity } from "@/lib/useActiveCity";
 import { trackGoal } from "@/lib/analytics";
-import { SITE_PHONE, SITE_PHONE_RAW } from "@/lib/site";
+import { SITE_PHONE, SITE_PHONE_RAW, SITE_WHATSAPP_URL } from "@/lib/site";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -186,6 +186,18 @@ export function Header() {
           >
             <Phone className="h-4 w-4" />
             {cityPhoneDisplay && <span>{cityPhoneDisplay}</span>}
+          </a>
+          <a
+            href={SITE_WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Написать в WhatsApp"
+            onClick={() => {
+              trackGoal("lead_whatsapp_click", { source: "header", city: activeCity?.slug });
+            }}
+            className="hidden h-9 w-9 items-center justify-center rounded-md bg-[#25D366] text-white hover:opacity-90 md:inline-flex"
+          >
+            <MessageCircle className="h-4 w-4" />
           </a>
           <Button
             asChild
