@@ -94,7 +94,7 @@ function LandingPage() {
           <a
             href={phoneHref}
             className="text-sm font-semibold text-primary"
-            aria-label="Позвонить"
+            aria-label={phoneDisplay ? `Позвонить ${phoneDisplay}` : "Позвонить"}
             onClick={() => {
               trackGoal("lead_phone_click", { source: "lp_header", city: city.slug });
               trackCityConversion(city.slug, service.slug, "phone", { source: "lp_header" });
