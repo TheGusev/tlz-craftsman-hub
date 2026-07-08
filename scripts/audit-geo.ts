@@ -49,12 +49,16 @@ function topBigrams(tokens: string[], top = 10): { bg: string; n: number }[] {
 // naive Russian stem: strip a few common endings for city names
 function cityForms(name: string): string[] {
   const base = name.toLowerCase().replace(/ё/g, "е");
-  const stems = new Set<string>([base]);
-  // strip common endings
-  const endings = ["а", "у", "ы", "е", "ой", "ом", "ей", "ю", "и"];
-  for (const end of endings) {
-    if (base.endsWith(end) && base.length - end.length >= 4) {
-      stems.add(base.slice(0, base.length - end.length));
+  const stems = new Set<string>();
+  const words = base.split(/\s+/);
+  const endings = ["ая", "ой", "ую", "ое", "ые", "ий", "ая", "ов", "ом", "ах", "ам", "а", "у", "ы", "е", "ой", "ей", "ю", "и", "ь"];
+  for (const w of words) {
+    if (w.length < 3) continue;
+    stems.add(w);
+    for (const end of endings) {
+      if (w.endsWith(end) && w.length - end.length >= 4) {
+        stems.add(w.slice(0, w.length - end.length));
+      }
     }
   }
   return [...stems];
