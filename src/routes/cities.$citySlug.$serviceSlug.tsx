@@ -20,6 +20,7 @@ import {
 import { buildCanonical } from "@/lib/seo";
 import { getServiceImage } from "@/lib/serviceImages";
 import { PriceNote } from "@/components/site/PriceNote";
+import { buildCityServiceContent } from "@/lib/cityServiceContent";
 
 function clamp(s: string, max: number): string {
   if (s.length <= max) return s;
@@ -135,6 +136,7 @@ function ServiceInCityPage() {
   const { city, service, sc }: { city: City; service: Service; sc: ServiceInCity } = Route.useLoaderData();
   const cover = getServiceImage(service.slug);
   const phoneDisplay = city.phoneDisplay || city.phone;
+  const extraSections = buildCityServiceContent(city, service);
   const heroActions = (city.phone || city.whatsapp) ? (
     <>
       {city.phone && (
@@ -190,6 +192,25 @@ function ServiceInCityPage() {
               </ul>
             </section>
           )}
+
+          {extraSections.map((sec, i) => (
+            <section key={`ex-${i}`}>
+              <h2 className="font-display text-2xl font-bold">{sec.heading}</h2>
+              {sec.paragraphs.map((p, j) => (
+                <p key={j} className="mt-3 text-base leading-relaxed text-foreground/80">{p}</p>
+              ))}
+              {sec.bullets && (
+                <ul className="mt-4 grid gap-3 md:grid-cols-2">
+                  {sec.bullets.map((b, k) => (
+                    <li key={k} className="rounded-xl border border-border bg-card p-4">
+                      <div className="font-display text-sm font-bold text-accent">{b.title}</div>
+                      <p className="mt-1 text-sm text-muted-foreground">{b.body}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ))}
 
 
           <section>
