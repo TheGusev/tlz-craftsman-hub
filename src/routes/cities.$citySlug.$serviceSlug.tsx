@@ -21,6 +21,7 @@ import { buildCanonical } from "@/lib/seo";
 import { getServiceImage } from "@/lib/serviceImages";
 import { PriceNote } from "@/components/site/PriceNote";
 import { buildCityServiceContent } from "@/lib/cityServiceContent";
+import { RelatedCityServices } from "@/components/site/RelatedCityServices";
 
 function clamp(s: string, max: number): string {
   if (s.length <= max) return s;
@@ -266,6 +267,8 @@ function ServiceInCityPage() {
               ))}
             </Accordion>
           </section>
+
+          <RelatedCityServices city={city} service={service} />
 
           <section className="rounded-2xl border border-border bg-surface p-6">
             <h2 className="font-display text-xl font-bold">Подробнее</h2>

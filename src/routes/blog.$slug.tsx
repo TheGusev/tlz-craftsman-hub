@@ -4,6 +4,7 @@ import { getService } from "@/data/services";
 import type { Service } from "@/data/services";
 import { Card } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
+import { blogSectionId } from "@/lib/relatedContent";
 import {
   buildGraphHead,
   buildBreadcrumbSchema,
@@ -98,7 +99,7 @@ function BlogPostPage() {
 
         <div className="prose prose-neutral mt-8 max-w-none dark:prose-invert">
           {post.body.map((section: BlogPost["body"][number], i: number) => (
-            <section key={i} className="mt-6">
+            <section key={i} className="mt-6 scroll-mt-24" id={section.heading ? blogSectionId(i) : undefined}>
               {section.heading && (
                 <h2 className="font-display text-xl font-bold md:text-2xl">
                   {section.heading}
