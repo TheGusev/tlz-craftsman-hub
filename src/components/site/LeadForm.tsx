@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { cities } from "@/data/cities";
+import { citiesForDropdown } from "@/lib/cityOrder";
 import { trackGoal, readUtm } from "@/lib/analytics";
 import { trackCityConversion } from "@/lib/conversions";
 import { useActiveCity } from "@/lib/useActiveCity";
@@ -127,7 +128,7 @@ export function LeadForm({
               <SelectValue placeholder="Выберите город" />
             </SelectTrigger>
             <SelectContent>
-              {cities.map((c) => (
+              {citiesForDropdown(cities).map((c) => (
                 <SelectItem key={c.slug} value={c.slug}>
                   {c.name}
                 </SelectItem>
