@@ -123,7 +123,18 @@ export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
               coordinates: city.coordinates,
               areaServed: city.region,
             }),
-            buildFAQSchema(sc.faq),
+            buildFAQSchema(
+              (() => {
+                const merged = [...sc.faq, ...service.faq.slice(0, 2)];
+                const seen = new Set<string>();
+                return merged.filter((f) => {
+                  const k = f.q.trim().toLowerCase();
+                  if (seen.has(k)) return false;
+                  seen.add(k);
+                  return true;
+                });
+              })(),
+            ),
           ]),
         },
       ],
