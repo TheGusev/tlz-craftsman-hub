@@ -43,9 +43,9 @@ ErrorDocument 404 /404.html
 
 # --- Кэширование ---
 <IfModule mod_headers.c>
-  # HTML — без кэша, чтобы обновления сразу подхватывались
+  # HTML — no-cache (revalidate), но без no-store: BFCache при «Назад» работает
   <FilesMatch "\.(html)$">
-    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Cache-Control "no-cache, must-revalidate"
   </FilesMatch>
 
   # Хэшированные ассеты — долгий immutable-кэш
