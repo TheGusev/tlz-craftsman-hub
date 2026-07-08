@@ -193,6 +193,25 @@ function ServiceInCityPage() {
             </section>
           )}
 
+          {extraSections.map((sec, i) => (
+            <section key={`ex-${i}`}>
+              <h2 className="font-display text-2xl font-bold">{sec.heading}</h2>
+              {sec.paragraphs.map((p, j) => (
+                <p key={j} className="mt-3 text-base leading-relaxed text-foreground/80">{p}</p>
+              ))}
+              {sec.bullets && (
+                <ul className="mt-4 grid gap-3 md:grid-cols-2">
+                  {sec.bullets.map((b, k) => (
+                    <li key={k} className="rounded-xl border border-border bg-card p-4">
+                      <div className="font-display text-sm font-bold text-accent">{b.title}</div>
+                      <p className="mt-1 text-sm text-muted-foreground">{b.body}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ))}
+
 
           <section>
             <h2 className="font-display text-2xl font-bold">Этапы работ</h2>
