@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { cities } from "@/data/cities";
 import { PageHero } from "@/components/site/PageHero";
+import { QuickLead } from "@/components/site/QuickLead";
 import { Card } from "@/components/ui/card";
 import geographyImg from "@/assets/regions-cover.jpg";
 import {
@@ -56,16 +57,21 @@ function MoskvaMoPage() {
         description="Столичный филиал и региональные бригады по Подмосковью. Выезд 24/7 по всем округам Москвы и городам МО — от Химок и Балашихи до Сергиева Посада. Работаем с УК, страховыми, коммерческой недвижимостью и частным сектором."
       />
       <div className="container mx-auto px-4 py-10 md:py-12">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {list.map((c) => (
-            <Link key={c.slug} to="/cities/$citySlug" params={{ citySlug: c.slug }}>
-              <Card className="h-full p-6 transition hover:border-accent hover:shadow-lg">
-                <h2 className="font-display text-xl font-bold">{c.name}</h2>
-                <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{c.intro}</p>
-                <div className="mt-3 text-xs text-accent">Выезд: {c.arrivalTime}</div>
-              </Card>
-            </Link>
-          ))}
+        <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+            {list.map((c) => (
+              <Link key={c.slug} to="/cities/$citySlug" params={{ citySlug: c.slug }}>
+                <Card className="h-full p-6 transition hover:border-accent hover:shadow-lg">
+                  <h2 className="font-display text-xl font-bold">{c.name}</h2>
+                  <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{c.intro}</p>
+                  <div className="mt-3 text-xs text-accent">Выезд: {c.arrivalTime}</div>
+                </Card>
+              </Link>
+            ))}
+          </div>
+          <aside className="lg:sticky lg:top-24 lg:self-start">
+            <QuickLead defaultCity="moskva" source="regions_moskva_mo" />
+          </aside>
         </div>
       </div>
     </article>

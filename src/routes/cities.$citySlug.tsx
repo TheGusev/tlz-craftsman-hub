@@ -6,6 +6,9 @@ import { getServiceInCityByCity } from "@/data/serviceInCity";
 import { generalFaq } from "@/data/faq";
 import { PageHero } from "@/components/site/PageHero";
 import { LeadForm } from "@/components/site/LeadForm";
+import { QuickLead } from "@/components/site/QuickLead";
+
+const MOSCOW_SLUGS = ["moskva", "moskovskaya-oblast"];
 import { IntroAnswer } from "@/components/site/IntroAnswer";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -178,7 +181,11 @@ function CityPage() {
 
         <aside className="lg:sticky lg:top-24 lg:self-start">
           <h2 className="mb-4 font-display text-xl font-bold">Срочный выезд {city.nameLocative}</h2>
-          <LeadForm defaultCity={city.slug} />
+          {MOSCOW_SLUGS.includes(city.slug) ? (
+            <QuickLead defaultCity={city.slug} source="city_page_moscow" />
+          ) : (
+            <LeadForm defaultCity={city.slug} />
+          )}
         </aside>
       </div>
 
