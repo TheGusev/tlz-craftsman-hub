@@ -20,6 +20,7 @@ import {
 import { buildCanonical } from "@/lib/seo";
 import { getServiceImage } from "@/lib/serviceImages";
 import { PriceNote } from "@/components/site/PriceNote";
+import { buildCityServiceContent } from "@/lib/cityServiceContent";
 
 function clamp(s: string, max: number): string {
   if (s.length <= max) return s;
