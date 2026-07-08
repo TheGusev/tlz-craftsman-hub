@@ -7,9 +7,10 @@
     "dev": "vite dev",
     "build": "vite build",
     "build:dev": "vite build --mode development",
-    "build:prod": "vite build && tsx scripts/generate-seo.ts && tsx scripts/prerender.ts && tsx scripts/generate-seo.ts --verify",
+    "build:prod": "vite build && tsx scripts/generate-seo.ts && tsx scripts/prerender.ts && tsx scripts/generate-seo.ts --verify && tsx scripts/generate-seo.ts --verify-jsonld",
     "prerender": "tsx scripts/prerender.ts",
     "seo": "tsx scripts/generate-seo.ts",
+    "verify:seo": "tsx scripts/generate-seo.ts --verify && tsx scripts/generate-seo.ts --verify-jsonld",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write ."
