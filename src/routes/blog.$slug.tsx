@@ -4,11 +4,13 @@ import { getService } from "@/data/services";
 import type { Service } from "@/data/services";
 import { Card } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
+import { FAQSection } from "@/components/site/FAQSection";
 import { blogSectionId } from "@/lib/relatedContent";
 import {
   buildGraphHead,
   buildBreadcrumbSchema,
   buildArticleSchema,
+  buildFAQSchema,
 } from "@/lib/jsonld";
 import { buildCanonical } from "@/lib/seo";
 
@@ -47,6 +49,7 @@ export const Route = createFileRoute("/blog/$slug")({
               description: post.excerpt,
               datePublished: post.publishedAt,
             }),
+            buildFAQSchema(post.faq ?? []),
           ]),
         },
       ],
@@ -113,6 +116,12 @@ function BlogPostPage() {
             </section>
           ))}
         </div>
+
+        {post.faq && post.faq.length > 0 && (
+          <div className="mt-12">
+            <FAQSection faqs={post.faq} />
+          </div>
+        )}
 
         {related.length > 0 && (
           <aside className="mt-12">
