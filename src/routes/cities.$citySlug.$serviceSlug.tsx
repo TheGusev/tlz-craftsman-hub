@@ -136,6 +136,7 @@ function ServiceInCityPage() {
   const { city, service, sc }: { city: City; service: Service; sc: ServiceInCity } = Route.useLoaderData();
   const cover = getServiceImage(service.slug);
   const phoneDisplay = city.phoneDisplay || city.phone;
+  const extraSections = buildCityServiceContent(city, service);
   const heroActions = (city.phone || city.whatsapp) ? (
     <>
       {city.phone && (
