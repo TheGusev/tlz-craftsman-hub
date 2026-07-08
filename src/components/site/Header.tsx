@@ -187,6 +187,18 @@ export function Header() {
             <Phone className="h-4 w-4" />
             {cityPhoneDisplay && <span>{cityPhoneDisplay}</span>}
           </a>
+          <a
+            href={SITE_WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Написать в WhatsApp"
+            onClick={() => {
+              trackGoal("lead_whatsapp_click", { source: "header", city: activeCity?.slug });
+            }}
+            className="hidden h-9 w-9 items-center justify-center rounded-md bg-[#25D366] text-white hover:opacity-90 md:inline-flex"
+          >
+            <MessageCircle className="h-4 w-4" />
+          </a>
           <Button
             asChild
             className="hidden md:inline-flex bg-[linear-gradient(110deg,var(--urgent),var(--accent),var(--urgent))] bg-[length:200%_auto] animate-shimmer text-urgent-foreground shadow-lg shadow-urgent/30 hover:opacity-90"
