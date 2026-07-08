@@ -39,7 +39,10 @@ export const Route = createFileRoute("/")({
         { property: "og:description", content: description },
         { property: "og:url", content: canonical },
       ],
-      links: [{ rel: "canonical", href: canonical }],
+      links: [
+        { rel: "canonical", href: canonical },
+        { rel: "preload", as: "image", href: geographyImg, fetchpriority: "high" },
+      ],
       scripts: [
         {
           type: "application/ld+json",
