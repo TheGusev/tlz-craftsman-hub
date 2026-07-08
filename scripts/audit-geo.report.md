@@ -1,6 +1,6 @@
 # GEO-frequency audit
 
-Generated: 2026-07-08T06:46:27.161Z
+Generated: 2026-07-08T06:47:17.789Z
 
 Thresholds: city ≤ 2.5%, service ≤ 3%, top-bigram ≤ 1%.
 
