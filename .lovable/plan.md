@@ -1,44 +1,52 @@
-# Добавить WhatsApp по номеру +7 961 911-99-19 везде
 
-Номер уже есть в `src/lib/site.ts` как `SITE_WHATSAPP_URL = "https://wa.me/79619119919"`. Добавим его во все места, где сейчас показаны только Позвонить / MAX / Telegram.
+## Что меняем
 
-## Что и где меняем
+### 1. Контент — 4 страницы city×service (`src/data/serviceInCity.ts`)
 
-### 1. Плавающий виджет связи — `src/components/site/UrgentCTA.tsx`
-Виден на всех страницах сайта. Сейчас: Позвонить · MAX · Telegram.
-Добавляем 4-ю кнопку **WhatsApp** между «Позвонить» и «MAX»:
-- цвет `bg-[#25D366] text-white` (фирменный зелёный WhatsApp)
-- иконка `MessageCircle` из `lucide-react`
-- `href={SITE_WHATSAPP_URL}`, `target="_blank"`, `rel="noopener noreferrer"`
-- аналитика: `goal: "lead_whatsapp_click"`, `source: "urgent_cta"`
-- порядок: Позвонить · WhatsApp · MAX · Telegram
-- «Позвонить» перекрашиваем в нейтральный (сейчас зелёный WA-цвет), чтобы не дублировать зелёный: `bg-primary text-primary-foreground` или `bg-urgent`.
+Переписываем поля (`h1`, `metaTitle`, `metaDescription`, `introAnswer`, `localOffer`, `whenCalled`, `priceContext`, `caseScenario`, `faq`) со смещением акцента с «дезинфекции/санобработки» на **уборку, вывоз, восстановление помещения**. Услуги и slug'и не трогаем — меняется только копирайт.
 
-### 2. Шапка сайта — `src/components/site/Header.tsx`
-На десктопе рядом с телефоном и кнопкой «Срочный выезд» добавляем иконку-ссылку WhatsApp (только иконка, `MessageCircle`, зелёная), `md:inline-flex`. На мобиле — не добавляем (там есть плавающий виджет).
+- **`moskva` × `posle-pozhara`** — уже про уборку; усилим: вывоз обгоревшего имущества, генеральная уборка после пожара, химчистка мягких поверхностей, мойка стен/потолков, вывоз строительного и погорельного мусора контейнерами, финишная приборка под сдачу оценщику/страховой. Добавим сценарии «уборка квартиры после пожара», «уборка коммерческого помещения после возгорания».
+- **`moskovskaya-oblast` × `posle-pozhara`** — то же, но с фокусом на коттеджи, дачи СНТ, ангары и склады МО: вывоз крупногабарита, уборка территории вокруг строения, разборка сгоревших конструкций, мойка фасадов от копоти.
+- **`moskva` × `dezinfekciya-posle-smerti`** — переписываем с ключевого «дезинфекция» на **уборку квартиры после смерти / после умершего**: вывоз мебели и вещей с биоследами, генеральная уборка всех поверхностей, химчистка, мойка полов и стен, устранение запаха, финишная уборка «под ключ» для сдачи наследникам/риелтору. Слово «дезинфекция» в тексте остаётся однократно как часть регламента, H1 меняем на «Уборка квартиры после смерти в Москве» (metaTitle/description синхронизируем).
+- **`moskovskaya-oblast` × `dezinfekciya-posle-smerti`** — аналогично: уборка квартир, коттеджей, комнат в общежитиях и домов в СНТ; вывоз крупногабарита из частного сектора, уборка придомовой территории при необходимости.
 
-### 3. LP-страница — `src/routes/lp.$citySlug.$serviceSlug.tsx`
-В hero-блоке уже есть `whatsappHref`, но кнопки WhatsApp рядом с «Позвонить» нет. Добавляем вторую CTA-кнопку «Написать в WhatsApp» рядом с существующей «Позвонить», зелёный стиль, тот же `whatsappHref`. Событие аналитики `lead_whatsapp_click` с `source: "lp_hero"`.
+Ограничения:
+- `slug` услуг и URL не меняются — SEO-история страниц сохраняется.
+- FAQ вопросов сохраняем ≥3 (для JSON-LD FAQPage).
+- Плотность топонима и названия услуги оставляем в текущих порогах (audit-geo не должен ругаться).
 
-### 4. Городская страница услуги — `src/routes/cities.$citySlug.$serviceSlug.tsx`
-Кнопка WhatsApp уже есть — не трогаем.
+### 2. Составная цель Метрики (`src/lib/conversions.ts`)
 
-### 5. Страница /contacts — `src/routes/contacts.tsx`
-WhatsApp уже есть — не трогаем.
+Сейчас `trackCityConversion` работает по 3 городам × 3 услугам (9 целей). Для МСК/МО нужны 4 новые цели, но не 6 (пары `moskva × dezinfekciya-posle-smerti` и т.п. — а не декартово произведение). Меняем механику с «два множества» на **whitelist пар**:
 
-## Единый источник номера
-Везде используем `SITE_WHATSAPP_URL` из `src/lib/site.ts` (кроме городской страницы, где сохраняется предзаполненный текст сообщения с названием услуги — оставляем как есть).
+```ts
+const TRACKED_PAIRS = new Set<string>([
+  // существующие 9
+  "simferopol:ochistka-uchastkov", "simferopol:unichtozhenie-tarakanov", "simferopol:posle-pozhara",
+  "sevastopol:ochistka-uchastkov", "sevastopol:unichtozhenie-tarakanov", "sevastopol:posle-pozhara",
+  "sochi:ochistka-uchastkov",       "sochi:unichtozhenie-tarakanov",       "sochi:posle-pozhara",
+  // новые 4
+  "moskva:posle-pozhara", "moskva:dezinfekciya-posle-smerti",
+  "moskovskaya-oblast:posle-pozhara", "moskovskaya-oblast:dezinfekciya-posle-smerti",
+]);
+```
 
-## Аналитика
-Новое событие `lead_whatsapp_click` с полями `source` (`urgent_cta` / `header` / `lp_hero`) и `city` (slug активного города).
+`trackCityConversion(city, service, type, params)` шлёт `conversion_{city}_{service}` только если пара в whitelist. Сигнатура и все места вызова (`LeadForm`, `QuickLead`, клики WA/TG/tel в `UrgentCTA`/`HeroCTA`/city×service, `PriceQuiz`) — **не меняются**, отчёт продолжит работать.
 
-## Что НЕ меняем
-- Порядок городов в дропдаунах, калькулятор МСК/МО, JSON-LD, sitemap, контент — без изменений.
-- Логику Telegram-нотификаций формы — без изменений.
-- Номер телефона и `SITE_WHATSAPP_URL` — без изменений (уже правильный).
+### 3. Что НЕ трогаем
 
-## Проверка после сборки
-1. Открыть главную → плавающая кнопка «трубка» → в раскрытии видно 4 пункта в порядке Позвонить · WhatsApp · MAX · Telegram, клик по WhatsApp открывает `wa.me/79619119919` в новой вкладке.
-2. Десктопная шапка — иконка WhatsApp рядом с телефоном.
-3. `/lp/moskva/dezinfekciya-...` — в hero две CTA: «Позвонить» и «Написать в WhatsApp».
-4. `/contacts` и `/cities/moskva/dezinfekciya-...` — WhatsApp на месте (как было).
+- Общая структура сайта, sitemap, canonical, JSON-LD, прайсы, цены (35 000 / 25 000 ₽ и т.д.), калькулятор, шапка, футер.
+- Другие 7 услуг МСК/МО.
+- Route-файл `cities.$citySlug.$serviceSlug.tsx` — он уже вызывает `trackCityConversion` и рендерит из `serviceInCity`.
+
+### 4. Проверки после сборки
+
+1. `npm run build` + prerender → 4 обновлённые страницы без ошибок.
+2. `scripts/audit-geo.ts` → 0 findings (плотность в норме).
+3. Открыть `/cities/moskva/posle-pozhara` — H1/тексты про уборку, FAQPage JSON-LD в head.
+4. В DevTools после отправки формы на `/cities/moskva/dezinfekciya-posle-smerti` — событие Метрики `conversion_moskva_dezinfekciya-posle-smerti`.
+5. Затем список из 4 URL — на переобход в Яндекс.Вебмастер (пришлю в чате после деплоя).
+
+## Что нужно от вас
+
+Подтвердите одно уточнение: **H1 на страницах «трупы» меняем** на «Уборка квартиры после смерти в Москве / в Московской области» (URL и slug остаются `dezinfekciya-posle-smerti`)? Если предпочитаете сохранить прежний H1 «Дезинфекция после смерти…» и переписать только тело — скажите, оставлю как есть.
