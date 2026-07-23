@@ -167,8 +167,9 @@ function verifyJsonLd() {
       errors.push(`${r.path}: canonical="${canonicals[0]}", ожидался "${expected}"`);
     }
 
-    // robots noindex
-    if (hasNoindex(html)) {
+    // robots noindex — допустим на служебных/юридических страницах
+    const NOINDEX_ALLOWED = new Set(["/privacy", "/soglasie", "/thank-you"]);
+    if (!NOINDEX_ALLOWED.has(r.path) && hasNoindex(html)) {
       errors.push(`${r.path}: <meta name="robots"> содержит noindex`);
     }
 
