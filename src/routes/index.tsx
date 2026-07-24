@@ -16,6 +16,10 @@ import { getCaseGallery } from "@/lib/caseGallery";
 
 import geographyImg from "@/assets/geography.webp";
 import heroCrimeaMountain from "@/assets/hero-crimea-mountain.webp";
+import heroMoscowNight from "@/assets/hero-moscow-night.jpg";
+import heroMoscowTeam from "@/assets/hero-moscow-team.jpg";
+import moscowDistrict from "@/assets/moscow-district.jpg";
+import mskOfficeTeam from "@/assets/msk-office-team.jpg";
 import {
   buildGraphHead,
   buildWebPageSchema,
@@ -29,8 +33,8 @@ import { buildCanonical } from "@/lib/seo";
 export const Route = createFileRoute("/")({
   head: () => {
     const canonical = buildCanonical("/");
-    const title = "Санитарные Решения РФ — аварийная санитарная служба 24/7 по Москве, МО, ЮФО и Крыму";
-    const description = "Аварийная санитарная очистка, дезинфекция, удаление плесени, фумигация. Москва и МО, Краснодар, Сочи, Ростов-на-Дону, Крым. Выезд бригады 24/7.";
+    const title = "Аварийная санитарная служба в Москве и МО — выезд 24/7 | Санитарные Решения РФ";
+    const description = "Аварийная санитарная служба в Москве и Московской области: уборка после пожара и потопа, дезинфекция, удаление плесени, фумигация. Выезд бригады за 60 минут. Также работаем в ЮФО и Крыму.";
     return {
       meta: [
         { title },
@@ -41,7 +45,7 @@ export const Route = createFileRoute("/")({
       ],
       links: [
         { rel: "canonical", href: canonical },
-        { rel: "preload", as: "image", href: geographyImg, fetchpriority: "high" },
+        { rel: "preload", as: "image", href: heroMoscowNight, fetchpriority: "high" },
       ],
       scripts: [
         {
@@ -75,13 +79,13 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const heroImages = [geographyImg, heroCrimeaMountain];
+  const heroImages = [heroMoscowNight, heroMoscowTeam, moscowDistrict];
   const [activeHero, setActiveHero] = useState(0);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
       setActiveHero((current) => (current + 1) % heroImages.length);
-    }, 3000);
+    }, 3500);
 
     return () => window.clearInterval(timer);
   }, [heroImages.length]);
@@ -93,24 +97,26 @@ function HomePage() {
           <img
             key={image}
             src={image}
-            alt="ЮФО и Крым с высоты"
+            alt="Аварийная санитарная бригада в Москве"
             loading={index === 0 ? "eager" : "lazy"}
             fetchPriority={index === 0 ? "high" : "auto"}
             decoding="async"
             className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${index === activeHero ? "opacity-100" : "opacity-0"}`}
           />
         ))}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/85 via-primary/70 to-primary/40" aria-hidden />
         <div className="container relative mx-auto flex min-h-[calc(100svh-76px)] items-center px-4 py-14 md:py-20">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-urgent px-3 py-1 text-xs font-semibold text-urgent-foreground shadow-lg shadow-urgent/30">
               <span className="h-2 w-2 animate-pulse rounded-full bg-primary-foreground" /> Аварийная служба 24/7
             </div>
             <h1 className="mt-6 font-display text-[2rem] font-bold leading-[1.1] sm:text-4xl md:text-6xl">
-              Срочные санитарные работы по Москве, МО, ЮФО и Крыму
+              Аварийная санитарная служба в Москве и Московской области
             </h1>
             <p className="mt-5 max-w-xl text-base opacity-90 md:text-lg">
-              Уборка после пожара и потопа, дезинфекция, удаление плесени, фумигация. Выезд бригады в течение 1–3 часов. Лицензия, сертифицированные препараты, гарантия результата.
+              Уборка после пожара и потопа, дезинфекция, удаление плесени, фумигация. Столичная бригада выезжает за 60 минут по всем округам Москвы и городам МО. Лицензия, сертифицированные препараты, гарантия результата.
             </p>
+            <p className="mt-2 text-xs opacity-70">Также работаем в ЮФО и Республике Крым — региональные бригады 24/7.</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Button asChild size="lg" className="bg-[linear-gradient(110deg,var(--urgent),var(--accent),var(--urgent))] bg-[length:200%_auto] animate-shimmer text-urgent-foreground shadow-lg shadow-urgent/40 hover:opacity-90">
                 <a
@@ -126,7 +132,7 @@ function HomePage() {
             </div>
             <div className="mt-10 grid max-w-2xl grid-cols-3 gap-4">
               {[
-                { icon: Clock, t: "1–3 часа", s: "до приезда бригады" },
+                { icon: Clock, t: "от 60 мин", s: "до приезда в МСК" },
                 { icon: ShieldCheck, t: "Гарантия", s: "до 12 месяцев" },
                 { icon: MapPin, t: "Москва и МО", s: "+ ЮФО и Крым" },
               ].map((b, i) => (
@@ -140,6 +146,7 @@ function HomePage() {
           </div>
         </div>
       </section>
+
 
       <section className="bg-surface py-12 md:py-16">
         <div className="container mx-auto max-w-2xl px-4">
@@ -183,53 +190,88 @@ function HomePage() {
       </section>
 
       <section className="relative overflow-hidden bg-surface py-16 md:py-24">
-        <div className="container mx-auto grid gap-10 px-4 md:grid-cols-2 md:items-center">
-          <div className="relative order-2 overflow-hidden rounded-2xl shadow-2xl md:order-1">
-            <img src={geographyImg} alt="Москва, МО, ЮФО и Крым с воздуха" loading="lazy" className="aspect-[4/3] w-full object-cover" />
-            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-              <div className="rounded-xl bg-background/95 px-3 py-2 text-foreground shadow-lg">
-                <div className="font-display text-xl font-bold">Москва и МО</div>
-                <div className="text-xs text-muted-foreground">+ ЮФО и Крым, 24/7</div>
-              </div>
-              <div className="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground shadow-lg">Москва и МО</div>
-            </div>
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl">
+            <h2 className="font-display text-3xl font-bold md:text-4xl">Три филиала — один стандарт</h2>
+            <p className="mt-3 text-muted-foreground">Основной штаб — в Москве. Дежурные бригады по МО и Подмосковью работают из столичного филиала. Также обслуживаем ЮФО и Крым региональными командами.</p>
           </div>
-          <div className="order-1 md:order-2">
-            <h2 className="font-display text-3xl font-bold md:text-4xl">География присутствия</h2>
-            <p className="mt-3 text-muted-foreground">Столичный филиал по Москве и МО — выезд по всем округам и городам Подмосковья. Дежурные бригады в Краснодаре, Сочи, Ростове-на-Дону. Региональный хаб по Крыму с выездом в Симферополь, Севастополь, Ялту, Евпаторию и Керчь.</p>
-            <div className="mt-6 grid gap-2 sm:grid-cols-2">
-              {cities.map((c) => (
-                <Link key={c.slug} to="/cities/$citySlug" params={{ citySlug: c.slug }} className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3 transition hover:border-accent active:scale-[0.99]">
-                  <div>
-                    <div className="font-display text-sm font-bold">{c.name}</div>
-                    <div className="text-[11px] text-muted-foreground">{c.region}</div>
-                  </div>
-                  <div className="text-[11px] font-semibold text-accent">{c.arrivalTime}</div>
-                </Link>
-              ))}
-            </div>
+          <div className="mt-8 grid gap-5 lg:grid-cols-3">
+            <Link to="/regions/moskva-mo" className="group relative overflow-hidden rounded-2xl shadow-xl lg:col-span-2 lg:row-span-2">
+              <img src={heroMoscowNight} alt="Ночная Москва — столичная санитарная служба" loading="lazy" className="aspect-[16/10] h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/50 to-transparent" aria-hidden />
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-primary-foreground md:p-8">
+                <div className="inline-flex rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">Основной филиал</div>
+                <h3 className="mt-3 font-display text-2xl font-bold md:text-3xl">Москва и Московская область</h3>
+                <p className="mt-2 max-w-xl text-sm opacity-90 md:text-base">Выезд от 60 минут по всем округам Москвы и городам МО. Работаем с УК, страховыми, коммерческой недвижимостью и частным сектором.</p>
+                <div className="mt-4 flex flex-wrap gap-2 text-xs">
+                  {["ЦАО", "ЗАО", "САО", "Химки", "Балашиха", "Подольск", "Мытищи"].map((d) => (
+                    <span key={d} className="rounded-full bg-background/20 px-3 py-1 backdrop-blur-sm">{d}</span>
+                  ))}
+                </div>
+              </div>
+            </Link>
+
+            <Link to="/regions/krym" className="group relative overflow-hidden rounded-2xl shadow-xl">
+              <img src={heroCrimeaMountain} alt="Крым — региональный хаб" loading="lazy" className="aspect-[16/10] h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-transparent" aria-hidden />
+              <div className="absolute bottom-0 left-0 right-0 p-5 text-primary-foreground">
+                <div className="text-xs font-semibold uppercase tracking-wider text-accent">Региональный хаб</div>
+                <h3 className="mt-2 font-display text-xl font-bold">Республика Крым</h3>
+                <p className="mt-1 text-xs opacity-90">Симферополь, Севастополь, Ялта, Евпатория, Керчь</p>
+              </div>
+            </Link>
+
+            <Link to="/cities" className="group relative overflow-hidden rounded-2xl shadow-xl">
+              <img src={geographyImg} alt="ЮФО — дежурные бригады" loading="lazy" className="aspect-[16/10] h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-transparent" aria-hidden />
+              <div className="absolute bottom-0 left-0 right-0 p-5 text-primary-foreground">
+                <div className="text-xs font-semibold uppercase tracking-wider text-accent">Южный округ</div>
+                <h3 className="mt-2 font-display text-xl font-bold">Краснодар, Сочи, Ростов-на-Дону</h3>
+                <p className="mt-1 text-xs opacity-90">Дежурные бригады круглосуточно</p>
+              </div>
+            </Link>
+          </div>
+
+          <div className="mt-8 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {cities.map((c) => (
+              <Link key={c.slug} to="/cities/$citySlug" params={{ citySlug: c.slug }} className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3 transition hover:border-accent">
+                <div>
+                  <div className="font-display text-sm font-bold">{c.name}</div>
+                  <div className="text-[11px] text-muted-foreground">{c.region}</div>
+                </div>
+                <div className="text-[11px] font-semibold text-accent">{c.arrivalTime}</div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
+
       <section className="container mx-auto px-4 py-16 md:py-24">
         <h2 className="font-display text-3xl font-bold md:text-4xl">Когда обращаются к нам</h2>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
+        <p className="mt-3 max-w-2xl text-muted-foreground">Реальные фото с выездов бригады. Работаем аккуратно, конфиденциально и с полным циклом восстановления объекта.</p>
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
           {[
-            { t: "После пожара", d: "Удалить сажу, обработать стены, убрать запах гари — без ущерба для конструкций." },
-            { t: "После потопа", d: "Откачать воду, просушить стены, не дать плесени поселиться в материалах." },
-            { t: "Плесень и грибок", d: "Полное удаление с гарантией 12 месяцев и устранением источника влаги." },
-            { t: "Биосанитарные случаи", d: "Конфиденциальная санация после смерти и устранение трупного запаха." },
-            { t: "Фумигация", d: "Газовая обработка складов, элеваторов, подвалов от вредителей и грызунов." },
-            { t: "Очистка территорий", d: "Расчистка после пожара, вывоз загрязнённого мусора, обработка грунта." },
+            { t: "После пожара", d: "Уборка сажи и копоти, вывоз обгоревшего мусора, обработка от запаха гари, восстановление помещения.", img: getServiceImage("posle-pozhara") },
+            { t: "После потопа", d: "Откачка воды, просушка конструкций, антиплесневая обработка, дезинфекция.", img: getServiceImage("posle-potopa") },
+            { t: "Плесень и грибок", d: "Полное удаление с гарантией 12 месяцев и устранением источника влаги.", img: getServiceImage("udalenie-pleseni") },
+            { t: "Биосанитарные случаи", d: "Конфиденциальная уборка после смерти, вывоз мусора, устранение трупного запаха.", img: getServiceImage("dezinfekciya-posle-smerti") },
+            { t: "Фумигация", d: "Газовая обработка складов, элеваторов, подвалов от вредителей и грызунов.", img: getServiceImage("fumigaciya") },
+            { t: "Очистка территорий", d: "Расчистка после пожара, вывоз загрязнённого мусора, обработка грунта.", img: getServiceImage("ochistka-uchastkov") },
           ].map((c, i) => (
-            <Card key={i} className="p-6">
-              <h3 className="font-display text-lg font-bold">{c.t}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{c.d}</p>
+            <Card key={i} className="overflow-hidden p-0">
+              {c.img && (
+                <img src={c.img} alt={c.t} loading="lazy" decoding="async" className="aspect-[16/10] w-full object-cover" />
+              )}
+              <div className="p-5">
+                <h3 className="font-display text-lg font-bold">{c.t}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{c.d}</p>
+              </div>
             </Card>
           ))}
         </div>
       </section>
+
 
       <section className="bg-surface py-16 text-foreground md:py-24">
         <div className="container mx-auto px-4">

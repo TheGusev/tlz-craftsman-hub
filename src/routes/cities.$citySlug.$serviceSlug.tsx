@@ -22,6 +22,10 @@ import { getServiceImage } from "@/lib/serviceImages";
 import { PriceNote } from "@/components/site/PriceNote";
 import { buildCityServiceContent } from "@/lib/cityServiceContent";
 import { RelatedCityServices } from "@/components/site/RelatedCityServices";
+import { EquipmentStrip } from "@/components/site/EquipmentStrip";
+import { getInlineGallery } from "@/lib/serviceInlineImages";
+import moscowDistrict from "@/assets/moscow-district.jpg";
+import mskTeam from "@/assets/msk-office-team.jpg";
 
 function clamp(s: string, max: number): string {
   if (s.length <= max) return s;
@@ -149,6 +153,8 @@ function ServiceInCityPage() {
   const cover = getServiceImage(service.slug);
   const phoneDisplay = city.phoneDisplay || city.phone;
   const extraSections = buildCityServiceContent(city, service);
+  const inlineGallery = getInlineGallery(service.slug);
+  const isMoscow = city.slug === "moskva" || city.slug === "moskovskaya-oblast";
   const heroActions = (city.phone || city.whatsapp) ? (
     <>
       {city.phone && (
@@ -194,6 +200,22 @@ function ServiceInCityPage() {
       <div className="container mx-auto grid gap-10 px-4 py-12 lg:grid-cols-[2fr_1fr]">
         <div className="space-y-12">
           {sc.introAnswer && <IntroAnswer>{sc.introAnswer}</IntroAnswer>}
+
+          {cover && (
+            <figure className="overflow-hidden rounded-2xl border border-border">
+              <img
+                src={cover}
+                alt={`${service.shortName} ${city.nameLocative} — работа бригады`}
+                loading="lazy"
+                decoding="async"
+                className="aspect-[16/9] w-full object-cover"
+              />
+              <figcaption className="bg-card px-4 py-3 text-xs text-muted-foreground">
+                {service.shortName} {city.nameLocative}. Работы проводятся сертифицированной бригадой в СИЗ.
+              </figcaption>
+            </figure>
+          )}
+
           {sc.whenCalled.length > 0 && (
             <section>
               <h2 className="font-display text-2xl font-bold">Когда вызывают {city.nameLocative}</h2>
@@ -206,23 +228,71 @@ function ServiceInCityPage() {
           )}
 
           {extraSections.map((sec, i) => (
-            <section key={`ex-${i}`}>
-              <h2 className="font-display text-2xl font-bold">{sec.heading}</h2>
-              {sec.paragraphs.map((p, j) => (
-                <p key={j} className="mt-3 text-base leading-relaxed text-foreground/80">{p}</p>
-              ))}
-              {sec.bullets && (
-                <ul className="mt-4 grid gap-3 md:grid-cols-2">
-                  {sec.bullets.map((b, k) => (
-                    <li key={k} className="rounded-xl border border-border bg-card p-4">
-                      <div className="font-display text-sm font-bold text-accent">{b.title}</div>
-                      <p className="mt-1 text-sm text-muted-foreground">{b.body}</p>
-                    </li>
-                  ))}
-                </ul>
+            <div key={`ex-${i}`}>
+              <section>
+                <h2 className="font-display text-2xl font-bold">{sec.heading}</h2>
+                {sec.paragraphs.map((p, j) => (
+                  <p key={j} className="mt-3 text-base leading-relaxed text-foreground/80">{p}</p>
+                ))}
+                {sec.bullets && (
+                  <ul className="mt-4 grid gap-3 md:grid-cols-2">
+                    {sec.bullets.map((b, k) => (
+                      <li key={k} className="rounded-xl border border-border bg-card p-4">
+                        <div className="font-display text-sm font-bold text-accent">{b.title}</div>
+                        <p className="mt-1 text-sm text-muted-foreground">{b.body}</p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+
+              {i === 1 && inlineGallery.length > 0 && (
+                <section className="mt-12">
+                  <h2 className="font-display text-2xl font-bold">Пример работ бригады</h2>
+                  <p className="mt-2 text-sm text-muted-foreground">Фото с реальных выездов — «до», «в процессе» и «после сдачи объекта».</p>
+                  <div className="mt-4 grid gap-3 md:grid-cols-3">
+                    {inlineGallery.map((p, k) => (
+                      <figure key={k} className="overflow-hidden rounded-xl border border-border bg-card">
+                        <img
+                          src={p.src}
+                          alt={p.alt}
+                          loading="lazy"
+                          decoding="async"
+                          className="aspect-[4/3] w-full object-cover"
+                        />
+                        <figcaption className="px-3 py-2 text-xs font-semibold text-accent">{p.caption}</figcaption>
+                      </figure>
+                    ))}
+                  </div>
+                </section>
               )}
-            </section>
+            </div>
           ))}
+
+          <EquipmentStrip />
+
+          {isMoscow && (
+            <section className="overflow-hidden rounded-2xl border border-border bg-card">
+              <div className="grid md:grid-cols-[1fr_1.2fr]">
+                <img
+                  src={moscowDistrict}
+                  alt={`Бригада ${city.nameLocative} — выезд по всем округам`}
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-[4/3] w-full object-cover md:h-full md:aspect-auto"
+                />
+                <div className="p-5 md:p-6">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-accent">Столичный филиал</div>
+                  <h3 className="mt-2 font-display text-xl font-bold">Выезд {city.nameLocative} от 60 минут</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Бригада дежурит круглосуточно. Работаем по всем округам, ЖК, коммерческим объектам и частному сектору. Приезжаем на неприметном транспорте — соседи и коллеги не узнают о работе.
+                  </p>
+                </div>
+              </div>
+            </section>
+          )}
+
+
 
 
           <section>
@@ -269,15 +339,28 @@ function ServiceInCityPage() {
 
           <section>
             <h2 className="font-display text-2xl font-bold">FAQ по {service.shortName.toLowerCase()} {city.nameLocative}</h2>
-            <Accordion type="single" collapsible className="mt-4">
-              {[...sc.faq, ...service.faq.slice(0, 2)].map((f: Service["faq"][number], i: number) => (
-                <AccordionItem key={i} value={`f-${i}`}>
-                  <AccordionTrigger className="text-left font-semibold">{f.q}</AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+            <div className="mt-4 grid gap-6 md:grid-cols-[220px_1fr] md:items-start">
+              <figure className="hidden overflow-hidden rounded-2xl border border-border bg-card md:block">
+                <img
+                  src={mskTeam}
+                  alt="Бригадир проверяет объект перед началом работ"
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-[3/4] w-full object-cover"
+                />
+                <figcaption className="px-3 py-2 text-xs text-muted-foreground">Осмотр объекта перед сметой</figcaption>
+              </figure>
+              <Accordion type="single" collapsible>
+                {[...sc.faq, ...service.faq.slice(0, 2)].map((f: Service["faq"][number], i: number) => (
+                  <AccordionItem key={i} value={`f-${i}`}>
+                    <AccordionTrigger className="text-left font-semibold">{f.q}</AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
           </section>
+
 
           <RelatedCityServices city={city} service={service} />
 
