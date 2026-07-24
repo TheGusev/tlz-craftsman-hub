@@ -16,6 +16,10 @@ import { getCaseGallery } from "@/lib/caseGallery";
 
 import geographyImg from "@/assets/geography.webp";
 import heroCrimeaMountain from "@/assets/hero-crimea-mountain.webp";
+import heroMoscowNight from "@/assets/hero-moscow-night.jpg";
+import heroMoscowTeam from "@/assets/hero-moscow-team.jpg";
+import moscowDistrict from "@/assets/moscow-district.jpg";
+import mskOfficeTeam from "@/assets/msk-office-team.jpg";
 import {
   buildGraphHead,
   buildWebPageSchema,
