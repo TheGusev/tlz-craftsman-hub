@@ -79,13 +79,13 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const heroImages = [geographyImg, heroCrimeaMountain];
+  const heroImages = [heroMoscowNight, heroMoscowTeam, moscowDistrict];
   const [activeHero, setActiveHero] = useState(0);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
       setActiveHero((current) => (current + 1) % heroImages.length);
-    }, 3000);
+    }, 3500);
 
     return () => window.clearInterval(timer);
   }, [heroImages.length]);
@@ -97,24 +97,26 @@ function HomePage() {
           <img
             key={image}
             src={image}
-            alt="ЮФО и Крым с высоты"
+            alt="Аварийная санитарная бригада в Москве"
             loading={index === 0 ? "eager" : "lazy"}
             fetchPriority={index === 0 ? "high" : "auto"}
             decoding="async"
             className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${index === activeHero ? "opacity-100" : "opacity-0"}`}
           />
         ))}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/85 via-primary/70 to-primary/40" aria-hidden />
         <div className="container relative mx-auto flex min-h-[calc(100svh-76px)] items-center px-4 py-14 md:py-20">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-urgent px-3 py-1 text-xs font-semibold text-urgent-foreground shadow-lg shadow-urgent/30">
               <span className="h-2 w-2 animate-pulse rounded-full bg-primary-foreground" /> Аварийная служба 24/7
             </div>
             <h1 className="mt-6 font-display text-[2rem] font-bold leading-[1.1] sm:text-4xl md:text-6xl">
-              Срочные санитарные работы по Москве, МО, ЮФО и Крыму
+              Аварийная санитарная служба в Москве и Московской области
             </h1>
             <p className="mt-5 max-w-xl text-base opacity-90 md:text-lg">
-              Уборка после пожара и потопа, дезинфекция, удаление плесени, фумигация. Выезд бригады в течение 1–3 часов. Лицензия, сертифицированные препараты, гарантия результата.
+              Уборка после пожара и потопа, дезинфекция, удаление плесени, фумигация. Столичная бригада выезжает за 60 минут по всем округам Москвы и городам МО. Лицензия, сертифицированные препараты, гарантия результата.
             </p>
+            <p className="mt-2 text-xs opacity-70">Также работаем в ЮФО и Республике Крым — региональные бригады 24/7.</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Button asChild size="lg" className="bg-[linear-gradient(110deg,var(--urgent),var(--accent),var(--urgent))] bg-[length:200%_auto] animate-shimmer text-urgent-foreground shadow-lg shadow-urgent/40 hover:opacity-90">
                 <a
@@ -130,7 +132,7 @@ function HomePage() {
             </div>
             <div className="mt-10 grid max-w-2xl grid-cols-3 gap-4">
               {[
-                { icon: Clock, t: "1–3 часа", s: "до приезда бригады" },
+                { icon: Clock, t: "от 60 мин", s: "до приезда в МСК" },
                 { icon: ShieldCheck, t: "Гарантия", s: "до 12 месяцев" },
                 { icon: MapPin, t: "Москва и МО", s: "+ ЮФО и Крым" },
               ].map((b, i) => (
@@ -144,6 +146,7 @@ function HomePage() {
           </div>
         </div>
       </section>
+
 
       <section className="bg-surface py-12 md:py-16">
         <div className="container mx-auto max-w-2xl px-4">
