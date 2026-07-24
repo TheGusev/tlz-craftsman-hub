@@ -190,34 +190,62 @@ function HomePage() {
       </section>
 
       <section className="relative overflow-hidden bg-surface py-16 md:py-24">
-        <div className="container mx-auto grid gap-10 px-4 md:grid-cols-2 md:items-center">
-          <div className="relative order-2 overflow-hidden rounded-2xl shadow-2xl md:order-1">
-            <img src={geographyImg} alt="Москва, МО, ЮФО и Крым с воздуха" loading="lazy" className="aspect-[4/3] w-full object-cover" />
-            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-              <div className="rounded-xl bg-background/95 px-3 py-2 text-foreground shadow-lg">
-                <div className="font-display text-xl font-bold">Москва и МО</div>
-                <div className="text-xs text-muted-foreground">+ ЮФО и Крым, 24/7</div>
-              </div>
-              <div className="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground shadow-lg">Москва и МО</div>
-            </div>
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl">
+            <h2 className="font-display text-3xl font-bold md:text-4xl">Три филиала — один стандарт</h2>
+            <p className="mt-3 text-muted-foreground">Основной штаб — в Москве. Дежурные бригады по МО и Подмосковью работают из столичного филиала. Также обслуживаем ЮФО и Крым региональными командами.</p>
           </div>
-          <div className="order-1 md:order-2">
-            <h2 className="font-display text-3xl font-bold md:text-4xl">География присутствия</h2>
-            <p className="mt-3 text-muted-foreground">Столичный филиал по Москве и МО — выезд по всем округам и городам Подмосковья. Дежурные бригады в Краснодаре, Сочи, Ростове-на-Дону. Региональный хаб по Крыму с выездом в Симферополь, Севастополь, Ялту, Евпаторию и Керчь.</p>
-            <div className="mt-6 grid gap-2 sm:grid-cols-2">
-              {cities.map((c) => (
-                <Link key={c.slug} to="/cities/$citySlug" params={{ citySlug: c.slug }} className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3 transition hover:border-accent active:scale-[0.99]">
-                  <div>
-                    <div className="font-display text-sm font-bold">{c.name}</div>
-                    <div className="text-[11px] text-muted-foreground">{c.region}</div>
-                  </div>
-                  <div className="text-[11px] font-semibold text-accent">{c.arrivalTime}</div>
-                </Link>
-              ))}
-            </div>
+          <div className="mt-8 grid gap-5 lg:grid-cols-3">
+            <Link to="/regions/moskva-mo" className="group relative overflow-hidden rounded-2xl shadow-xl lg:col-span-2 lg:row-span-2">
+              <img src={heroMoscowNight} alt="Ночная Москва — столичная санитарная служба" loading="lazy" className="aspect-[16/10] h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/50 to-transparent" aria-hidden />
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-primary-foreground md:p-8">
+                <div className="inline-flex rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">Основной филиал</div>
+                <h3 className="mt-3 font-display text-2xl font-bold md:text-3xl">Москва и Московская область</h3>
+                <p className="mt-2 max-w-xl text-sm opacity-90 md:text-base">Выезд от 60 минут по всем округам Москвы и городам МО. Работаем с УК, страховыми, коммерческой недвижимостью и частным сектором.</p>
+                <div className="mt-4 flex flex-wrap gap-2 text-xs">
+                  {["ЦАО", "ЗАО", "САО", "Химки", "Балашиха", "Подольск", "Мытищи"].map((d) => (
+                    <span key={d} className="rounded-full bg-background/20 px-3 py-1 backdrop-blur-sm">{d}</span>
+                  ))}
+                </div>
+              </div>
+            </Link>
+
+            <Link to="/regions/krym" className="group relative overflow-hidden rounded-2xl shadow-xl">
+              <img src={heroCrimeaMountain} alt="Крым — региональный хаб" loading="lazy" className="aspect-[16/10] h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-transparent" aria-hidden />
+              <div className="absolute bottom-0 left-0 right-0 p-5 text-primary-foreground">
+                <div className="text-xs font-semibold uppercase tracking-wider text-accent">Региональный хаб</div>
+                <h3 className="mt-2 font-display text-xl font-bold">Республика Крым</h3>
+                <p className="mt-1 text-xs opacity-90">Симферополь, Севастополь, Ялта, Евпатория, Керчь</p>
+              </div>
+            </Link>
+
+            <Link to="/cities" className="group relative overflow-hidden rounded-2xl shadow-xl">
+              <img src={geographyImg} alt="ЮФО — дежурные бригады" loading="lazy" className="aspect-[16/10] h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-transparent" aria-hidden />
+              <div className="absolute bottom-0 left-0 right-0 p-5 text-primary-foreground">
+                <div className="text-xs font-semibold uppercase tracking-wider text-accent">Южный округ</div>
+                <h3 className="mt-2 font-display text-xl font-bold">Краснодар, Сочи, Ростов-на-Дону</h3>
+                <p className="mt-1 text-xs opacity-90">Дежурные бригады круглосуточно</p>
+              </div>
+            </Link>
+          </div>
+
+          <div className="mt-8 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {cities.map((c) => (
+              <Link key={c.slug} to="/cities/$citySlug" params={{ citySlug: c.slug }} className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3 transition hover:border-accent">
+                <div>
+                  <div className="font-display text-sm font-bold">{c.name}</div>
+                  <div className="text-[11px] text-muted-foreground">{c.region}</div>
+                </div>
+                <div className="text-[11px] font-semibold text-accent">{c.arrivalTime}</div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
+
 
       <section className="container mx-auto px-4 py-16 md:py-24">
         <h2 className="font-display text-3xl font-bold md:text-4xl">Когда обращаются к нам</h2>
