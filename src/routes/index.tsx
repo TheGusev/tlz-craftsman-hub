@@ -45,7 +45,7 @@ export const Route = createFileRoute("/")({
       ],
       links: [
         { rel: "canonical", href: canonical },
-        { rel: "preload", as: "image", href: geographyImg, fetchpriority: "high" },
+        { rel: "preload", as: "image", href: heroMoscowNight, fetchpriority: "high" },
       ],
       scripts: [
         {
