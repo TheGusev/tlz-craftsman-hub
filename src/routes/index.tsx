@@ -249,22 +249,29 @@ function HomePage() {
 
       <section className="container mx-auto px-4 py-16 md:py-24">
         <h2 className="font-display text-3xl font-bold md:text-4xl">Когда обращаются к нам</h2>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
+        <p className="mt-3 max-w-2xl text-muted-foreground">Реальные фото с выездов бригады. Работаем аккуратно, конфиденциально и с полным циклом восстановления объекта.</p>
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
           {[
-            { t: "После пожара", d: "Удалить сажу, обработать стены, убрать запах гари — без ущерба для конструкций." },
-            { t: "После потопа", d: "Откачать воду, просушить стены, не дать плесени поселиться в материалах." },
-            { t: "Плесень и грибок", d: "Полное удаление с гарантией 12 месяцев и устранением источника влаги." },
-            { t: "Биосанитарные случаи", d: "Конфиденциальная санация после смерти и устранение трупного запаха." },
-            { t: "Фумигация", d: "Газовая обработка складов, элеваторов, подвалов от вредителей и грызунов." },
-            { t: "Очистка территорий", d: "Расчистка после пожара, вывоз загрязнённого мусора, обработка грунта." },
+            { t: "После пожара", d: "Уборка сажи и копоти, вывоз обгоревшего мусора, обработка от запаха гари, восстановление помещения.", img: getServiceImage("posle-pozhara") },
+            { t: "После потопа", d: "Откачка воды, просушка конструкций, антиплесневая обработка, дезинфекция.", img: getServiceImage("posle-potopa") },
+            { t: "Плесень и грибок", d: "Полное удаление с гарантией 12 месяцев и устранением источника влаги.", img: getServiceImage("udalenie-pleseni") },
+            { t: "Биосанитарные случаи", d: "Конфиденциальная уборка после смерти, вывоз мусора, устранение трупного запаха.", img: getServiceImage("dezinfekciya-posle-smerti") },
+            { t: "Фумигация", d: "Газовая обработка складов, элеваторов, подвалов от вредителей и грызунов.", img: getServiceImage("fumigaciya") },
+            { t: "Очистка территорий", d: "Расчистка после пожара, вывоз загрязнённого мусора, обработка грунта.", img: getServiceImage("ochistka-uchastkov") },
           ].map((c, i) => (
-            <Card key={i} className="p-6">
-              <h3 className="font-display text-lg font-bold">{c.t}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{c.d}</p>
+            <Card key={i} className="overflow-hidden p-0">
+              {c.img && (
+                <img src={c.img} alt={c.t} loading="lazy" decoding="async" className="aspect-[16/10] w-full object-cover" />
+              )}
+              <div className="p-5">
+                <h3 className="font-display text-lg font-bold">{c.t}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{c.d}</p>
+              </div>
             </Card>
           ))}
         </div>
       </section>
+
 
       <section className="bg-surface py-16 text-foreground md:py-24">
         <div className="container mx-auto px-4">
