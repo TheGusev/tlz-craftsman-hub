@@ -200,6 +200,22 @@ function ServiceInCityPage() {
       <div className="container mx-auto grid gap-10 px-4 py-12 lg:grid-cols-[2fr_1fr]">
         <div className="space-y-12">
           {sc.introAnswer && <IntroAnswer>{sc.introAnswer}</IntroAnswer>}
+
+          {cover && (
+            <figure className="overflow-hidden rounded-2xl border border-border">
+              <img
+                src={cover}
+                alt={`${service.shortName} ${city.nameLocative} — работа бригады`}
+                loading="lazy"
+                decoding="async"
+                className="aspect-[16/9] w-full object-cover"
+              />
+              <figcaption className="bg-card px-4 py-3 text-xs text-muted-foreground">
+                {service.shortName} {city.nameLocative}. Работы проводятся сертифицированной бригадой в СИЗ.
+              </figcaption>
+            </figure>
+          )}
+
           {sc.whenCalled.length > 0 && (
             <section>
               <h2 className="font-display text-2xl font-bold">Когда вызывают {city.nameLocative}</h2>
@@ -212,23 +228,71 @@ function ServiceInCityPage() {
           )}
 
           {extraSections.map((sec, i) => (
-            <section key={`ex-${i}`}>
-              <h2 className="font-display text-2xl font-bold">{sec.heading}</h2>
-              {sec.paragraphs.map((p, j) => (
-                <p key={j} className="mt-3 text-base leading-relaxed text-foreground/80">{p}</p>
-              ))}
-              {sec.bullets && (
-                <ul className="mt-4 grid gap-3 md:grid-cols-2">
-                  {sec.bullets.map((b, k) => (
-                    <li key={k} className="rounded-xl border border-border bg-card p-4">
-                      <div className="font-display text-sm font-bold text-accent">{b.title}</div>
-                      <p className="mt-1 text-sm text-muted-foreground">{b.body}</p>
-                    </li>
-                  ))}
-                </ul>
+            <div key={`ex-${i}`}>
+              <section>
+                <h2 className="font-display text-2xl font-bold">{sec.heading}</h2>
+                {sec.paragraphs.map((p, j) => (
+                  <p key={j} className="mt-3 text-base leading-relaxed text-foreground/80">{p}</p>
+                ))}
+                {sec.bullets && (
+                  <ul className="mt-4 grid gap-3 md:grid-cols-2">
+                    {sec.bullets.map((b, k) => (
+                      <li key={k} className="rounded-xl border border-border bg-card p-4">
+                        <div className="font-display text-sm font-bold text-accent">{b.title}</div>
+                        <p className="mt-1 text-sm text-muted-foreground">{b.body}</p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+
+              {i === 1 && inlineGallery.length > 0 && (
+                <section className="mt-12">
+                  <h2 className="font-display text-2xl font-bold">Пример работ бригады</h2>
+                  <p className="mt-2 text-sm text-muted-foreground">Фото с реальных выездов — «до», «в процессе» и «после сдачи объекта».</p>
+                  <div className="mt-4 grid gap-3 md:grid-cols-3">
+                    {inlineGallery.map((p, k) => (
+                      <figure key={k} className="overflow-hidden rounded-xl border border-border bg-card">
+                        <img
+                          src={p.src}
+                          alt={p.alt}
+                          loading="lazy"
+                          decoding="async"
+                          className="aspect-[4/3] w-full object-cover"
+                        />
+                        <figcaption className="px-3 py-2 text-xs font-semibold text-accent">{p.caption}</figcaption>
+                      </figure>
+                    ))}
+                  </div>
+                </section>
               )}
-            </section>
+            </div>
           ))}
+
+          <EquipmentStrip />
+
+          {isMoscow && (
+            <section className="overflow-hidden rounded-2xl border border-border bg-card">
+              <div className="grid md:grid-cols-[1fr_1.2fr]">
+                <img
+                  src={moscowDistrict}
+                  alt={`Бригада ${city.nameLocative} — выезд по всем округам`}
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-[4/3] w-full object-cover md:h-full md:aspect-auto"
+                />
+                <div className="p-5 md:p-6">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-accent">Столичный филиал</div>
+                  <h3 className="mt-2 font-display text-xl font-bold">Выезд {city.nameLocative} от 60 минут</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Бригада дежурит круглосуточно. Работаем по всем округам, ЖК, коммерческим объектам и частному сектору. Приезжаем на неприметном транспорте — соседи и коллеги не узнают о работе.
+                  </p>
+                </div>
+              </div>
+            </section>
+          )}
+
+
 
 
           <section>
