@@ -153,6 +153,8 @@ function ServiceInCityPage() {
   const cover = getServiceImage(service.slug);
   const phoneDisplay = city.phoneDisplay || city.phone;
   const extraSections = buildCityServiceContent(city, service);
+  const inlineGallery = getInlineGallery(service.slug);
+  const isMoscow = city.slug === "moskva" || city.slug === "moskovskaya-oblast";
   const heroActions = (city.phone || city.whatsapp) ? (
     <>
       {city.phone && (
