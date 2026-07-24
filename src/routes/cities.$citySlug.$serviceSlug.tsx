@@ -339,15 +339,28 @@ function ServiceInCityPage() {
 
           <section>
             <h2 className="font-display text-2xl font-bold">FAQ по {service.shortName.toLowerCase()} {city.nameLocative}</h2>
-            <Accordion type="single" collapsible className="mt-4">
-              {[...sc.faq, ...service.faq.slice(0, 2)].map((f: Service["faq"][number], i: number) => (
-                <AccordionItem key={i} value={`f-${i}`}>
-                  <AccordionTrigger className="text-left font-semibold">{f.q}</AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+            <div className="mt-4 grid gap-6 md:grid-cols-[220px_1fr] md:items-start">
+              <figure className="hidden overflow-hidden rounded-2xl border border-border bg-card md:block">
+                <img
+                  src={mskTeam}
+                  alt="Бригадир проверяет объект перед началом работ"
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-[3/4] w-full object-cover"
+                />
+                <figcaption className="px-3 py-2 text-xs text-muted-foreground">Осмотр объекта перед сметой</figcaption>
+              </figure>
+              <Accordion type="single" collapsible>
+                {[...sc.faq, ...service.faq.slice(0, 2)].map((f: Service["faq"][number], i: number) => (
+                  <AccordionItem key={i} value={`f-${i}`}>
+                    <AccordionTrigger className="text-left font-semibold">{f.q}</AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
           </section>
+
 
           <RelatedCityServices city={city} service={service} />
 
