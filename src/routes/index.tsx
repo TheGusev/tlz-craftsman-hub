@@ -211,23 +211,23 @@ function HomePage() {
               </div>
             </Link>
 
-            <Link to="/regions/krym" className="group relative overflow-hidden rounded-2xl shadow-xl">
-              <img src={heroCrimeaMountain} alt="Крым — региональный хаб" loading="lazy" className="aspect-[16/10] h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+            <Link to="/cities/$citySlug" params={{ citySlug: "moskovskaya-oblast" }} className="group relative overflow-hidden rounded-2xl shadow-xl">
+              <img src={heroMoscowTeam} alt="Бригада на выезде в Московской области" loading="lazy" className="aspect-[16/10] h-full w-full object-cover transition duration-700 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-transparent" aria-hidden />
               <div className="absolute bottom-0 left-0 right-0 p-5 text-primary-foreground">
-                <div className="text-xs font-semibold uppercase tracking-wider text-accent">Региональный хаб</div>
-                <h3 className="mt-2 font-display text-xl font-bold">Республика Крым</h3>
-                <p className="mt-1 text-xs opacity-90">Симферополь, Севастополь, Ялта, Евпатория, Керчь</p>
+                <div className="text-xs font-semibold uppercase tracking-wider text-accent">Подмосковье</div>
+                <h3 className="mt-2 font-display text-xl font-bold">Московская область</h3>
+                <p className="mt-1 text-xs opacity-90">Химки, Балашиха, Мытищи, Подольск, Королёв</p>
               </div>
             </Link>
 
-            <Link to="/cities" className="group relative overflow-hidden rounded-2xl shadow-xl">
-              <img src={geographyImg} alt="ЮФО — дежурные бригады" loading="lazy" className="aspect-[16/10] h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+            <Link to="/vyezd" className="group relative overflow-hidden rounded-2xl shadow-xl">
+              <img src={geographyImg} alt="Дежурные бригады круглосуточно" loading="lazy" className="aspect-[16/10] h-full w-full object-cover transition duration-700 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-transparent" aria-hidden />
               <div className="absolute bottom-0 left-0 right-0 p-5 text-primary-foreground">
-                <div className="text-xs font-semibold uppercase tracking-wider text-accent">Южный округ</div>
-                <h3 className="mt-2 font-display text-xl font-bold">Краснодар, Сочи, Ростов-на-Дону</h3>
-                <p className="mt-1 text-xs opacity-90">Дежурные бригады круглосуточно</p>
+                <div className="text-xs font-semibold uppercase tracking-wider text-accent">Дежурство 24/7</div>
+                <h3 className="mt-2 font-display text-xl font-bold">Аварийный выезд</h3>
+                <p className="mt-1 text-xs opacity-90">Бригада на объекте от 60 минут</p>
               </div>
             </Link>
           </div>

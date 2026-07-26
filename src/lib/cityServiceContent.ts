@@ -557,8 +557,7 @@ export function buildCityServiceContent(city: City, service: Service): Section[]
     heading: `Особенности услуги «${service.shortName}» ${city.nameLocative}`,
     paragraphs: [
       `${city.name} — ${cp.climate}. Поэтому ${shortLower} здесь не типовая работа: ${sa.problem}.`,
-      `Сезонный фактор: ${season}. ${cp.logistics.charAt(0).toUpperCase() + cp.logistics.slice(1)}, поэтому бригада успевает на аварийный вызов за ${city.arrivalTime}.`,
-      `Протокол и препараты подбираем под тип отделки: ${sa.materials}. Смета фиксируется до начала работ, по завершении — акт и гарантия.`,
+      `Сезонный фактор: ${season}. Протокол и препараты подбираем под тип отделки: ${sa.materials}.`,
     ],
   };
 
@@ -566,7 +565,6 @@ export function buildCityServiceContent(city: City, service: Service): Section[]
     heading: `Типовые сценарии: ${shortLower} ${city.nameLocative}`,
     paragraphs: [
       `Чаще всего к нам обращаются в четырёх ситуациях — от аварийных ночных выездов до плановых договоров с УК и коммерческими объектами ${regionLabel}.`,
-      `На каждый сценарий есть чек-лист: порядок операций, оборудование, время и документы. Это позволяет назвать сроки и цену заранее.`,
     ],
     bullets: sa.scenarios.slice(0, 4).map((s, i) => ({
       title: `Сценарий ${i + 1}`,
@@ -580,7 +578,7 @@ export function buildCityServiceContent(city: City, service: Service): Section[]
     heading: `Районы выезда и логистика ${city.nameLocative}`,
     paragraphs: [
       `Центральную зону (${centerList}) закрываем в первую очередь — плотная застройка и много старого фонда. Внешний контур (${outerList}) — частный сектор, промзоны и удалённые микрорайоны.`,
-      `Время прибытия — ${city.arrivalTime}. За ночь и выходные наценки нет: бригада дежурит круглосуточно, диспетчер держит связь до выдачи акта.`,
+      `Время прибытия — ${city.arrivalTime}, за ночь и выходные наценки нет.`,
     ],
     bullets: [
       {
