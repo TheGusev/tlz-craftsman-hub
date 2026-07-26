@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getService, services, type Service } from "@/data/services";
-import { cities } from "@/data/cities";
+import { visibleCities as cities, isVisibleCity } from "@/data/cities";
 import { cases } from "@/data/cases";
 import { getServiceInCityByService } from "@/data/serviceInCity";
 import { PageHero } from "@/components/site/PageHero";
@@ -76,7 +76,7 @@ export const Route = createFileRoute("/services/$serviceSlug")({
 
 function ServicePage() {
   const { service }: { service: Service } = Route.useLoaderData();
-  const cityLinks = getServiceInCityByService(service.slug);
+  const cityLinks = getServiceInCityByService(service.slug).filter((sc) => isVisibleCity(sc.citySlug));
   const serviceCases = cases.filter((c) => c.service === service.slug);
 
   const cover = getServiceImage(service.slug);
