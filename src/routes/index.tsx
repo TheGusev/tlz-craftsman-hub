@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { services } from "@/data/services";
-import { cities } from "@/data/cities";
+import { visibleCities as cities } from "@/data/cities";
 import { cases } from "@/data/cases";
 import { generalFaq } from "@/data/faq";
 import { MobileQuickLead } from "@/components/site/MobileQuickLead";

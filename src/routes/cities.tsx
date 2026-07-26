@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
-import { cities } from "@/data/cities";
+import { visibleCities as cities } from "@/data/cities";
 import { PageHero } from "@/components/site/PageHero";
 import { Card } from "@/components/ui/card";
 import {

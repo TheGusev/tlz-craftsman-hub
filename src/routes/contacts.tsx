@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { cities } from "@/data/cities";
+import { visibleCities as cities } from "@/data/cities";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Card } from "@/components/ui/card";
