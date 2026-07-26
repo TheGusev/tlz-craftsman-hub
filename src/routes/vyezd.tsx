@@ -3,7 +3,7 @@ import { PageHero } from "@/components/site/PageHero";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Truck, Clock, MapPin } from "lucide-react";
 import { buildCanonical } from "@/lib/seo";
-import { cities } from "@/data/cities";
+import { visibleCities as cities } from "@/data/cities";
 
 const PATH = "/vyezd";
 const TITLE = "Выезд бригады — зоны, время, стоимость доезда | Санитарные Решения РФ";

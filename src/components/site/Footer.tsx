@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { services } from "@/data/services";
-import { cities } from "@/data/cities";
+import { visibleCities as cities } from "@/data/cities";
 import { SITE_NAME, SITE_EMAIL } from "@/lib/site";
 import { trackGoal } from "@/lib/analytics";
 import { useActiveCity } from "@/lib/useActiveCity";
@@ -67,7 +67,7 @@ export function Footer() {
         <div>
           <h3 className="font-display text-sm font-semibold uppercase tracking-wider opacity-90">Города</h3>
           <ul className="mt-4 space-y-2 text-sm opacity-80">
-            {cities.slice(0, 10).map((c) => (
+            {cities.map((c) => (
               <li key={c.slug}>
                 <Link to="/cities/$citySlug" params={{ citySlug: c.slug }} className="hover:text-accent">
                   {c.name}

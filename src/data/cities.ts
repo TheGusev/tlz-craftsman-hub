@@ -431,3 +431,14 @@ export const cities: City[] = [
 ];
 
 export const getCity = (slug: string) => cities.find((c) => c.slug === slug);
+
+/** Слаги городов, которые показываются в интерфейсе (меню, футер, списки, дропдауны). */
+export const VISIBLE_CITY_SLUGS = ["moskva", "moskovskaya-oblast"] as const;
+
+/** Города для UI: Москва и МО, в этом порядке. Остальные страницы остаются доступными по прямой ссылке. */
+export const visibleCities: City[] = VISIBLE_CITY_SLUGS
+  .map((s) => cities.find((c) => c.slug === s))
+  .filter((c): c is City => Boolean(c));
+
+export const isVisibleCity = (slug: string) => (VISIBLE_CITY_SLUGS as readonly string[]).includes(slug);
+

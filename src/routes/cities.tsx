@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
-import { cities } from "@/data/cities";
+import { visibleCities as cities } from "@/data/cities";
 import { PageHero } from "@/components/site/PageHero";
 import { Card } from "@/components/ui/card";
 import {
@@ -13,8 +13,8 @@ export const Route = createFileRoute("/cities")({
   head: () => {
     const path = "/cities";
     const canonical = buildCanonical(path);
-    const title = "Города присутствия — Санитарные Решения РФ";
-    const description = "Санитарная служба в Краснодаре, Сочи, Ростове-на-Дону и по всему Крыму. Дежурные бригады 24/7.";
+    const title = "Города присутствия: Москва и МО — Санитарные Решения";
+    const description = "Санитарная служба в Москве и Московской области. Дежурные бригады 24/7, выезд от 60 минут, договор и гарантия.";
     return {
       meta: [
         { title },
@@ -48,7 +48,7 @@ function CitiesIndex() {
     <PageHero
       breadcrumbs={[{ label: "Города" }]}
       title="Города присутствия"
-      description="Дежурные бригады в Краснодарском крае, Ростовской области и Республике Крым. Региональный хаб по Крыму обеспечивает выезд во все ключевые города полуострова."
+      description="Дежурные бригады в Москве и Московской области. Столичный филиал работает круглосуточно: выезд по всем округам Москвы и городам Подмосковья."
     />
     <div className="container mx-auto px-4 py-10 md:py-12">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

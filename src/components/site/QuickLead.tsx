@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { sendLeadToTelegram, checkRateLimit } from "@/lib/telegram";
 import { trackGoal, readUtm } from "@/lib/analytics";
 import { trackCityConversion } from "@/lib/conversions";
-import { citiesForDropdown } from "@/lib/cityOrder";
+import { citiesForDropdownWith } from "@/lib/cityOrder";
 
 const objectTypes = [
   { value: "apartment", label: "Квартира" },
@@ -113,7 +113,7 @@ export function QuickLead({
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const sortedCities = citiesForDropdown(cities);
+  const sortedCities = citiesForDropdownWith(cities, defaultCity);
   const cityLabel = cities.find((c) => c.slug === city)?.name;
   const objectLabel = objectTypes.find((o) => o.value === objectType)?.label;
   const problemLabel = services.find((s) => s.slug === problem)?.shortName;

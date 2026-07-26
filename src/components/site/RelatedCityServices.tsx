@@ -4,8 +4,8 @@ import type { Service } from "@/data/services";
 import { getRelatedServices, getRelatedBlogLinks } from "@/lib/relatedContent";
 
 export function RelatedCityServices({ city, service }: { city: City; service: Service }) {
-  const related = getRelatedServices(service.slug, 6);
-  const blogLinks = getRelatedBlogLinks(service.slug, 3);
+  const related = getRelatedServices(service.slug, 4);
+  const blogLinks = getRelatedBlogLinks(service.slug, 2);
 
   return (
     <>
@@ -14,9 +14,6 @@ export function RelatedCityServices({ city, service }: { city: City; service: Se
           <h2 id="related-services-heading" className="font-display text-2xl font-bold">
             Другие услуги {city.nameLocative}
           </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Смежные направления, которые часто заказывают вместе с услугой «{service.shortName}» {city.nameLocative}.
-          </p>
           <ul className="mt-4 grid gap-3 md:grid-cols-2">
             {related.map((r) => (
               <li key={r.slug}>
@@ -31,9 +28,6 @@ export function RelatedCityServices({ city, service }: { city: City; service: Se
                   <div className="mt-1 font-display font-bold">
                     {r.shortName} {city.nameLocative}
                   </div>
-                  <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-                    {r.intro}
-                  </p>
                 </Link>
               </li>
             ))}
@@ -46,9 +40,6 @@ export function RelatedCityServices({ city, service }: { city: City; service: Se
           <h2 id="related-blog-heading" className="font-display text-2xl font-bold">
             Читайте в блоге
           </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Подробные разборы по теме — с примерами по ЮФО и Крыму.
-          </p>
           <ul className="mt-4 grid gap-3 md:grid-cols-3">
             {blogLinks.map((b) => (
               <li key={b.href}>

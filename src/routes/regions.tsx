@@ -48,14 +48,6 @@ const regions = [
     cities: ["Москва", "Химки", "Балашиха", "Мытищи", "Подольск", "Королёв", "Одинцово", "Красногорск"],
     to: "/regions/moskva-mo" as const,
   },
-  {
-    slug: "krym",
-    name: "Республика Крым",
-    description:
-      "Региональный хаб по Крыму с выездом в Симферополь, Севастополь, Ялту, Евпаторию и Керчь.",
-    cities: ["Симферополь", "Севастополь", "Ялта", "Евпатория", "Керчь"],
-    to: "/regions/krym" as const,
-  },
 ];
 
 function RegionsHub() {
@@ -68,7 +60,7 @@ function RegionsHub() {
       <PageHero
         backgroundImage={geographyImg}
         title="Регионы присутствия"
-        description="Работаем по ЮФО и Крыму. Региональные хабы с дежурными бригадами, выезд 24/7, единый стандарт обслуживания."
+        description="Работаем по Москве и Московской области. Дежурные бригады, выезд 24/7, единый стандарт обслуживания."
       />
 
       <section className="container mx-auto px-4 py-12 md:py-16">
@@ -97,18 +89,6 @@ function RegionsHub() {
               </Link>
             </Card>
           ))}
-          <Card className="flex flex-col justify-center border-dashed p-6 text-center">
-            <h2 className="font-display text-base font-bold text-muted-foreground">
-              Краснодарский край и Ростовская область
-            </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Пока представлены через хаб{" "}
-              <Link to="/cities" className="text-accent hover:underline">
-                городов
-              </Link>{" "}
-              — Краснодар, Сочи, Ростов-на-Дону.
-            </p>
-          </Card>
         </div>
       </section>
     </main>
