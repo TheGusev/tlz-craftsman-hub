@@ -123,17 +123,20 @@ export function Header() {
               </NavigationMenuContent>
             </NavigationMenuItem>
 
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link
-                  to="/cases"
-                  className="inline-flex h-10 items-center px-3 text-sm font-medium hover:text-accent"
-                  activeProps={{ className: "text-accent" }}
-                >
-                  Кейсы
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
+            {CASES_PUBLIC && (
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link
+                    to="/cases"
+                    className="inline-flex h-10 items-center px-3 text-sm font-medium hover:text-accent"
+                    activeProps={{ className: "text-accent" }}
+                  >
+                    Кейсы
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            )}
+
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Link to="/faq" className="inline-flex h-10 items-center px-3 text-sm font-medium hover:text-accent">
