@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { Phone, Menu, X, ChevronDown, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { services } from "@/data/services";
+import { CASES_PUBLIC } from "@/data/cases";
+
 import { visibleCities as cities } from "@/data/cities";
 import { useActiveCity } from "@/lib/useActiveCity";
 import { trackGoal } from "@/lib/analytics";
@@ -123,17 +125,20 @@ export function Header() {
               </NavigationMenuContent>
             </NavigationMenuItem>
 
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link
-                  to="/cases"
-                  className="inline-flex h-10 items-center px-3 text-sm font-medium hover:text-accent"
-                  activeProps={{ className: "text-accent" }}
-                >
-                  Кейсы
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
+            {CASES_PUBLIC && (
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link
+                    to="/cases"
+                    className="inline-flex h-10 items-center px-3 text-sm font-medium hover:text-accent"
+                    activeProps={{ className: "text-accent" }}
+                  >
+                    Кейсы
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            )}
+
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Link to="/faq" className="inline-flex h-10 items-center px-3 text-sm font-medium hover:text-accent">
@@ -288,7 +293,8 @@ function MobileNav({ onNavigate }: { onNavigate: () => void }) {
         </div>
       )}
       {[
-        { to: "/cases" as const, label: "Кейсы" },
+        ...(CASES_PUBLIC ? [{ to: "/cases" as const, label: "Кейсы" }] : []),
+
         { to: "/faq" as const, label: "FAQ" },
         { to: "/blog" as const, label: "Блог" },
         { to: "/prices" as const, label: "Цены" },

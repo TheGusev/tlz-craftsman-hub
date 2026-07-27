@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { services } from "@/data/services";
 import { visibleCities as cities } from "@/data/cities";
+import { CASES_PUBLIC } from "@/data/cases";
+
 import { SITE_NAME, SITE_EMAIL } from "@/lib/site";
 import { trackGoal } from "@/lib/analytics";
 import { useActiveCity } from "@/lib/useActiveCity";
@@ -89,7 +91,7 @@ export function Footer() {
           <h3 className="font-display text-sm font-semibold uppercase tracking-wider opacity-90">Компания</h3>
           <ul className="mt-4 space-y-2 text-sm opacity-80">
             <li><Link to="/about" className="hover:text-accent">О компании</Link></li>
-            <li><Link to="/cases" className="hover:text-accent">Кейсы</Link></li>
+            {CASES_PUBLIC && <li><Link to="/cases" className="hover:text-accent">Кейсы</Link></li>}
             <li><Link to="/otzyvy" className="hover:text-accent">Отзывы</Link></li>
             <li><Link to="/blog" className="hover:text-accent">Блог</Link></li>
             <li><Link to="/faq" className="hover:text-accent">FAQ</Link></li>
