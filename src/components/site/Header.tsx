@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { Phone, Menu, X, ChevronDown, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { services } from "@/data/services";
+import { CASES_PUBLIC } from "@/data/cases";
+
 import { visibleCities as cities } from "@/data/cities";
 import { useActiveCity } from "@/lib/useActiveCity";
 import { trackGoal } from "@/lib/analytics";
