@@ -291,7 +291,8 @@ function MobileNav({ onNavigate }: { onNavigate: () => void }) {
         </div>
       )}
       {[
-        { to: "/cases" as const, label: "Кейсы" },
+        ...(CASES_PUBLIC ? [{ to: "/cases" as const, label: "Кейсы" }] : []),
+
         { to: "/faq" as const, label: "FAQ" },
         { to: "/blog" as const, label: "Блог" },
         { to: "/prices" as const, label: "Цены" },
