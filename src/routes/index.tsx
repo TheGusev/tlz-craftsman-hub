@@ -292,28 +292,31 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 py-16 md:py-24">
-        <div className="flex items-end justify-between">
-          <h2 className="font-display text-3xl font-bold md:text-4xl">Реальные кейсы</h2>
-          <Link to="/cases" className="hidden text-sm font-semibold text-accent hover:underline md:inline">Все кейсы →</Link>
-        </div>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
-          {cases.slice(0, 6).map((c) => {
-            const photo = getCaseGallery(c.slug)[0];
-            return (
-              <Card key={c.slug} className="overflow-hidden p-0">
-                {photo && <img src={photo.src} alt={photo.alt} loading="lazy" className="aspect-[16/10] w-full object-cover" />}
-                <div className="p-6">
-                  <div className="text-xs font-semibold uppercase tracking-wider text-accent">{c.objectType}</div>
-                  <h3 className="mt-2 font-display text-base font-bold">{c.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{c.problem}</p>
-                  <div className="mt-4 text-xs text-muted-foreground">Срок: {c.duration}</div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      </section>
+      {cases.length > 0 && (
+        <section className="container mx-auto px-4 py-16 md:py-24">
+          <div className="flex items-end justify-between">
+            <h2 className="font-display text-3xl font-bold md:text-4xl">Реальные кейсы</h2>
+            <Link to="/cases" className="hidden text-sm font-semibold text-accent hover:underline md:inline">Все кейсы →</Link>
+          </div>
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {cases.slice(0, 6).map((c) => {
+              const photo = getCaseGallery(c.slug)[0];
+              return (
+                <Card key={c.slug} className="overflow-hidden p-0">
+                  {photo && <img src={photo.src} alt={photo.alt} loading="lazy" className="aspect-[16/10] w-full object-cover" />}
+                  <div className="p-6">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-accent">{c.objectType}</div>
+                    <h3 className="mt-2 font-display text-base font-bold">{c.title}</h3>
+                    <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{c.problem}</p>
+                    <div className="mt-4 text-xs text-muted-foreground">Срок: {c.duration}</div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
 
       <section className="bg-surface py-16 md:py-24">
         <div className="container mx-auto max-w-3xl px-4">

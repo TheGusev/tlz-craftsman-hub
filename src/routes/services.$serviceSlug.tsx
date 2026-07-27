@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getService, services, type Service } from "@/data/services";
 import { visibleCities as cities, isVisibleCity } from "@/data/cities";
-import { cases } from "@/data/cases";
+import { publicCases as cases } from "@/data/cases";
 import { getServiceInCityByService } from "@/data/serviceInCity";
 import { PageHero } from "@/components/site/PageHero";
 import { LeadForm } from "@/components/site/LeadForm";
