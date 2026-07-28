@@ -11,6 +11,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Check, AlertTriangle } from "lucide-react";
 import { getServiceImage } from "@/lib/serviceImages";
 import { getCaseGallery } from "@/lib/caseGallery";
+import { BeforeAfterGallery } from "@/components/site/BeforeAfterGallery";
+import { getFloodGallery, FLOOD_SERVICE_SLUG } from "@/lib/floodGallery";
 import {
   buildGraphHead,
   buildWebPageSchema,
