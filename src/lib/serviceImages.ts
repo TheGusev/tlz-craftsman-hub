@@ -1,4 +1,4 @@
-import flood from "@/assets/service-flood.webp";
+import floodCoverAsset from "@/assets/potop-koridor-ofisa.jpg.asset.json";
 import smokeSmell from "@/assets/service-smoke-smell.webp";
 import disinfection from "@/assets/service-disinfection.webp";
 import odor from "@/assets/service-odor.webp";
@@ -20,7 +20,7 @@ import dezinfekciyaRoom from "@/assets/service-dezinfekciya-room.jpg";
 
 export const serviceImages: Record<string, string> = {
   "posle-pozhara": fire,
-  "posle-potopa": flood,
+  "posle-potopa": floodCoverAsset.url,
   "udalenie-zapaha-gari": smokeSmell,
   "sanitarnaya-obrabotka-pomeshcheniy": disinfection,
   "dezinfekciya-posle-smerti": afterDeath,

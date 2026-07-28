@@ -23,6 +23,8 @@ const SERVICE_TO_CASE: Record<string, string> = {
 };
 
 export function getInlineGallery(serviceSlug: string): GalleryPhoto[] {
+  // Для «после потопа» показываем реальные фото объекта (BeforeAfterGallery).
+  if (serviceSlug === "posle-potopa") return [];
   const caseSlug = SERVICE_TO_CASE[serviceSlug];
   if (!caseSlug) return [];
   const photos = caseGallery[caseSlug];

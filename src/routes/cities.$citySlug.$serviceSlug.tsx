@@ -24,6 +24,8 @@ import { buildCityServiceContent } from "@/lib/cityServiceContent";
 import { RelatedCityServices } from "@/components/site/RelatedCityServices";
 import { EquipmentStrip } from "@/components/site/EquipmentStrip";
 import { getInlineGallery } from "@/lib/serviceInlineImages";
+import { BeforeAfterGallery } from "@/components/site/BeforeAfterGallery";
+import { getFloodGallery, FLOOD_SERVICE_SLUG } from "@/lib/floodGallery";
 import moscowDistrict from "@/assets/moscow-district.jpg";
 import mskTeam from "@/assets/msk-office-team.jpg";
 
@@ -245,6 +247,16 @@ function ServiceInCityPage() {
                   </ul>
                 )}
               </section>
+
+              {i === 1 && service.slug === FLOOD_SERVICE_SLUG && (
+                <div className="mt-12">
+                  <BeforeAfterGallery
+                    photos={getFloodGallery(city.nameLocative)}
+                    subtitle={`Реальные объекты ${city.nameLocative} — фото с выезда бригады: откачка воды, вывоз ила, мойка и просушка помещений.`}
+                    footnote="Кадры сделаны на одном объекте: слева — состояние до работ, справа — после сдачи."
+                  />
+                </div>
+              )}
 
               {i === 1 && inlineGallery.length > 0 && (
                 <section className="mt-12">

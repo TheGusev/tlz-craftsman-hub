@@ -11,6 +11,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Check, AlertTriangle } from "lucide-react";
 import { getServiceImage } from "@/lib/serviceImages";
 import { getCaseGallery } from "@/lib/caseGallery";
+import { BeforeAfterGallery } from "@/components/site/BeforeAfterGallery";
+import { getFloodGallery, FLOOD_SERVICE_SLUG } from "@/lib/floodGallery";
 import {
   buildGraphHead,
   buildWebPageSchema,
@@ -141,6 +143,13 @@ function ServicePage() {
               ))}
             </ul>
           </section>
+
+          {service.slug === FLOOD_SERVICE_SLUG && (
+            <BeforeAfterGallery
+              photos={getFloodGallery("в Москве")}
+              footnote="Кадры сделаны на одном объекте: слева — состояние до работ, справа — после сдачи."
+            />
+          )}
 
           <section>
             <h2 className="font-display text-2xl font-bold">От чего зависит цена</h2>
