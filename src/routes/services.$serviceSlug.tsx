@@ -142,6 +142,13 @@ function ServicePage() {
             </ul>
           </section>
 
+          {service.slug === FLOOD_SERVICE_SLUG && (
+            <BeforeAfterGallery
+              photos={getFloodGallery("Москве")}
+              footnote="Кадры сделаны на одном объекте: слева — состояние до работ, справа — после сдачи."
+            />
+          )}
+
           <section>
             <h2 className="font-display text-2xl font-bold">От чего зависит цена</h2>
             <ul className="mt-4 space-y-2">
