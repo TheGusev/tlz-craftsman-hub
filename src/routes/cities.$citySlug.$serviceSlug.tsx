@@ -246,6 +246,16 @@ function ServiceInCityPage() {
                 )}
               </section>
 
+              {i === 1 && service.slug === FLOOD_SERVICE_SLUG && (
+                <div className="mt-12">
+                  <BeforeAfterGallery
+                    photos={getFloodGallery(city.name)}
+                    subtitle={`Реальные объекты ${city.nameLocative} — фото с выезда бригады: откачка воды, вывоз ила, мойка и просушка помещений.`}
+                    footnote="Кадры сделаны на одном объекте: слева — состояние до работ, справа — после сдачи."
+                  />
+                </div>
+              )}
+
               {i === 1 && inlineGallery.length > 0 && (
                 <section className="mt-12">
                   <h2 className="font-display text-2xl font-bold">Пример работ бригады</h2>
