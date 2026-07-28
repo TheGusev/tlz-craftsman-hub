@@ -12,8 +12,8 @@ export type BeforeAfterPhoto = {
 
 export const FLOOD_SERVICE_SLUG = "posle-potopa";
 
-export function getFloodGallery(cityName?: string): BeforeAfterPhoto[] {
-  const geo = cityName ? ` в ${cityName}` : "";
+export function getFloodGallery(cityLocative?: string): BeforeAfterPhoto[] {
+  const geo = cityLocative ? ` ${cityLocative}` : "";
   return [
     {
       src: koridor.url,

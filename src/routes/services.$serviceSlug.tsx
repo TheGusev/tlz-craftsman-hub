@@ -146,7 +146,7 @@ function ServicePage() {
 
           {service.slug === FLOOD_SERVICE_SLUG && (
             <BeforeAfterGallery
-              photos={getFloodGallery("Москве")}
+              photos={getFloodGallery("в Москве")}
               footnote="Кадры сделаны на одном объекте: слева — состояние до работ, справа — после сдачи."
             />
           )}
