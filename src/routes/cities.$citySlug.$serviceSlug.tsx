@@ -142,6 +142,22 @@ export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
                 });
               })(),
             ),
+            ...(service.slug === FLOOD_SERVICE_SLUG
+              ? [
+                  (() => {
+                    const v = getFloodVideo(city.nameLocative);
+                    return buildVideoObjectSchema({
+                      path,
+                      name: `${service.shortName} ${city.nameLocative} — видео с выезда бригады`,
+                      description: v.caption,
+                      contentUrl: v.src,
+                      thumbnailUrl: v.poster,
+                      uploadDate: v.uploadDate,
+                      duration: v.duration,
+                    });
+                  })(),
+                ]
+              : []),
           ]),
         },
       ],
