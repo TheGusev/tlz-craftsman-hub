@@ -25,7 +25,7 @@ import { RelatedCityServices } from "@/components/site/RelatedCityServices";
 import { EquipmentStrip } from "@/components/site/EquipmentStrip";
 import { getInlineGallery } from "@/lib/serviceInlineImages";
 import { BeforeAfterGallery } from "@/components/site/BeforeAfterGallery";
-import { getFloodGallery, FLOOD_SERVICE_SLUG } from "@/lib/floodGallery";
+import { getFloodGallery, getFloodVideo, FLOOD_SERVICE_SLUG } from "@/lib/floodGallery";
 import moscowDistrict from "@/assets/moscow-district.jpg";
 import mskTeam from "@/assets/msk-office-team.jpg";
 
