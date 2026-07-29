@@ -252,6 +252,7 @@ function ServiceInCityPage() {
                 <div className="mt-12">
                   <BeforeAfterGallery
                     photos={getFloodGallery(city.nameLocative)}
+                    video={getFloodVideo(city.nameLocative)}
                     subtitle={`Реальные объекты ${city.nameLocative} — фото с выезда бригады: откачка воды, вывоз ила, мойка и просушка помещений.`}
                     footnote="Кадры сделаны на одном объекте: слева — состояние до работ, справа — после сдачи."
                   />
