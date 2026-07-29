@@ -19,6 +19,7 @@ import {
   buildBreadcrumbSchema,
   buildServiceSchema,
   buildFAQSchema,
+  buildVideoObjectSchema,
 } from "@/lib/jsonld";
 import { buildCanonical } from "@/lib/seo";
 
