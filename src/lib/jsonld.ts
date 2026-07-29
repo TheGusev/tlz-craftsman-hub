@@ -171,6 +171,29 @@ export function buildImageGallerySchema(opts: {
   };
 }
 
+export function buildVideoObjectSchema(opts: {
+  path: string;
+  name: string;
+  description: string;
+  contentUrl: string;
+  thumbnailUrl: string;
+  uploadDate: string;
+  duration?: string;
+}): JsonLdNode {
+  const abs = (u: string) => (u.startsWith("http") ? u : `${SITE_URL}${u}`);
+  return {
+    "@type": "VideoObject",
+    "@id": `${buildCanonical(opts.path)}#video`,
+    name: opts.name,
+    description: opts.description,
+    contentUrl: abs(opts.contentUrl),
+    thumbnailUrl: [abs(opts.thumbnailUrl)],
+    uploadDate: opts.uploadDate,
+    ...(opts.duration ? { duration: opts.duration } : {}),
+    publisher: { "@id": `${SITE_URL}/#organization` },
+  };
+}
+
 export function buildArticleSchema(opts: {
   path: string;
   headline: string;

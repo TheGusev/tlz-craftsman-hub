@@ -3,6 +3,8 @@ import koridor from "@/assets/potop-koridor-ofisa.jpg.asset.json";
 import kabinet from "@/assets/potop-kabinet.jpg.asset.json";
 import zal from "@/assets/potop-zal.jpg.asset.json";
 import holl from "@/assets/potop-holl-lestnica.jpg.asset.json";
+import videoAsset from "@/assets/potop-video.mp4.asset.json";
+import videoPoster from "@/assets/potop-video-poster.jpg.asset.json";
 
 export type BeforeAfterPhoto = {
   src: string;
@@ -11,6 +13,25 @@ export type BeforeAfterPhoto = {
 };
 
 export const FLOOD_SERVICE_SLUG = "posle-potopa";
+
+export type FloodVideo = {
+  src: string;
+  poster: string;
+  caption: string;
+  duration: string;
+  uploadDate: string;
+};
+
+export function getFloodVideo(cityLocative?: string): FloodVideo {
+  const geo = cityLocative ? ` ${cityLocative}` : "";
+  return {
+    src: videoAsset.url,
+    poster: videoPoster.url,
+    caption: `Видео с выезда бригады${geo}: откачка воды, вывоз ила и уборка помещений`,
+    duration: "PT35S",
+    uploadDate: "2026-07-29",
+  };
+}
 
 export function getFloodGallery(cityLocative?: string): BeforeAfterPhoto[] {
   const geo = cityLocative ? ` ${cityLocative}` : "";

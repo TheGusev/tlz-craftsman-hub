@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Lightbox } from "@/components/site/Lightbox";
-import type { BeforeAfterPhoto } from "@/lib/floodGallery";
+import type { BeforeAfterPhoto, FloodVideo } from "@/lib/floodGallery";
 
 type Props = {
   photos: BeforeAfterPhoto[];
+  video?: FloodVideo;
   title?: string;
   subtitle?: string;
   footnote?: string;
@@ -11,12 +12,13 @@ type Props = {
 
 export function BeforeAfterGallery({
   photos,
+  video,
   title = "Наши работы после потопа: до и после",
   subtitle = "Реальные объекты, фото с выезда бригады.",
   footnote,
 }: Props) {
   const [index, setIndex] = useState<number | null>(null);
-  if (photos.length === 0) return null;
+  if (photos.length === 0 && !video) return null;
 
   return (
     <section aria-labelledby="before-after-heading">
@@ -24,6 +26,30 @@ export function BeforeAfterGallery({
         {title}
       </h2>
       <p className="mt-2 text-sm text-muted-foreground">{subtitle}</p>
+
+      {video && (
+        <figure className="mx-auto mt-5 max-w-[420px] overflow-hidden rounded-2xl border border-border bg-card shadow-elegant">
+          <video
+            src={video.src}
+            poster={video.poster}
+            controls
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            aria-label={video.caption}
+            className="aspect-[3/4] w-full bg-black object-cover"
+          />
+          <figcaption className="flex items-center justify-between gap-2 px-4 py-3">
+            <span className="text-sm font-semibold">{video.caption}</span>
+            <span className="shrink-0 rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-accent">
+              Видео
+            </span>
+          </figcaption>
+        </figure>
+      )}
+
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         {photos.map((p, i) => (
           <figure key={p.src} className="overflow-hidden rounded-2xl border border-border bg-card">

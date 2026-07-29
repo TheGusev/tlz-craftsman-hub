@@ -12,13 +12,14 @@ import { Check, AlertTriangle } from "lucide-react";
 import { getServiceImage } from "@/lib/serviceImages";
 import { getCaseGallery } from "@/lib/caseGallery";
 import { BeforeAfterGallery } from "@/components/site/BeforeAfterGallery";
-import { getFloodGallery, FLOOD_SERVICE_SLUG } from "@/lib/floodGallery";
+import { getFloodGallery, getFloodVideo, FLOOD_SERVICE_SLUG } from "@/lib/floodGallery";
 import {
   buildGraphHead,
   buildWebPageSchema,
   buildBreadcrumbSchema,
   buildServiceSchema,
   buildFAQSchema,
+  buildVideoObjectSchema,
 } from "@/lib/jsonld";
 import { buildCanonical } from "@/lib/seo";
 
@@ -67,6 +68,22 @@ export const Route = createFileRoute("/services/$serviceSlug")({
               priceFrom: s.priceFrom,
             }),
             buildFAQSchema(s.faq),
+            ...(s.slug === FLOOD_SERVICE_SLUG
+              ? [
+                  (() => {
+                    const v = getFloodVideo("в Москве");
+                    return buildVideoObjectSchema({
+                      path,
+                      name: `${s.shortName} — видео с выезда бригады`,
+                      description: v.caption,
+                      contentUrl: v.src,
+                      thumbnailUrl: v.poster,
+                      uploadDate: v.uploadDate,
+                      duration: v.duration,
+                    });
+                  })(),
+                ]
+              : []),
           ]),
         },
       ],
@@ -147,6 +164,7 @@ function ServicePage() {
           {service.slug === FLOOD_SERVICE_SLUG && (
             <BeforeAfterGallery
               photos={getFloodGallery("в Москве")}
+              video={getFloodVideo("в Москве")}
               footnote="Кадры сделаны на одном объекте: слева — состояние до работ, справа — после сдачи."
             />
           )}
