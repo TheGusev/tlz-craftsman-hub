@@ -68,6 +68,22 @@ export const Route = createFileRoute("/services/$serviceSlug")({
               priceFrom: s.priceFrom,
             }),
             buildFAQSchema(s.faq),
+            ...(s.slug === FLOOD_SERVICE_SLUG
+              ? [
+                  (() => {
+                    const v = getFloodVideo("в Москве");
+                    return buildVideoObjectSchema({
+                      path,
+                      name: `${s.shortName} — видео с выезда бригады`,
+                      description: v.caption,
+                      contentUrl: v.src,
+                      thumbnailUrl: v.poster,
+                      uploadDate: v.uploadDate,
+                      duration: v.duration,
+                    });
+                  })(),
+                ]
+              : []),
           ]),
         },
       ],
