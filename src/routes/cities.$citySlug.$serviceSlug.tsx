@@ -16,6 +16,7 @@ import {
   buildServiceSchema,
   buildLocalBusinessSchema,
   buildFAQSchema,
+  buildVideoObjectSchema,
 } from "@/lib/jsonld";
 import { buildCanonical } from "@/lib/seo";
 import { getServiceImage } from "@/lib/serviceImages";
