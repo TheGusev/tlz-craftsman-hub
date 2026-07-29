@@ -3,6 +3,8 @@ import koridor from "@/assets/potop-koridor-ofisa.jpg.asset.json";
 import kabinet from "@/assets/potop-kabinet.jpg.asset.json";
 import zal from "@/assets/potop-zal.jpg.asset.json";
 import holl from "@/assets/potop-holl-lestnica.jpg.asset.json";
+import videoAsset from "@/assets/potop-video.mp4.asset.json";
+import videoPoster from "@/assets/potop-video-poster.jpg.asset.json";
 
 export type BeforeAfterPhoto = {
   src: string;
