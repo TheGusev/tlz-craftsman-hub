@@ -27,6 +27,7 @@ import { EquipmentStrip } from "@/components/site/EquipmentStrip";
 import { getInlineGallery } from "@/lib/serviceInlineImages";
 import { BeforeAfterGallery } from "@/components/site/BeforeAfterGallery";
 import { getFloodGallery, getFloodVideo, FLOOD_SERVICE_SLUG } from "@/lib/floodGallery";
+import { getFireGallery, FIRE_SERVICE_SLUG } from "@/lib/fireGallery";
 import moscowDistrict from "@/assets/moscow-district.jpg";
 import mskTeam from "@/assets/msk-office-team.jpg";
 
@@ -272,6 +273,17 @@ function ServiceInCityPage() {
                     video={getFloodVideo(city.nameLocative)}
                     subtitle={`Реальные объекты ${city.nameLocative} — фото с выезда бригады: откачка воды, вывоз ила, мойка и просушка помещений.`}
                     footnote="Кадры сделаны на одном объекте: слева — состояние до работ, справа — после сдачи."
+                  />
+                </div>
+              )}
+
+              {i === 1 && service.slug === FIRE_SERVICE_SLUG && (
+                <div className="mt-12">
+                  <BeforeAfterGallery
+                    photos={getFireGallery(city.nameLocative)}
+                    title="Наши работы после пожара: до и после"
+                    subtitle={`Реальные объекты ${city.nameLocative} — очистка от копоти, уборка помещений и вывоз обгоревших вещей.`}
+                    footnote="Шкаф на первом и втором кадре — один и тот же: до очистки и после восстановления."
                   />
                 </div>
               )}

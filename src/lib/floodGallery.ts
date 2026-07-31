@@ -1,10 +1,5 @@
-// Реальные фото с выездов бригады после потопа (офисное здание, откачка + уборка).
-import koridor from "@/assets/potop-koridor-ofisa.jpg.asset.json";
-import kabinet from "@/assets/potop-kabinet.jpg.asset.json";
-import zal from "@/assets/potop-zal.jpg.asset.json";
-import holl from "@/assets/potop-holl-lestnica.jpg.asset.json";
-import videoAsset from "@/assets/potop-video.mp4.asset.json";
-import videoPoster from "@/assets/potop-video-poster.jpg.asset.json";
+// Реальные фото и видео с выездов бригады после потопа (офисное здание, откачка + уборка).
+// Файлы лежат в public/media — попадают в dist и деплоятся на боевой хостинг.
 
 export type BeforeAfterPhoto = {
   src: string;
@@ -22,11 +17,14 @@ export type FloodVideo = {
   uploadDate: string;
 };
 
+const VIDEO_SRC = "/media/potop-video.mp4";
+const VIDEO_POSTER = "/media/potop-video-poster.webp";
+
 export function getFloodVideo(cityLocative?: string): FloodVideo {
   const geo = cityLocative ? ` ${cityLocative}` : "";
   return {
-    src: videoAsset.url,
-    poster: videoPoster.url,
+    src: VIDEO_SRC,
+    poster: VIDEO_POSTER,
     caption: `Видео с выезда бригады${geo}: откачка воды, вывоз ила и уборка помещений`,
     duration: "PT35S",
     uploadDate: "2026-07-29",
@@ -37,26 +35,26 @@ export function getFloodGallery(cityLocative?: string): BeforeAfterPhoto[] {
   const geo = cityLocative ? ` ${cityLocative}` : "";
   return [
     {
-      src: koridor.url,
+      src: "/media/potop-koridor-ofisa.webp",
       alt: `Уборка после потопа${geo} — коридор офиса до и после`,
       caption: "Коридор офиса: откачка и уборка",
     },
     {
-      src: kabinet.url,
+      src: "/media/potop-kabinet.webp",
       alt: `Уборка после потопа${geo} — кабинет с илом до и после`,
       caption: "Кабинет: ил и грязь после подтопления",
     },
     {
-      src: zal.url,
+      src: "/media/potop-zal.webp",
       alt: `Уборка после потопа${geo} — зал 60 м² до и после просушки`,
       caption: "Зал 60 м²: просушка и мойка",
     },
     {
-      src: holl.url,
+      src: "/media/potop-holl-lestnica.webp",
       alt: `Уборка после потопа${geo} — холл и лестница до и после`,
       caption: "Холл и лестница: очистка после потопа",
     },
   ];
 }
 
-export const floodCover = koridor.url;
+export const floodCover = "/media/potop-koridor-ofisa.webp";

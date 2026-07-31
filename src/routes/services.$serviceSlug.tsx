@@ -13,6 +13,7 @@ import { getServiceImage } from "@/lib/serviceImages";
 import { getCaseGallery } from "@/lib/caseGallery";
 import { BeforeAfterGallery } from "@/components/site/BeforeAfterGallery";
 import { getFloodGallery, getFloodVideo, FLOOD_SERVICE_SLUG } from "@/lib/floodGallery";
+import { getFireGallery, FIRE_SERVICE_SLUG } from "@/lib/fireGallery";
 import {
   buildGraphHead,
   buildWebPageSchema,
@@ -160,6 +161,15 @@ function ServicePage() {
               ))}
             </ul>
           </section>
+
+          {service.slug === FIRE_SERVICE_SLUG && (
+            <BeforeAfterGallery
+              photos={getFireGallery("в Москве")}
+              title="Наши работы после пожара: до и после"
+              subtitle="Реальные объекты — фото с выезда бригады: очистка от копоти, уборка и вывоз мусора."
+              footnote="Шкаф на первом и втором кадре — один и тот же: до очистки и после восстановления."
+            />
+          )}
 
           {service.slug === FLOOD_SERVICE_SLUG && (
             <BeforeAfterGallery
