@@ -1,11 +1,11 @@
-import floodCoverAsset from "@/assets/potop-koridor-ofisa.jpg.asset.json";
+import { floodCover } from "@/lib/floodGallery";
+import { fireCover } from "@/lib/fireGallery";
 import smokeSmell from "@/assets/service-smoke-smell.webp";
 import disinfection from "@/assets/service-disinfection.webp";
 import odor from "@/assets/service-odor.webp";
 import fumigation from "@/assets/service-fumigation.webp";
 import afterDeath from "@/assets/service-after-death.jpg";
 import mold from "@/assets/service-mold.webp";
-import fire from "@/assets/service-fire.webp";
 import plot from "@/assets/service-plot.webp";
 import dezinsekciya from "@/assets/service-dezinsekciya.jpg";
 import deratizaciya from "@/assets/service-deratizaciya.jpg";
@@ -19,8 +19,8 @@ import rodentsYard from "@/assets/service-rodents-yard.jpg";
 import dezinfekciyaRoom from "@/assets/service-dezinfekciya-room.jpg";
 
 export const serviceImages: Record<string, string> = {
-  "posle-pozhara": fire,
-  "posle-potopa": floodCoverAsset.url,
+  "posle-pozhara": fireCover,
+  "posle-potopa": floodCover,
   "udalenie-zapaha-gari": smokeSmell,
   "sanitarnaya-obrabotka-pomeshcheniy": disinfection,
   "dezinfekciya-posle-smerti": afterDeath,
