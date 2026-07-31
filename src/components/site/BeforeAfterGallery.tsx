@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Lightbox } from "@/components/site/Lightbox";
+import { LazyVideo } from "@/components/site/LazyVideo";
 import type { BeforeAfterPhoto, FloodVideo } from "@/lib/floodGallery";
 
 type Props = {
