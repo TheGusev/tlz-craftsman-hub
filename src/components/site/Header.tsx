@@ -31,6 +31,7 @@ import {
 export function Header() {
   const [open, setOpen] = useState(false);
   const activeCity = useActiveCity();
+  const activeService = useActiveService();
   const cityPhoneRaw = activeCity?.phone
     ? activeCity.phone.replace(/[^+\d]/g, "")
     : "";
