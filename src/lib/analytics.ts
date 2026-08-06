@@ -10,12 +10,26 @@ declare global {
 
 export const YM_ID = Number(import.meta.env.VITE_YANDEX_METRIKA_ID ?? 0) || 0;
 
+/** Слаг услуги → безопасный суффикс имени цели Метрики. */
+function goalSuffix(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const slug = value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  return slug || null;
+}
+
+function sendGoal(name: string, params?: Record<string, unknown>) {
+  if (YM_ID && window.ym) window.ym(YM_ID, "reachGoal", name, params);
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: name, ...(params ?? {}) });
+}
+
 export function trackGoal(name: string, params?: Record<string, unknown>) {
   if (typeof window === "undefined") return;
   try {
-    if (YM_ID && window.ym) window.ym(YM_ID, "reachGoal", name, params);
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({ event: name, ...(params ?? {}) });
+    sendGoal(name, params);
+    // Дополнительно — отдельная цель на конкретную услугу: {цель}_{услуга}.
+    const suffix = goalSuffix(params?.service);
+    if (suffix) sendGoal(`${name}_${suffix}`, params);
   } catch {
     // ignore
   }
