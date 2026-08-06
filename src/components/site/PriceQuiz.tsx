@@ -38,13 +38,15 @@ const URGENCY_MULT: Record<Urgency, number> = {
 
 export function PriceQuiz({
   basePrice,
-  serviceName,
-  cityName,
+  serviceSlug,
+  citySlug,
   onFinish,
 }: {
   basePrice: number;
-  serviceName: string;
-  cityName: string;
+  /** slug услуги — используется для составных целей Метрики */
+  serviceSlug: string;
+  /** slug города — используется для составных целей Метрики */
+  citySlug: string;
   onFinish?: (estimate: number) => void;
 }) {
   const [step, setStep] = useState(0);
@@ -65,14 +67,14 @@ export function PriceQuiz({
       const value =
         Math.round((basePrice * OBJECT_MULT[obj] * AREA_MULT[area] * URGENCY_MULT[u]) / 100) * 100;
       trackGoal("lp_quiz_complete", {
-        service: serviceName,
-        city: cityName,
+        service: serviceSlug,
+        city: citySlug,
         object: obj,
         area,
         urgency: u,
         estimate: value,
       });
-      trackCityConversion(cityName, serviceName, "quiz", {
+      trackCityConversion(citySlug, serviceSlug, "quiz", {
         estimate: value,
       });
       onFinish?.(value);
