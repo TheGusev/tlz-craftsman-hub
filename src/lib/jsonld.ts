@@ -151,23 +151,47 @@ export function buildFAQSchema(faqs: FaqItem[]): JsonLdNode | null {
   };
 }
 
+const absUrl = (u: string) => (u.startsWith("http") ? u : `${SITE_URL}${u}`);
+
+export type SchemaImage = {
+  url: string;
+  caption?: string;
+  description?: string;
+  width?: number;
+  height?: number;
+};
+
+/** Отдельный ImageObject (используется как primaryImageOfPage и внутри галерей). */
+export function buildImageObject(img: SchemaImage, id?: string): JsonLdNode {
+  return {
+    "@type": "ImageObject",
+    ...(id ? { "@id": id } : {}),
+    url: absUrl(img.url),
+    contentUrl: absUrl(img.url),
+    ...(img.caption ? { caption: img.caption } : {}),
+    ...(img.description ? { description: img.description } : {}),
+    ...(img.width ? { width: img.width } : {}),
+    ...(img.height ? { height: img.height } : {}),
+  };
+}
+
 export function buildImageGallerySchema(opts: {
   path: string;
   name: string;
   description?: string;
-  images: { url: string; caption?: string }[];
-}): JsonLdNode {
+  images: SchemaImage[];
+}): JsonLdNode | null {
+  if (!opts.images || opts.images.length === 0) return null;
   const url = buildCanonical(opts.path);
   return {
     "@type": "ImageGallery",
     "@id": `${url}#gallery`,
     name: opts.name,
+    url,
+    inLanguage: "ru-RU",
     ...(opts.description ? { description: opts.description } : {}),
-    image: opts.images.map((img) => ({
-      "@type": "ImageObject",
-      contentUrl: img.url.startsWith("http") ? img.url : `${SITE_URL}${img.url}`,
-      ...(img.caption ? { caption: img.caption } : {}),
-    })),
+    isPartOf: { "@id": `${url}#webpage` },
+    image: opts.images.map((img) => buildImageObject(img)),
   };
 }
 
@@ -179,17 +203,30 @@ export function buildVideoObjectSchema(opts: {
   thumbnailUrl: string;
   uploadDate: string;
   duration?: string;
+  width?: number;
+  height?: number;
 }): JsonLdNode {
-  const abs = (u: string) => (u.startsWith("http") ? u : `${SITE_URL}${u}`);
+  const url = buildCanonical(opts.path);
   return {
     "@type": "VideoObject",
-    "@id": `${buildCanonical(opts.path)}#video`,
+    "@id": `${url}#video`,
     name: opts.name,
     description: opts.description,
-    contentUrl: abs(opts.contentUrl),
-    thumbnailUrl: [abs(opts.thumbnailUrl)],
+    contentUrl: absUrl(opts.contentUrl),
+    thumbnailUrl: [absUrl(opts.thumbnailUrl)],
+    thumbnail: buildImageObject({ url: opts.thumbnailUrl, caption: opts.name }),
     uploadDate: opts.uploadDate,
     ...(opts.duration ? { duration: opts.duration } : {}),
+    ...(opts.width ? { width: opts.width } : {}),
+    ...(opts.height ? { height: opts.height } : {}),
+    encodingFormat: "video/mp4",
+    inLanguage: "ru-RU",
+    isFamilyFriendly: true,
+    potentialAction: {
+      "@type": "WatchAction",
+      target: url,
+    },
+    isPartOf: { "@id": `${url}#webpage` },
     publisher: { "@id": `${SITE_URL}/#organization` },
   };
 }
