@@ -188,6 +188,7 @@ function dedupeHead(html: string): string {
     /<link\b[^>]*\brel=["']canonical["'][^>]*>\s*/gi,
     /<meta\b[^>]*\bproperty=["']og:image["'][^>]*>\s*/gi,
     /<meta\b[^>]*\bname=["']twitter:image["'][^>]*>\s*/gi,
+    /<meta\b[^>]*\bname=["']robots["'][^>]*>\s*/gi,
     /<title>[^<]*<\/title>\s*/gi,
   ];
   for (const re of patterns) {
