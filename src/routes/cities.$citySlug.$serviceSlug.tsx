@@ -112,7 +112,7 @@ export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
               path,
               name: sc.metaTitle,
               description: sc.metaDescription,
-              ...(cover ? { primaryImage: { url: cover, caption: sc.h1 } } : {}),
+              ...(img ? { primaryImage: { url: img, caption: sc.h1 } } : {}),
             }),
             buildBreadcrumbSchema([
               { label: "Города", path: "/cities" },
