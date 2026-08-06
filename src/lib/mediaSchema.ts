@@ -50,6 +50,8 @@ export function buildServiceMediaNodes(opts: {
         duration: v.duration,
         width: v.width,
         height: v.height,
+        posterWidth: v.posterWidth,
+        posterHeight: v.posterHeight,
       }),
     );
   }

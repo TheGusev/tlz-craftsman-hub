@@ -21,7 +21,7 @@ export function buildOrganizationSchema(): JsonLdNode {
     url: SITE_URL,
     ...(SITE_PHONE ? { telephone: SITE_PHONE } : {}),
     email: SITE_EMAIL,
-    areaServed: ["RU-KDA", "RU-ROS", "RU-STA", "RU-CR"],
+    areaServed: ["RU-MOW", "RU-MOS"],
     sameAs: [],
   };
 }
@@ -42,6 +42,13 @@ export function buildWebPageSchema(opts: {
   name: string;
   description?: string;
   primaryImage?: { url: string; caption?: string; width?: number; height?: number };
+  /** Связать страницу с её BreadcrumbList (@id <url>#breadcrumb) */
+  withBreadcrumb?: boolean;
+  /** Главная сущность страницы: "#service", "#localbusiness", "#article" и т.п. */
+  mainEntity?: string;
+  /** Медиа страницы: "#gallery", "#video" */
+  associatedMedia?: string[];
+  dateModified?: string;
 }): JsonLdNode {
   const url = buildCanonical(opts.path);
   const imgUrl = opts.primaryImage
@@ -49,6 +56,7 @@ export function buildWebPageSchema(opts: {
       ? opts.primaryImage.url
       : `${SITE_URL}${opts.primaryImage.url}`
     : null;
+  const media = (opts.associatedMedia ?? []).map((frag) => ({ "@id": `${url}${frag}` }));
   return {
     "@type": "WebPage",
     "@id": `${url}#webpage`,
@@ -56,7 +64,13 @@ export function buildWebPageSchema(opts: {
     name: opts.name,
     inLanguage: "ru-RU",
     isPartOf: { "@id": `${SITE_URL}/#website` },
+    publisher: { "@id": `${SITE_URL}/#organization` },
+    about: { "@id": `${SITE_URL}/#organization` },
     ...(opts.description ? { description: opts.description } : {}),
+    ...(opts.withBreadcrumb ? { breadcrumb: { "@id": `${url}#breadcrumb` } } : {}),
+    ...(opts.mainEntity ? { mainEntity: { "@id": `${url}${opts.mainEntity}` } } : {}),
+    ...(media.length ? { associatedMedia: media } : {}),
+    ...(opts.dateModified ? { dateModified: opts.dateModified } : {}),
     ...(imgUrl && opts.primaryImage
       ? {
           primaryImageOfPage: {
@@ -68,14 +82,17 @@ export function buildWebPageSchema(opts: {
             ...(opts.primaryImage.width ? { width: opts.primaryImage.width } : {}),
             ...(opts.primaryImage.height ? { height: opts.primaryImage.height } : {}),
           },
+          image: { "@id": `${url}#primaryimage` },
         }
       : {}),
   };
 }
 
-export function buildBreadcrumbSchema(items: BreadcrumbInput[]): JsonLdNode {
+export function buildBreadcrumbSchema(items: BreadcrumbInput[], path?: string): JsonLdNode {
+  const url = path ? buildCanonical(path) : null;
   return {
     "@type": "BreadcrumbList",
+    ...(url ? { "@id": `${url}#breadcrumb` } : {}),
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Главная", item: SITE_URL },
       ...items.map((it, i) => ({
@@ -95,15 +112,22 @@ export function buildServiceSchema(opts: {
   serviceType?: string;
   priceFrom?: number;
   areaServed?: string;
+  image?: string;
 }): JsonLdNode {
+  const url = buildCanonical(opts.path);
   return {
     "@type": "Service",
-    "@id": `${buildCanonical(opts.path)}#service`,
+    "@id": `${url}#service`,
     name: opts.name,
     description: opts.description,
+    url,
     ...(opts.serviceType ? { serviceType: opts.serviceType } : {}),
     provider: { "@id": `${SITE_URL}/#organization` },
-    areaServed: opts.areaServed ?? "ЮФО и Республика Крым",
+    mainEntityOfPage: { "@id": `${url}#webpage` },
+    ...(opts.image
+      ? { image: opts.image.startsWith("http") ? opts.image : `${SITE_URL}${opts.image}` }
+      : {}),
+    areaServed: opts.areaServed ?? "Москва и Московская область",
     ...(opts.priceFrom
       ? {
           offers: {
@@ -154,6 +178,8 @@ export function buildLocalBusinessSchema(opts: {
         }
       : {}),
     areaServed: opts.areaServed ?? opts.cityName,
+    parentOrganization: { "@id": `${SITE_URL}/#organization` },
+    mainEntityOfPage: { "@id": `${url}#webpage` },
     openingHours: "Mo-Su 00:00-23:59",
   };
 }
@@ -224,6 +250,8 @@ export function buildVideoObjectSchema(opts: {
   duration?: string;
   width?: number;
   height?: number;
+  posterWidth?: number;
+  posterHeight?: number;
 }): JsonLdNode {
   const url = buildCanonical(opts.path);
   return {
@@ -233,7 +261,12 @@ export function buildVideoObjectSchema(opts: {
     description: opts.description,
     contentUrl: absUrl(opts.contentUrl),
     thumbnailUrl: [absUrl(opts.thumbnailUrl)],
-    thumbnail: buildImageObject({ url: opts.thumbnailUrl, caption: opts.name }),
+    thumbnail: buildImageObject({
+      url: opts.thumbnailUrl,
+      caption: opts.name,
+      width: opts.posterWidth,
+      height: opts.posterHeight,
+    }),
     uploadDate: opts.uploadDate,
     ...(opts.duration ? { duration: opts.duration } : {}),
     ...(opts.width ? { width: opts.width } : {}),

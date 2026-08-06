@@ -1,5 +1,8 @@
 // Реальные фото и видео с выездов бригады после потопа (офисное здание, откачка + уборка).
 // Файлы лежат в public/media — попадают в dist и деплоятся на боевой хостинг.
+// Размеры и длительность НЕ хардкодятся: берутся из автогенерируемого манифеста
+// (npm run media:manifest), который читает реальные файлы.
+import { getMedia, getMediaDuration } from "./generated/mediaManifest";
 
 export type BeforeAfterPhoto = {
   src: string;
@@ -29,17 +32,25 @@ const VIDEO_POSTER = "/media/potop-video-poster.webp";
 
 export function getFloodVideo(cityLocative?: string): FloodVideo {
   const geo = cityLocative ? ` ${cityLocative}` : "";
+  const video = getMedia(VIDEO_SRC);
+  const poster = getMedia(VIDEO_POSTER);
   return {
     src: VIDEO_SRC,
     poster: VIDEO_POSTER,
     caption: `Видео с выезда бригады${geo}: откачка воды, вывоз ила и уборка помещений`,
-    duration: "PT35S",
+    duration: getMediaDuration(VIDEO_SRC) ?? "PT35S",
     uploadDate: "2026-07-29T10:00:00+03:00",
-    width: 640,
-    height: 854,
-    posterWidth: 960,
-    posterHeight: 1280,
+    width: video?.width ?? 0,
+    height: video?.height ?? 0,
+    posterWidth: poster?.width ?? 0,
+    posterHeight: poster?.height ?? 0,
   };
+}
+
+/** Дополняет фото реальными размерами из манифеста. */
+export function withRealSize(photo: Omit<BeforeAfterPhoto, "width" | "height">): BeforeAfterPhoto {
+  const m = getMedia(photo.src);
+  return { ...photo, width: m?.width, height: m?.height };
 }
 
 export function getFloodGallery(cityLocative?: string): BeforeAfterPhoto[] {
@@ -49,31 +60,23 @@ export function getFloodGallery(cityLocative?: string): BeforeAfterPhoto[] {
       src: "/media/potop-koridor-ofisa.webp",
       alt: `Уборка после потопа${geo} — коридор офиса до и после`,
       caption: "Коридор офиса: откачка и уборка",
-      width: 1200,
-      height: 1200,
     },
     {
       src: "/media/potop-kabinet.webp",
       alt: `Уборка после потопа${geo} — кабинет с илом до и после`,
       caption: "Кабинет: ил и грязь после подтопления",
-      width: 1200,
-      height: 1200,
     },
     {
       src: "/media/potop-zal.webp",
       alt: `Уборка после потопа${geo} — зал 60 м² до и после просушки`,
       caption: "Зал 60 м²: просушка и мойка",
-      width: 1200,
-      height: 1200,
     },
     {
       src: "/media/potop-holl-lestnica.webp",
       alt: `Уборка после потопа${geo} — холл и лестница до и после`,
       caption: "Холл и лестница: очистка после потопа",
-      width: 1200,
-      height: 1200,
     },
-  ];
+  ].map(withRealSize);
 }
 
 export const floodCover = "/media/potop-koridor-ofisa.webp";

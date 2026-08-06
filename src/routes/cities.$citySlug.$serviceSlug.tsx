@@ -17,9 +17,9 @@ import {
   buildLocalBusinessSchema,
   buildFAQSchema,
 } from "@/lib/jsonld";
-import { buildServiceMediaNodes } from "@/lib/mediaSchema";
+import { buildServiceMediaNodes, hasServiceGallery, hasServiceVideo } from "@/lib/mediaSchema";
 import { buildCanonical } from "@/lib/seo";
-import { getServiceImage } from "@/lib/serviceImages";
+import { getServiceImage, getServiceImageSize } from "@/lib/serviceImages";
 import { PriceNote } from "@/components/site/PriceNote";
 import { buildCityServiceContent } from "@/lib/cityServiceContent";
 import { RelatedCityServices } from "@/components/site/RelatedCityServices";
@@ -89,6 +89,11 @@ export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
     const path = `/cities/${city.slug}/${service.slug}`;
     const canonical = buildCanonical(path);
     const img = getServiceImage(service.slug);
+    const imgSize = getServiceImageSize(service.slug);
+    const media = [
+      ...(hasServiceVideo(service.slug) ? ["#video"] : []),
+      ...(hasServiceGallery(service.slug) ? ["#gallery"] : []),
+    ];
     return {
       meta: [
         { title: sc.metaTitle },
@@ -112,13 +117,19 @@ export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
               path,
               name: sc.metaTitle,
               description: sc.metaDescription,
-              ...(img ? { primaryImage: { url: img, caption: sc.h1 } } : {}),
+              withBreadcrumb: true,
+              mainEntity: "#service",
+              ...(media.length ? { associatedMedia: media } : {}),
+              ...(img ? { primaryImage: { url: img, caption: sc.h1, ...(imgSize ?? {}) } } : {}),
             }),
-            buildBreadcrumbSchema([
-              { label: "Города", path: "/cities" },
-              { label: city.name, path: `/cities/${city.slug}` },
-              { label: service.shortName, path },
-            ]),
+            buildBreadcrumbSchema(
+              [
+                { label: "Города", path: "/cities" },
+                { label: city.name, path: `/cities/${city.slug}` },
+                { label: service.shortName, path },
+              ],
+              path,
+            ),
             buildServiceSchema({
               path,
               name: sc.h1,
@@ -126,6 +137,7 @@ export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
               serviceType: service.cluster,
               priceFrom: sc.localPricing?.from ?? service.priceFrom,
               areaServed: city.name,
+              ...(img ? { image: img } : {}),
             }),
             buildLocalBusinessSchema({
               path,
