@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { cities } from "@/data/cities";
 import { citiesForDropdownWith } from "@/lib/cityOrder";
 import { trackGoal, readUtm } from "@/lib/analytics";
-import { trackCityConversion } from "@/lib/conversions";
+
 import { useActiveCity } from "@/lib/useActiveCity";
 import { sendLeadToTelegram, checkRateLimit } from "@/lib/telegram";
 
@@ -75,9 +75,10 @@ export function LeadForm({
         landing: typeof window !== "undefined" ? window.location.pathname : "",
         referrer: typeof document !== "undefined" ? document.referrer : "",
       });
-      trackGoal("lead_form_submit", { source, service: service ?? null });
-      trackCityConversion(activeCity?.slug ?? defaultCity ?? cityVal, service, "form", {
+      trackGoal("lead_form_submit", {
         source,
+        city: activeCity?.slug ?? defaultCity ?? cityVal,
+        service: service ?? null,
       });
       (e.target as HTMLFormElement).reset();
       toast.success("Заявка отправлена! Мы перезвоним в течение 5 минут.");

@@ -11,7 +11,7 @@ import { getServiceImage } from "@/lib/serviceImages";
 import { PriceQuiz } from "@/components/site/PriceQuiz";
 import { PriceNote } from "@/components/site/PriceNote";
 import { trackGoal } from "@/lib/analytics";
-import { trackCityConversion } from "@/lib/conversions";
+
 import { SITE_PHONE, SITE_PHONE_RAW, SITE_URL } from "@/lib/site";
 
 type LpSearch = {
@@ -96,8 +96,11 @@ function LandingPage() {
             className="text-sm font-semibold text-primary"
             aria-label={phoneDisplay ? `Позвонить ${phoneDisplay}` : "Позвонить"}
             onClick={() => {
-              trackGoal("lead_phone_click", { source: "lp_header", city: city.slug });
-              trackCityConversion(city.slug, service.slug, "phone", { source: "lp_header" });
+              trackGoal("lead_phone_click", {
+                source: "lp_header",
+                city: city.slug,
+                service: service.slug,
+              });
             }}
           >
             {phoneDisplay || <Phone className="h-4 w-4" />}
@@ -131,8 +134,11 @@ function LandingPage() {
                 <a
                   href={phoneHref}
                   onClick={() => {
-                    trackGoal("lead_phone_click", { source: "lp_hero", city: city.slug });
-                    trackCityConversion(city.slug, service.slug, "phone", { source: "lp_hero" });
+                    trackGoal("lead_phone_click", {
+                      source: "lp_hero",
+                      city: city.slug,
+                      service: service.slug,
+                    });
                   }}
                 >
                   <Phone className="mr-2 h-4 w-4" />
@@ -145,8 +151,12 @@ function LandingPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => {
-                    trackGoal("lead_messenger_click", { source: "lp_hero", channel: "whatsapp", city: city.slug });
-                    trackCityConversion(city.slug, service.slug, "messenger", { source: "lp_hero", channel: "whatsapp" });
+                    trackGoal("lead_messenger_click", {
+                      source: "lp_hero",
+                      channel: "whatsapp",
+                      city: city.slug,
+                      service: service.slug,
+                    });
                   }}
                 >
                   <MessageCircle className="mr-2 h-4 w-4" />

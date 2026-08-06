@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { trackGoal } from "@/lib/analytics";
-import { trackCityConversion } from "@/lib/conversions";
+
 
 type ObjectType = "apartment" | "house" | "commercial";
 type AreaBand = "s" | "m" | "l" | "xl";
@@ -72,9 +72,6 @@ export function PriceQuiz({
         object: obj,
         area,
         urgency: u,
-        estimate: value,
-      });
-      trackCityConversion(citySlug, serviceSlug, "quiz", {
         estimate: value,
       });
       onFinish?.(value);

@@ -8,7 +8,7 @@ import { IntroAnswer } from "@/components/site/IntroAnswer";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Check, Phone, MessageCircle } from "lucide-react";
-import { trackCityConversion } from "@/lib/conversions";
+import { trackGoal } from "@/lib/analytics";
 import {
   buildGraphHead,
   buildWebPageSchema,
@@ -189,7 +189,13 @@ function ServiceInCityPage() {
       {city.phone && (
         <a
           href={`tel:${city.phone}`}
-          onClick={() => trackCityConversion(city.slug, service.slug, "phone", { place: "service_in_city_hero" })}
+          onClick={() =>
+            trackGoal("lead_phone_click", {
+              source: "service_in_city_hero",
+              city: city.slug,
+              service: service.slug,
+            })
+          }
           className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-3 font-semibold text-accent-foreground shadow-elegant transition hover:opacity-90"
         >
           <Phone className="h-5 w-5" />
@@ -201,7 +207,14 @@ function ServiceInCityPage() {
           href={`https://wa.me/${city.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`Здравствуйте! Нужна услуга «${service.shortName}» ${city.nameLocative}.`)}`}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() => trackCityConversion(city.slug, service.slug, "messenger", { channel: "whatsapp", place: "service_in_city_hero" })}
+          onClick={() =>
+            trackGoal("lead_whatsapp_click", {
+              source: "service_in_city_hero",
+              channel: "whatsapp",
+              city: city.slug,
+              service: service.slug,
+            })
+          }
           className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/30 bg-primary-foreground/10 px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary-foreground/20"
         >
           <MessageCircle className="h-5 w-5" />

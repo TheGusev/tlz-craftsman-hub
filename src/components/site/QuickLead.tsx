@@ -11,7 +11,7 @@ import { services } from "@/data/services";
 import { cn } from "@/lib/utils";
 import { sendLeadToTelegram, checkRateLimit } from "@/lib/telegram";
 import { trackGoal, readUtm } from "@/lib/analytics";
-import { trackCityConversion } from "@/lib/conversions";
+
 import { citiesForDropdownWith } from "@/lib/cityOrder";
 
 const objectTypes = [
@@ -155,8 +155,7 @@ export function QuickLead({
         landing: typeof window !== "undefined" ? window.location.pathname : "",
         referrer: typeof document !== "undefined" ? document.referrer : "",
       });
-      trackGoal("lead_form_submit", { source });
-      trackCityConversion(city, problem, "form", { source });
+      trackGoal("lead_form_submit", { source, city, service: problem ?? null });
       setCity(defaultCity);
       setObjectType(undefined);
       setProblem(defaultProblem);

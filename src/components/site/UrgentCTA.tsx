@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Phone, Send, User, X, MessageCircle } from "lucide-react";
 import { trackGoal } from "@/lib/analytics";
-import { trackCityConversion, type ConversionType } from "@/lib/conversions";
+
 import { useActiveCity } from "@/lib/useActiveCity";
 import { useActiveService } from "@/lib/useActiveService";
 import { SITE_PHONE_RAW, SITE_TELEGRAM_URL, SITE_MAX_URL, SITE_WHATSAPP_URL } from "@/lib/site";
@@ -13,14 +13,13 @@ type Action = {
   bg: string;
   external?: boolean;
   goal: string;
-  conversion: ConversionType;
 };
 
 const actions: Action[] = [
-  { label: "Позвонить", href: `tel:${SITE_PHONE_RAW}`, icon: Phone, bg: "bg-urgent text-urgent-foreground", goal: "lead_phone_click", conversion: "phone" },
-  { label: "WhatsApp", href: SITE_WHATSAPP_URL, icon: MessageCircle, bg: "bg-[#25D366] text-white", external: true, goal: "lead_whatsapp_click", conversion: "messenger" },
-  { label: "MAX", href: SITE_MAX_URL, icon: User, bg: "bg-sky-500 text-white", external: true, goal: "lead_max_click", conversion: "messenger" },
-  { label: "Telegram", href: SITE_TELEGRAM_URL, icon: Send, bg: "bg-sky-500 text-white", external: true, goal: "lead_telegram_click", conversion: "messenger" },
+  { label: "Позвонить", href: `tel:${SITE_PHONE_RAW}`, icon: Phone, bg: "bg-urgent text-urgent-foreground", goal: "lead_phone_click" },
+  { label: "WhatsApp", href: SITE_WHATSAPP_URL, icon: MessageCircle, bg: "bg-[#25D366] text-white", external: true, goal: "lead_whatsapp_click" },
+  { label: "MAX", href: SITE_MAX_URL, icon: User, bg: "bg-sky-500 text-white", external: true, goal: "lead_max_click" },
+  { label: "Telegram", href: SITE_TELEGRAM_URL, icon: Send, bg: "bg-sky-500 text-white", external: true, goal: "lead_telegram_click" },
 ];
 
 export function UrgentCTA() {
@@ -61,9 +60,10 @@ export function UrgentCTA() {
               rel={a.external ? "noopener noreferrer" : undefined}
               aria-label={a.label}
               onClick={() => {
-                trackGoal(a.goal, { source: "urgent_cta", city: activeCity?.slug });
-                trackCityConversion(activeCity?.slug, activeService?.slug, a.conversion, {
+                trackGoal(a.goal, {
                   source: "urgent_cta",
+                  city: activeCity?.slug,
+                  service: activeService?.slug,
                   channel: a.label.toLowerCase(),
                 });
               }}
