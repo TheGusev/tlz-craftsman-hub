@@ -62,6 +62,10 @@ export function UrgentCTA() {
               aria-label={a.label}
               onClick={() => {
                 trackGoal(a.goal, { source: "urgent_cta", city: activeCity?.slug });
+                trackCityConversion(activeCity?.slug, activeService?.slug, a.conversion, {
+                  source: "urgent_cta",
+                  channel: a.label.toLowerCase(),
+                });
               }}
               tabIndex={open ? 0 : -1}
               style={{ transitionDelay: open ? `${i * 50}ms` : "0ms" }}
