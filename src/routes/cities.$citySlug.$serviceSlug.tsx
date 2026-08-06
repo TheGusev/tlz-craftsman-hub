@@ -16,8 +16,8 @@ import {
   buildServiceSchema,
   buildLocalBusinessSchema,
   buildFAQSchema,
-  buildVideoObjectSchema,
 } from "@/lib/jsonld";
+import { buildServiceMediaNodes } from "@/lib/mediaSchema";
 import { buildCanonical } from "@/lib/seo";
 import { getServiceImage } from "@/lib/serviceImages";
 import { PriceNote } from "@/components/site/PriceNote";
@@ -108,7 +108,12 @@ export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
         {
           type: "application/ld+json",
           children: buildGraphHead([
-            buildWebPageSchema({ path, name: sc.metaTitle, description: sc.metaDescription }),
+            buildWebPageSchema({
+              path,
+              name: sc.metaTitle,
+              description: sc.metaDescription,
+              ...(cover ? { primaryImage: { url: cover, caption: sc.h1 } } : {}),
+            }),
             buildBreadcrumbSchema([
               { label: "Города", path: "/cities" },
               { label: city.name, path: `/cities/${city.slug}` },
@@ -143,22 +148,12 @@ export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
                 });
               })(),
             ),
-            ...(service.slug === FLOOD_SERVICE_SLUG
-              ? [
-                  (() => {
-                    const v = getFloodVideo(city.nameLocative);
-                    return buildVideoObjectSchema({
-                      path,
-                      name: `${service.shortName} ${city.nameLocative} — видео с выезда бригады`,
-                      description: v.caption,
-                      contentUrl: v.src,
-                      thumbnailUrl: v.poster,
-                      uploadDate: v.uploadDate,
-                      duration: v.duration,
-                    });
-                  })(),
-                ]
-              : []),
+            ...buildServiceMediaNodes({
+              path,
+              serviceSlug: service.slug,
+              serviceShortName: service.shortName,
+              cityLocative: city.nameLocative,
+            }),
           ]),
         },
       ],
