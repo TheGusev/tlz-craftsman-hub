@@ -275,7 +275,7 @@ async function render404(browser: Browser, baseUrl: string) {
     await page.waitForSelector("main, #root > *", { timeout: 15_000 }).catch(() => {});
     await new Promise((r) => setTimeout(r, 1500));
     const rawHtml = await page.evaluate(() => "<!doctype html>\n" + document.documentElement.outerHTML);
-    const html = dropForeignJsonLd(dedupeHead(rawHtml), route);
+    const html = dedupeHead(rawHtml);
     writeFileSync(join(DIST, "404.html"), html, "utf8");
     console.log(`  ✓ 404 → dist/404.html (${(html.length / 1024).toFixed(1)}kb)`);
   } finally {
