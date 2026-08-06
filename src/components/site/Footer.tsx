@@ -6,10 +6,12 @@ import { CASES_PUBLIC } from "@/data/cases";
 import { SITE_NAME, SITE_EMAIL } from "@/lib/site";
 import { trackGoal } from "@/lib/analytics";
 import { useActiveCity } from "@/lib/useActiveCity";
+import { useActiveService } from "@/lib/useActiveService";
 
 
 export function Footer() {
   const activeCity = useActiveCity();
+  const activeService = useActiveService();
   const cityPhoneRaw = activeCity?.phone
     ? activeCity.phone.replace(/[^+\d]/g, "")
     : "";
