@@ -25,33 +25,107 @@ function routeToFsPath(route: string): string {
   return join(DIST, route.replace(/^\//, ""), "index.html");
 }
 
-function today(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function lastmodFor(path: string): string {
+/**
+ * lastmod указываем только там, где есть настоящая дата контента (посты блога).
+ * Подставлять дату сборки нельзя: иначе при каждом деплое «обновляются» все URL
+ * и поисковики перестают доверять этому полю.
+ */
+function lastmodFor(path: string): string | null {
   if (path.startsWith("/blog/")) {
     const slug = path.replace(/^\/blog\//, "");
     const post = blogPosts.find((p) => p.slug === slug);
     if (post?.publishedAt) return post.publishedAt;
   }
-  return today();
+  return null;
+}
+
+function xmlEscape(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+/** Разбирает путь и возвращает slug услуги и локатив города (если это город×услуга). */
+function mediaContextFor(path: string): { serviceSlug: string; cityLocative?: string } | null {
+  const svc = /^\/services\/([^/]+)$/.exec(path);
+  if (svc) return { serviceSlug: svc[1] };
+  const cs = /^\/cities\/([^/]+)\/([^/]+)$/.exec(path);
+  if (cs) {
+    const city = cities.find((c) => c.slug === cs[1]);
+    return { serviceSlug: cs[2], cityLocative: city?.nameLocative };
+  }
+  return null;
+}
+
+/** Блоки <image:image> и <video:video> для страницы (реальные файлы из public/media). */
+function mediaBlocksFor(path: string, title: string): string[] {
+  const ctx = mediaContextFor(path);
+  if (!ctx) return [];
+  const out: string[] = [];
+
+  if (hasServiceVideo(ctx.serviceSlug)) {
+    const v = getFloodVideo(ctx.cityLocative);
+    out.push(
+      [
+        `    <video:video>`,
+        `      <video:thumbnail_loc>${SITE_URL}${v.poster}</video:thumbnail_loc>`,
+        `      <video:title>${xmlEscape(title)}</video:title>`,
+        `      <video:description>${xmlEscape(v.caption)}</video:description>`,
+        `      <video:content_loc>${SITE_URL}${v.src}</video:content_loc>`,
+        `      <video:duration>${durationSeconds(v.duration)}</video:duration>`,
+        `      <video:family_friendly>yes</video:family_friendly>`,
+        `      <video:live>no</video:live>`,
+        `    </video:video>`,
+      ].join("\n"),
+    );
+  }
+
+  for (const photo of getServiceGallery(ctx.serviceSlug, ctx.cityLocative)) {
+    out.push(
+      [
+        `    <image:image>`,
+        `      <image:loc>${SITE_URL}${photo.src}</image:loc>`,
+        `      <image:caption>${xmlEscape(photo.alt)}</image:caption>`,
+        `    </image:image>`,
+      ].join("\n"),
+    );
+  }
+  return out;
+}
+
+/** ISO-8601 длительность (PT35S) → секунды для video:duration. */
+function durationSeconds(iso: string): number {
+  const m = /^PT(?:(\d+)M)?(?:(\d+)S)?$/.exec(iso);
+  if (!m) return 0;
+  return Number(m[1] ?? 0) * 60 + Number(m[2] ?? 0);
 }
 
 function buildSitemap(): string {
-  const entries = getAllRoutes();
+  const entries = getIndexableRoutes();
   const body = entries
     .map((e) => {
+      const lastmod = lastmodFor(e.path);
       const parts = [
         `    <loc>${SITE_URL}${e.path}</loc>`,
-        `    <lastmod>${lastmodFor(e.path)}</lastmod>`,
+        lastmod ? `    <lastmod>${lastmod}</lastmod>` : null,
         e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
         e.priority ? `    <priority>${e.priority}</priority>` : null,
+        ...mediaBlocksFor(e.path, `${SITE_URL}${e.path}`),
       ].filter(Boolean);
       return `  <url>\n${parts.join("\n")}\n  </url>`;
     })
     .join("\n");
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`;
+  return [
+    `<?xml version="1.0" encoding="UTF-8"?>`,
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"`,
+    `        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"`,
+    `        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">`,
+    body,
+    `</urlset>`,
+    ``,
+  ].join("\n");
 }
 
 function ensureDir(p: string) {
@@ -61,8 +135,13 @@ function ensureDir(p: string) {
 function generate() {
   ensureDir(DIST);
   writeFileSync(join(DIST, "sitemap.xml"), buildSitemap(), "utf8");
-  console.log(`[seo] sitemap.xml (${getAllRoutes().length} URLs, с lastmod) записан в dist/`);
+  const total = getAllRoutes().length;
+  const indexable = getIndexableRoutes().length;
+  console.log(
+    `[seo] sitemap.xml записан в dist/: ${indexable} индексируемых URL из ${total} собранных (медиа: image/video)`,
+  );
 }
+
 
 function verify() {
   const routes = getAllRoutes();
