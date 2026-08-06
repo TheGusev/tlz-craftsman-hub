@@ -12,6 +12,7 @@ import { fileURLToPath } from "node:url";
 
 import { getAllRoutes, getIndexableRoutes } from "../src/lib/route-config";
 import { cities } from "../src/data/cities";
+import { services } from "../src/data/services";
 import { SITE_URL } from "../src/lib/site";
 import { blogPosts } from "../src/data/blog";
 import { hasServiceGallery, hasServiceVideo, getServiceGallery } from "../src/lib/mediaSchema";
@@ -62,10 +63,12 @@ function mediaContextFor(path: string): { serviceSlug: string; cityLocative?: st
 }
 
 /** Блоки <image:image> и <video:video> для страницы (реальные файлы из public/media). */
-function mediaBlocksFor(path: string, title: string): string[] {
+function mediaBlocksFor(path: string): string[] {
   const ctx = mediaContextFor(path);
   if (!ctx) return [];
   const out: string[] = [];
+  const shortName = services.find((s) => s.slug === ctx.serviceSlug)?.shortName ?? "Санитарная обработка";
+  const title = `${shortName}${ctx.cityLocative ? ` ${ctx.cityLocative}` : ""} — видео с выезда бригады`;
 
   if (hasServiceVideo(ctx.serviceSlug)) {
     const v = getFloodVideo(ctx.cityLocative);
@@ -114,7 +117,7 @@ function buildSitemap(): string {
         lastmod ? `    <lastmod>${lastmod}</lastmod>` : null,
         e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
         e.priority ? `    <priority>${e.priority}</priority>` : null,
-        ...mediaBlocksFor(e.path, `${SITE_URL}${e.path}`),
+        ...mediaBlocksFor(e.path),
       ].filter(Boolean);
       return `  <url>\n${parts.join("\n")}\n  </url>`;
     })
