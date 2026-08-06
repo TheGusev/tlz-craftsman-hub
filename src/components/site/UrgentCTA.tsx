@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Phone, Send, User, X, MessageCircle } from "lucide-react";
 import { trackGoal } from "@/lib/analytics";
-import { trackCityConversion, type ConversionType } from "@/lib/conversions";
+
 import { useActiveCity } from "@/lib/useActiveCity";
 import { useActiveService } from "@/lib/useActiveService";
 import { SITE_PHONE_RAW, SITE_TELEGRAM_URL, SITE_MAX_URL, SITE_WHATSAPP_URL } from "@/lib/site";
@@ -61,9 +61,10 @@ export function UrgentCTA() {
               rel={a.external ? "noopener noreferrer" : undefined}
               aria-label={a.label}
               onClick={() => {
-                trackGoal(a.goal, { source: "urgent_cta", city: activeCity?.slug });
-                trackCityConversion(activeCity?.slug, activeService?.slug, a.conversion, {
+                trackGoal(a.goal, {
                   source: "urgent_cta",
+                  city: activeCity?.slug,
+                  service: activeService?.slug,
                   channel: a.label.toLowerCase(),
                 });
               }}
