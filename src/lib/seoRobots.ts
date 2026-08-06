@@ -8,8 +8,12 @@ import { CASES_PUBLIC } from "@/data/cases";
 export const ROBOTS_INDEX = "index,follow,max-image-preview:large,max-snippet:-1";
 export const ROBOTS_NOINDEX = "noindex,follow";
 
+/** Служебные и юридические страницы — вне индекса по своей природе. */
+const NEVER_INDEXED = new Set(["/privacy", "/soglasie", "/thank-you"]);
+
 /** Должен ли путь индексироваться и попадать в sitemap.xml. */
 export function isIndexablePath(path: string): boolean {
+  if (NEVER_INDEXED.has(path)) return false;
   if (path === "/cases" || path.startsWith("/cases/")) return CASES_PUBLIC;
   const city = /^\/cities\/([^/]+)/.exec(path);
   if (city) return isVisibleCity(city[1]);
