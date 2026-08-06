@@ -41,8 +41,14 @@ export function buildWebPageSchema(opts: {
   path: string;
   name: string;
   description?: string;
+  primaryImage?: { url: string; caption?: string; width?: number; height?: number };
 }): JsonLdNode {
   const url = buildCanonical(opts.path);
+  const imgUrl = opts.primaryImage
+    ? opts.primaryImage.url.startsWith("http")
+      ? opts.primaryImage.url
+      : `${SITE_URL}${opts.primaryImage.url}`
+    : null;
   return {
     "@type": "WebPage",
     "@id": `${url}#webpage`,
@@ -51,6 +57,19 @@ export function buildWebPageSchema(opts: {
     inLanguage: "ru-RU",
     isPartOf: { "@id": `${SITE_URL}/#website` },
     ...(opts.description ? { description: opts.description } : {}),
+    ...(imgUrl && opts.primaryImage
+      ? {
+          primaryImageOfPage: {
+            "@type": "ImageObject",
+            "@id": `${url}#primaryimage`,
+            url: imgUrl,
+            contentUrl: imgUrl,
+            ...(opts.primaryImage.caption ? { caption: opts.primaryImage.caption } : {}),
+            ...(opts.primaryImage.width ? { width: opts.primaryImage.width } : {}),
+            ...(opts.primaryImage.height ? { height: opts.primaryImage.height } : {}),
+          },
+        }
+      : {}),
   };
 }
 
