@@ -14,6 +14,8 @@ export const Route = createFileRoute("/soglasie")({
       { title: TITLE },
       { name: "description", content: DESC },
       { property: "og:url", content: buildCanonical(PATH) },
+      { name: "robots", content: "noindex, follow" },
+
     ],
     links: [{ rel: "canonical", href: buildCanonical(PATH) }],
   }),
