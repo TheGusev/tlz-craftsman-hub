@@ -10,10 +10,12 @@ import { writeFileSync, existsSync, mkdirSync, statSync, readFileSync } from "no
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { getAllRoutes } from "../src/lib/route-config";
+import { getAllRoutes, getIndexableRoutes } from "../src/lib/route-config";
+import { cities } from "../src/data/cities";
 import { SITE_URL } from "../src/lib/site";
 import { blogPosts } from "../src/data/blog";
-import { hasServiceGallery, hasServiceVideo } from "../src/lib/mediaSchema";
+import { hasServiceGallery, hasServiceVideo, getServiceGallery } from "../src/lib/mediaSchema";
+import { getFloodVideo } from "../src/lib/floodGallery";
 import { probeFile } from "./media-probe";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
