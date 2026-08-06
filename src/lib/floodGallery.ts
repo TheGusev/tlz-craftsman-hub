@@ -5,6 +5,9 @@ export type BeforeAfterPhoto = {
   src: string;
   alt: string;
   caption: string;
+  /** Реальные размеры файла — используются в JSON-LD ImageObject */
+  width?: number;
+  height?: number;
 };
 
 export const FLOOD_SERVICE_SLUG = "posle-potopa";
@@ -15,6 +18,10 @@ export type FloodVideo = {
   caption: string;
   duration: string;
   uploadDate: string;
+  width: number;
+  height: number;
+  posterWidth: number;
+  posterHeight: number;
 };
 
 const VIDEO_SRC = "/media/potop-video.mp4";
@@ -27,7 +34,11 @@ export function getFloodVideo(cityLocative?: string): FloodVideo {
     poster: VIDEO_POSTER,
     caption: `Видео с выезда бригады${geo}: откачка воды, вывоз ила и уборка помещений`,
     duration: "PT35S",
-    uploadDate: "2026-07-29",
+    uploadDate: "2026-07-29T10:00:00+03:00",
+    width: 640,
+    height: 854,
+    posterWidth: 960,
+    posterHeight: 1280,
   };
 }
 
@@ -38,21 +49,29 @@ export function getFloodGallery(cityLocative?: string): BeforeAfterPhoto[] {
       src: "/media/potop-koridor-ofisa.webp",
       alt: `Уборка после потопа${geo} — коридор офиса до и после`,
       caption: "Коридор офиса: откачка и уборка",
+      width: 1200,
+      height: 1200,
     },
     {
       src: "/media/potop-kabinet.webp",
       alt: `Уборка после потопа${geo} — кабинет с илом до и после`,
       caption: "Кабинет: ил и грязь после подтопления",
+      width: 1200,
+      height: 1200,
     },
     {
       src: "/media/potop-zal.webp",
       alt: `Уборка после потопа${geo} — зал 60 м² до и после просушки`,
       caption: "Зал 60 м²: просушка и мойка",
+      width: 1200,
+      height: 1200,
     },
     {
       src: "/media/potop-holl-lestnica.webp",
       alt: `Уборка после потопа${geo} — холл и лестница до и после`,
       caption: "Холл и лестница: очистка после потопа",
+      width: 1200,
+      height: 1200,
     },
   ];
 }
