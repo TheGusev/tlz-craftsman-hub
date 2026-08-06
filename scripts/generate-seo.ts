@@ -18,6 +18,7 @@ import { blogPosts } from "../src/data/blog";
 import { hasServiceGallery, hasServiceVideo, getServiceGallery } from "../src/lib/mediaSchema";
 import { getFloodVideo } from "../src/lib/floodGallery";
 import { probeFile } from "./media-probe";
+import { isIndexablePath } from "../src/lib/seoRobots";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -389,10 +390,15 @@ function verifyJsonLd() {
       errors.push(`${r.path}: canonical="${canonicals[0]}", ожидался "${expected}"`);
     }
 
-    // robots noindex — допустим на служебных/юридических страницах
+    // robots: индексируемые страницы обязаны быть без noindex,
+    // скрытые (города вне Москвы/МО, кейсы) — обязаны его иметь.
     const NOINDEX_ALLOWED = new Set(["/privacy", "/soglasie", "/thank-you"]);
-    if (!NOINDEX_ALLOWED.has(r.path) && hasNoindex(html)) {
-      errors.push(`${r.path}: <meta name="robots"> содержит noindex`);
+    const shouldIndex = isIndexablePath(r.path) && !NOINDEX_ALLOWED.has(r.path);
+    if (shouldIndex && hasNoindex(html)) {
+      errors.push(`${r.path}: <meta name="robots"> содержит noindex, хотя страница индексируемая`);
+    }
+    if (!isIndexablePath(r.path) && !hasNoindex(html)) {
+      errors.push(`${r.path}: скрытая страница без <meta name="robots" content="noindex,follow">`);
     }
 
     // JSON-LD
@@ -513,7 +519,59 @@ function verifyJsonLd() {
   console.log("[verify-jsonld] OK — canonical, robots, медиа (VideoObject/ImageObject) и JSON-LD корректны на всех маршрутах.");
 }
 
+/** Проверка sitemap.xml: состав URL и физическое наличие заявленных медиа. */
+function verifySitemap() {
+  const fp = join(DIST, "sitemap.xml");
+  if (!existsSync(fp)) {
+    console.error("[verify-sitemap] dist/sitemap.xml отсутствует");
+    process.exit(1);
+  }
+  const xml = readFileSync(fp, "utf8");
+  const errors: string[] = [];
+  const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  const expected = getIndexableRoutes().map((r) => `${SITE_URL}${r.path}`);
+
+  for (const loc of locs) {
+    const path = loc.slice(SITE_URL.length) || "/";
+    if (!isIndexablePath(path)) errors.push(`sitemap: ${path} не должен индексироваться`);
+    const html = routeToFsPath(path);
+    if (!existsSync(html)) {
+      errors.push(`sitemap: ${path} — нет HTML в dist`);
+      continue;
+    }
+    if (hasNoindex(readFileSync(html, "utf8")))
+      errors.push(`sitemap: ${path} отдаёт noindex, но заявлен в sitemap`);
+  }
+  for (const e of expected) {
+    if (!locs.includes(e)) errors.push(`sitemap: пропущен индексируемый URL ${e}`);
+  }
+
+  const media = [
+    ...[...xml.matchAll(/<image:loc>([^<]+)<\/image:loc>/g)].map((m) => m[1]),
+    ...[...xml.matchAll(/<video:content_loc>([^<]+)<\/video:content_loc>/g)].map((m) => m[1]),
+    ...[...xml.matchAll(/<video:thumbnail_loc>([^<]+)<\/video:thumbnail_loc>/g)].map((m) => m[1]),
+  ];
+  for (const u of media) {
+    if (!u.startsWith(SITE_URL)) {
+      errors.push(`sitemap: медиа-URL не абсолютный на нашем домене — ${u}`);
+      continue;
+    }
+    const rel = u.slice(SITE_URL.length).replace(/^\//, "");
+    if (!existsSync(join(DIST, rel))) errors.push(`sitemap: файла нет в dist — ${u}`);
+  }
+
+  if (errors.length) {
+    console.error(`[verify-sitemap] ОШИБКИ (${errors.length}):`);
+    errors.slice(0, 50).forEach((e) => console.error(`  - ${e}`));
+    process.exit(1);
+  }
+  console.log(
+    `[verify-sitemap] OK — ${locs.length} URL, ${media.length} медиа-ссылок, все файлы на месте.`,
+  );
+}
+
 const args = process.argv.slice(2);
-if (args.includes("--verify-jsonld")) verifyJsonLd();
+if (args.includes("--verify-sitemap")) verifySitemap();
+else if (args.includes("--verify-jsonld")) verifyJsonLd();
 else if (args.includes("--verify")) verify();
 else generate();
