@@ -13,19 +13,21 @@ type Action = {
   bg: string;
   external?: boolean;
   goal: string;
+  conversion: ConversionType;
 };
 
 const actions: Action[] = [
-  { label: "Позвонить", href: `tel:${SITE_PHONE_RAW}`, icon: Phone, bg: "bg-urgent text-urgent-foreground", goal: "lead_phone_click" },
-  { label: "WhatsApp", href: SITE_WHATSAPP_URL, icon: MessageCircle, bg: "bg-[#25D366] text-white", external: true, goal: "lead_whatsapp_click" },
-  { label: "MAX", href: SITE_MAX_URL, icon: User, bg: "bg-sky-500 text-white", external: true, goal: "lead_max_click" },
-  { label: "Telegram", href: SITE_TELEGRAM_URL, icon: Send, bg: "bg-sky-500 text-white", external: true, goal: "lead_telegram_click" },
+  { label: "Позвонить", href: `tel:${SITE_PHONE_RAW}`, icon: Phone, bg: "bg-urgent text-urgent-foreground", goal: "lead_phone_click", conversion: "phone" },
+  { label: "WhatsApp", href: SITE_WHATSAPP_URL, icon: MessageCircle, bg: "bg-[#25D366] text-white", external: true, goal: "lead_whatsapp_click", conversion: "messenger" },
+  { label: "MAX", href: SITE_MAX_URL, icon: User, bg: "bg-sky-500 text-white", external: true, goal: "lead_max_click", conversion: "messenger" },
+  { label: "Telegram", href: SITE_TELEGRAM_URL, icon: Send, bg: "bg-sky-500 text-white", external: true, goal: "lead_telegram_click", conversion: "messenger" },
 ];
 
 export function UrgentCTA() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const activeCity = useActiveCity();
+  const activeService = useActiveService();
 
   useEffect(() => {
     if (!open) return;
