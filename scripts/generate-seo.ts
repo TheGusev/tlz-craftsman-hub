@@ -245,6 +245,9 @@ function verifyMedia(route: string, serviceSlug: string, nodes: JsonLdNode[], er
       if (!thumbNode || thumbNode["@type"] !== "ImageObject") {
         errors.push(`${route}: VideoObject.thumbnail (ImageObject-постер) отсутствует`);
       } else {
+        if (thumbNode["width"] === undefined || thumbNode["height"] === undefined) {
+          errors.push(`${route}: VideoObject.thumbnail без width/height`);
+        }
         checkMediaUrl(thumbNode["contentUrl"], "VideoObject.thumbnail.contentUrl", route, errors, {
           width: thumbNode["width"],
           height: thumbNode["height"],

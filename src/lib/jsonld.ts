@@ -250,6 +250,8 @@ export function buildVideoObjectSchema(opts: {
   duration?: string;
   width?: number;
   height?: number;
+  posterWidth?: number;
+  posterHeight?: number;
 }): JsonLdNode {
   const url = buildCanonical(opts.path);
   return {
@@ -259,7 +261,12 @@ export function buildVideoObjectSchema(opts: {
     description: opts.description,
     contentUrl: absUrl(opts.contentUrl),
     thumbnailUrl: [absUrl(opts.thumbnailUrl)],
-    thumbnail: buildImageObject({ url: opts.thumbnailUrl, caption: opts.name }),
+    thumbnail: buildImageObject({
+      url: opts.thumbnailUrl,
+      caption: opts.name,
+      width: opts.posterWidth,
+      height: opts.posterHeight,
+    }),
     uploadDate: opts.uploadDate,
     ...(opts.duration ? { duration: opts.duration } : {}),
     ...(opts.width ? { width: opts.width } : {}),
