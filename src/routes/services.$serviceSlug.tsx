@@ -20,8 +20,8 @@ import {
   buildBreadcrumbSchema,
   buildServiceSchema,
   buildFAQSchema,
-  buildVideoObjectSchema,
 } from "@/lib/jsonld";
+import { buildServiceMediaNodes } from "@/lib/mediaSchema";
 import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/services/$serviceSlug")({
@@ -56,7 +56,12 @@ export const Route = createFileRoute("/services/$serviceSlug")({
         {
           type: "application/ld+json",
           children: buildGraphHead([
-            buildWebPageSchema({ path, name: s.metaTitle, description: s.metaDescription }),
+            buildWebPageSchema({
+              path,
+              name: s.metaTitle,
+              description: s.metaDescription,
+              ...(img ? { primaryImage: { url: img, caption: s.h1 } } : {}),
+            }),
             buildBreadcrumbSchema([
               { label: "Услуги", path: "/services" },
               { label: s.shortName, path },
@@ -69,22 +74,11 @@ export const Route = createFileRoute("/services/$serviceSlug")({
               priceFrom: s.priceFrom,
             }),
             buildFAQSchema(s.faq),
-            ...(s.slug === FLOOD_SERVICE_SLUG
-              ? [
-                  (() => {
-                    const v = getFloodVideo("в Москве");
-                    return buildVideoObjectSchema({
-                      path,
-                      name: `${s.shortName} — видео с выезда бригады`,
-                      description: v.caption,
-                      contentUrl: v.src,
-                      thumbnailUrl: v.poster,
-                      uploadDate: v.uploadDate,
-                      duration: v.duration,
-                    });
-                  })(),
-                ]
-              : []),
+            ...buildServiceMediaNodes({
+              path,
+              serviceSlug: s.slug,
+              serviceShortName: s.shortName,
+            }),
           ]),
         },
       ],
