@@ -33,7 +33,7 @@ export function Footer() {
               <a
                 href={`tel:${cityPhoneRaw}`}
                 onClick={() => {
-                  trackGoal("lead_phone_click", { source: "footer", city: activeCity.slug });
+                  trackGoal("lead_phone_click", { source: "footer", city: activeCity.slug, service: activeService?.slug });
                 }}
                 className="block text-lg font-semibold text-accent"
               >
