@@ -9,7 +9,7 @@ import { IntroAnswer } from "@/components/site/IntroAnswer";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Check, AlertTriangle } from "lucide-react";
-import { getServiceImage } from "@/lib/serviceImages";
+import { getServiceImage, getServiceImageSize } from "@/lib/serviceImages";
 import { getCaseGallery } from "@/lib/caseGallery";
 import { BeforeAfterGallery } from "@/components/site/BeforeAfterGallery";
 import { getFloodGallery, getFloodVideo, FLOOD_SERVICE_SLUG } from "@/lib/floodGallery";
@@ -21,7 +21,7 @@ import {
   buildServiceSchema,
   buildFAQSchema,
 } from "@/lib/jsonld";
-import { buildServiceMediaNodes } from "@/lib/mediaSchema";
+import { buildServiceMediaNodes, hasServiceGallery, hasServiceVideo } from "@/lib/mediaSchema";
 import { buildCanonical } from "@/lib/seo";
 
 export const Route = createFileRoute("/services/$serviceSlug")({
@@ -34,6 +34,11 @@ export const Route = createFileRoute("/services/$serviceSlug")({
     if (!loaderData) return { meta: [] };
     const s = loaderData.service;
     const img = getServiceImage(s.slug);
+    const imgSize = getServiceImageSize(s.slug);
+    const media = [
+      ...(hasServiceVideo(s.slug) ? ["#video"] : []),
+      ...(hasServiceGallery(s.slug) ? ["#gallery"] : []),
+    ];
     const path = `/services/${s.slug}`;
     const canonical = buildCanonical(path);
     return {
@@ -60,18 +65,25 @@ export const Route = createFileRoute("/services/$serviceSlug")({
               path,
               name: s.metaTitle,
               description: s.metaDescription,
-              ...(img ? { primaryImage: { url: img, caption: s.h1 } } : {}),
+              withBreadcrumb: true,
+              mainEntity: "#service",
+              ...(media.length ? { associatedMedia: media } : {}),
+              ...(img ? { primaryImage: { url: img, caption: s.h1, ...(imgSize ?? {}) } } : {}),
             }),
-            buildBreadcrumbSchema([
-              { label: "Услуги", path: "/services" },
-              { label: s.shortName, path },
-            ]),
+            buildBreadcrumbSchema(
+              [
+                { label: "Услуги", path: "/services" },
+                { label: s.shortName, path },
+              ],
+              path,
+            ),
             buildServiceSchema({
               path,
               name: s.name,
               description: s.metaDescription,
               serviceType: s.cluster,
               priceFrom: s.priceFrom,
+              ...(img ? { image: img } : {}),
             }),
             buildFAQSchema(s.faq),
             ...buildServiceMediaNodes({

@@ -14,6 +14,7 @@ import { getAllRoutes } from "../src/lib/route-config";
 import { SITE_URL } from "../src/lib/site";
 import { blogPosts } from "../src/data/blog";
 import { hasServiceGallery, hasServiceVideo } from "../src/lib/mediaSchema";
+import { probeFile } from "./media-probe";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -143,8 +144,31 @@ function findType(nodes: JsonLdNode[], type: string): JsonLdNode | undefined {
   });
 }
 
-/** Проверяет, что URL абсолютный, ведёт на наш домен и файл реально есть в dist. */
-function checkMediaUrl(u: unknown, label: string, route: string, errors: string[]) {
+type ProbeResult = { width: number; height: number; durationSeconds?: number };
+const probeCache = new Map<string, ProbeResult | null>();
+
+function probeCached(fp: string): ProbeResult | null {
+  if (!probeCache.has(fp)) {
+    try {
+      probeCache.set(fp, probeFile(fp));
+    } catch {
+      probeCache.set(fp, null);
+    }
+  }
+  return probeCache.get(fp) ?? null;
+}
+
+/**
+ * Проверяет, что URL абсолютный, ведёт на наш домен, файл реально есть в dist,
+ * а объявленные в JSON-LD width/height совпадают с настоящими размерами файла.
+ */
+function checkMediaUrl(
+  u: unknown,
+  label: string,
+  route: string,
+  errors: string[],
+  declared?: { width?: unknown; height?: unknown; durationSeconds?: number },
+) {
   if (typeof u !== "string" || !u.trim()) {
     errors.push(`${route}: ${label} пустой или не строка`);
     return;
@@ -157,7 +181,41 @@ function checkMediaUrl(u: unknown, label: string, route: string, errors: string[
   const fp = join(DIST, rel.replace(/^\//, ""));
   if (!existsSync(fp)) {
     errors.push(`${route}: ${label}="${u}" — файла нет в dist (${fp})`);
+    return;
   }
+
+  const real = probeCached(fp);
+  if (!real) {
+    errors.push(`${route}: ${label} — не удалось прочитать размеры файла ${rel}`);
+    return;
+  }
+  if (declared) {
+    if (declared.width !== undefined && declared.width !== real.width) {
+      errors.push(
+        `${route}: ${label} width=${String(declared.width)} не совпадает с файлом (${real.width})`,
+      );
+    }
+    if (declared.height !== undefined && declared.height !== real.height) {
+      errors.push(
+        `${route}: ${label} height=${String(declared.height)} не совпадает с файлом (${real.height})`,
+      );
+    }
+    if (declared.durationSeconds !== undefined && real.durationSeconds !== undefined) {
+      if (Math.abs(declared.durationSeconds - real.durationSeconds) > 1) {
+        errors.push(
+          `${route}: ${label} duration=${declared.durationSeconds}s расходится с файлом (${real.durationSeconds.toFixed(2)}s)`,
+        );
+      }
+    }
+  }
+}
+
+/** "PT34S" / "PT1M5S" → секунды */
+function parseIsoDuration(v: unknown): number | undefined {
+  if (typeof v !== "string") return undefined;
+  const m = /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?$/.exec(v);
+  if (!m) return undefined;
+  return Number(m[1] ?? 0) * 3600 + Number(m[2] ?? 0) * 60 + Number(m[3] ?? 0);
 }
 
 function verifyMedia(route: string, serviceSlug: string, nodes: JsonLdNode[], errors: string[]) {
@@ -171,10 +229,27 @@ function verifyMedia(route: string, serviceSlug: string, nodes: JsonLdNode[], er
           errors.push(`${route}: VideoObject.${f} пустой`);
         }
       }
-      checkMediaUrl(v["contentUrl"], "VideoObject.contentUrl", route, errors);
+      const durationSeconds = parseIsoDuration(v["duration"]);
+      if (durationSeconds === undefined) {
+        errors.push(`${route}: VideoObject.duration отсутствует или не ISO-8601`);
+      }
+      checkMediaUrl(v["contentUrl"], "VideoObject.contentUrl", route, errors, {
+        width: v["width"],
+        height: v["height"],
+        durationSeconds,
+      });
       const thumb = v["thumbnailUrl"];
       const thumbUrl = Array.isArray(thumb) ? thumb[0] : thumb;
       checkMediaUrl(thumbUrl, "VideoObject.thumbnailUrl", route, errors);
+      const thumbNode = v["thumbnail"] as JsonLdNode | undefined;
+      if (!thumbNode || thumbNode["@type"] !== "ImageObject") {
+        errors.push(`${route}: VideoObject.thumbnail (ImageObject-постер) отсутствует`);
+      } else {
+        checkMediaUrl(thumbNode["contentUrl"], "VideoObject.thumbnail.contentUrl", route, errors, {
+          width: thumbNode["width"],
+          height: thumbNode["height"],
+        });
+      }
     }
   }
 
@@ -190,7 +265,13 @@ function verifyMedia(route: string, serviceSlug: string, nodes: JsonLdNode[], er
       imgs.forEach((img, i) => {
         const t = img["@type"];
         if (t !== "ImageObject") errors.push(`${route}: ImageGallery.image[${i}] не ImageObject`);
-        checkMediaUrl(img["contentUrl"], `ImageGallery.image[${i}].contentUrl`, route, errors);
+        if (img["width"] === undefined || img["height"] === undefined) {
+          errors.push(`${route}: ImageGallery.image[${i}] без width/height`);
+        }
+        checkMediaUrl(img["contentUrl"], `ImageGallery.image[${i}].contentUrl`, route, errors, {
+          width: img["width"],
+          height: img["height"],
+        });
       });
     }
   }
@@ -268,7 +349,59 @@ function verifyJsonLd() {
     const svcMatch = /^\/services\/([^/]+)$/.exec(r.path);
     const citySvcMatch = /^\/cities\/[^/]+\/([^/]+)$/.exec(r.path);
     const mediaService = svcMatch?.[1] ?? citySvcMatch?.[1];
-    if (mediaService) verifyMedia(r.path, mediaService, nodes, errors);
+    if (mediaService) {
+      verifyMedia(r.path, mediaService, nodes, errors);
+
+      const url = `${SITE_URL}${r.path}`;
+      // На вложенных маршрутах в графе есть узлы родительского роута —
+      // берём именно узлы этой страницы по @id.
+      const byId = (id: string) => nodes.find((n) => n["@id"] === id);
+      const wp = byId(`${url}#webpage`);
+      const bc = nodes.find(
+        (n) =>
+          (n["@type"] === "BreadcrumbList" || (Array.isArray(n["@type"]) && (n["@type"] as string[]).includes("BreadcrumbList"))) &&
+          n["@id"] === `${url}#breadcrumb`,
+      );
+      if (!bc) errors.push(`${r.path}: нет BreadcrumbList с @id ${url}#breadcrumb`);
+      if (!wp) {
+        errors.push(`${r.path}: нет WebPage`);
+      } else {
+        const ref = (v: unknown) => (v as JsonLdNode | undefined)?.["@id"];
+        if (ref(wp["breadcrumb"]) !== `${url}#breadcrumb`)
+          errors.push(`${r.path}: WebPage.breadcrumb не связан с BreadcrumbList`);
+        if (ref(wp["publisher"]) !== `${SITE_URL}/#organization`)
+          errors.push(`${r.path}: WebPage.publisher не ссылается на Organization`);
+        if (ref(wp["isPartOf"]) !== `${SITE_URL}/#website`)
+          errors.push(`${r.path}: WebPage.isPartOf не ссылается на WebSite`);
+        if (ref(wp["mainEntity"]) !== `${url}#service`)
+          errors.push(`${r.path}: WebPage.mainEntity не ссылается на Service`);
+        const primary = wp["primaryImageOfPage"] as JsonLdNode | undefined;
+        if (!primary) {
+          errors.push(`${r.path}: WebPage без primaryImageOfPage`);
+        } else {
+          checkMediaUrl(primary["contentUrl"], "WebPage.primaryImageOfPage", r.path, errors, {
+            width: primary["width"],
+            height: primary["height"],
+          });
+        }
+        const expectedMedia = [
+          ...(hasServiceVideo(mediaService) ? [`${url}#video`] : []),
+          ...(hasServiceGallery(mediaService) ? [`${url}#gallery`] : []),
+        ];
+        if (expectedMedia.length) {
+          const got = Array.isArray(wp["associatedMedia"])
+            ? (wp["associatedMedia"] as JsonLdNode[]).map((m) => m["@id"])
+            : [];
+          for (const id of expectedMedia) {
+            if (!got.includes(id))
+              errors.push(`${r.path}: WebPage.associatedMedia не содержит ${id}`);
+          }
+        }
+      }
+      const svc = byId(`${url}#service`);
+      if (svc && (svc["mainEntityOfPage"] as JsonLdNode | undefined)?.["@id"] !== `${url}#webpage`)
+        errors.push(`${r.path}: Service.mainEntityOfPage не связан с WebPage`);
+    }
 
     if (isBlogPost) {
       for (const req of ["BreadcrumbList", "Article"]) {

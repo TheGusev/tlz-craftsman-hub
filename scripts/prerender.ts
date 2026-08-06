@@ -35,6 +35,7 @@ import sirv from "sirv";
 import puppeteer, { type Browser } from "puppeteer-core";
 
 import { getAllRoutes } from "../src/lib/route-config";
+import { SITE_URL } from "../src/lib/site";
 
 /**
  * Удаляет stale prerender-артефакты предыдущих прогонов:
@@ -157,6 +158,31 @@ async function startServer(): Promise<{ url: string; close: () => void }> {
  *
  * Также страхуемся для og:image/twitter:image (историчный дубль из index.html).
  */
+/**
+ * Убирает JSON-LD родительских маршрутов: при вложенных роутах TanStack
+ * оставляет в графе WebPage/BreadcrumbList родителя (например /services),
+ * что даёт на дочерней странице лишние узлы с чужим @id.
+ */
+function dropForeignJsonLd(html: string, route: string): string {
+  const canonical = `${SITE_URL}${route === "/" ? "" : route}`;
+  return html.replace(
+    /<script type="application\/ld\+json">([\s\S]*?)<\/script>\s*/gi,
+    (block, json: string) => {
+      try {
+        const parsed = JSON.parse(json) as { "@graph"?: { "@type"?: unknown; "@id"?: unknown }[] };
+        const graph = Array.isArray(parsed["@graph"]) ? parsed["@graph"] : [];
+        const wp = graph.find((n) => n["@type"] === "WebPage");
+        if (wp && typeof wp["@id"] === "string" && wp["@id"] !== `${canonical}#webpage`) {
+          return "";
+        }
+      } catch {
+        // не трогаем блоки, которые не удалось разобрать
+      }
+      return block;
+    },
+  );
+}
+
 function dedupeHead(html: string): string {
   const patterns: RegExp[] = [
     /<link\b[^>]*\brel=["']canonical["'][^>]*>\s*/gi,
@@ -207,7 +233,7 @@ async function renderRoute(browser: Browser, baseUrl: string, route: string) {
     // Дать TanStack Router время дописать head/JSON-LD
     await new Promise((r) => setTimeout(r, 300));
     const rawHtml = await page.evaluate(() => "<!doctype html>\n" + document.documentElement.outerHTML);
-    const html = dedupeHead(rawHtml);
+    const html = dropForeignJsonLd(dedupeHead(rawHtml), route);
     const fp = routeToFsPath(route);
     mkdirSync(dirname(fp), { recursive: true });
     writeFileSync(fp, html, "utf8");
@@ -249,7 +275,7 @@ async function render404(browser: Browser, baseUrl: string) {
     await page.waitForSelector("main, #root > *", { timeout: 15_000 }).catch(() => {});
     await new Promise((r) => setTimeout(r, 1500));
     const rawHtml = await page.evaluate(() => "<!doctype html>\n" + document.documentElement.outerHTML);
-    const html = dedupeHead(rawHtml);
+    const html = dropForeignJsonLd(dedupeHead(rawHtml), route);
     writeFileSync(join(DIST, "404.html"), html, "utf8");
     console.log(`  ✓ 404 → dist/404.html (${(html.length / 1024).toFixed(1)}kb)`);
   } finally {
