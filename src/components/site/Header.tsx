@@ -7,6 +7,8 @@ import { CASES_PUBLIC } from "@/data/cases";
 import { visibleCities as cities } from "@/data/cities";
 import { useActiveCity } from "@/lib/useActiveCity";
 import { trackGoal } from "@/lib/analytics";
+import { trackCityConversion } from "@/lib/conversions";
+import { useActiveService } from "@/lib/useActiveService";
 import { SITE_PHONE, SITE_PHONE_RAW, SITE_WHATSAPP_URL } from "@/lib/site";
 
 import { Button } from "@/components/ui/button";
@@ -186,6 +188,7 @@ export function Header() {
             aria-label={cityPhoneDisplay ? `Позвонить ${cityPhoneDisplay}` : "Позвонить"}
             onClick={() => {
               trackGoal("lead_phone_click", { source: "header", city: activeCity?.slug });
+              trackCityConversion(activeCity?.slug, activeService?.slug, "phone", { source: "header" });
             }}
             className="hidden items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-foreground hover:text-accent md:inline-flex"
           >
@@ -199,6 +202,7 @@ export function Header() {
             aria-label="Написать в WhatsApp"
             onClick={() => {
               trackGoal("lead_whatsapp_click", { source: "header", city: activeCity?.slug });
+              trackCityConversion(activeCity?.slug, activeService?.slug, "messenger", { source: "header", channel: "whatsapp" });
             }}
             className="hidden h-9 w-9 items-center justify-center rounded-md bg-[#25D366] text-white hover:opacity-90 md:inline-flex"
           >
@@ -212,6 +216,7 @@ export function Header() {
               href={cityPhoneHref}
               onClick={() => {
                 trackGoal("lead_phone_click", { source: "header_cta", city: activeCity?.slug });
+                trackCityConversion(activeCity?.slug, activeService?.slug, "phone", { source: "header_cta" });
               }}
             >
               Срочный выезд
