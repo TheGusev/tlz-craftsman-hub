@@ -4,6 +4,7 @@ import { serviceInCity } from "@/data/serviceInCity";
 import { blogPosts } from "@/data/blog";
 import { cases } from "@/data/cases";
 import { SITE_URL } from "@/lib/site";
+import { isIndexablePath } from "@/lib/seoRobots";
 
 export type RouteEntry = {
   path: string;
@@ -80,6 +81,11 @@ export function getCanonical(path: string): string {
   return `${SITE_URL}${clean}`;
 }
 
+/** Маршруты, которые реально должны индексироваться (основа sitemap.xml). */
+export function getIndexableRoutes(): RouteEntry[] {
+  return getAllRoutes().filter((r) => isIndexablePath(r.path));
+}
+
 export function getSitemapEntries(): RouteEntry[] {
-  return getAllRoutes();
+  return getIndexableRoutes();
 }

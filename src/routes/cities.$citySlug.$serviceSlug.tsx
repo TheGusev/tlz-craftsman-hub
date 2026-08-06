@@ -19,6 +19,7 @@ import {
 } from "@/lib/jsonld";
 import { buildServiceMediaNodes, hasServiceGallery, hasServiceVideo } from "@/lib/mediaSchema";
 import { buildCanonical } from "@/lib/seo";
+import { robotsMetaFor } from "@/lib/seoRobots";
 import { getServiceImage, getServiceImageSize } from "@/lib/serviceImages";
 import { PriceNote } from "@/components/site/PriceNote";
 import { buildCityServiceContent } from "@/lib/cityServiceContent";
@@ -101,6 +102,7 @@ export const Route = createFileRoute("/cities/$citySlug/$serviceSlug")({
         { property: "og:title", content: sc.metaTitle },
         { property: "og:description", content: sc.metaDescription },
         { property: "og:url", content: canonical },
+        ...robotsMetaFor(path),
         ...(img
           ? [
               { property: "og:image", content: img },

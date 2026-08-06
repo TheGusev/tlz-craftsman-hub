@@ -7,9 +7,10 @@ Disallow: /account/
 Disallow: /quiz/
 Disallow: /thank-you
 Disallow: /calculator/
-Disallow: /*?utm
-Disallow: /*?yclid
-Disallow: /*?gclid
+Allow: /media/
+Allow: /assets/
+Allow: /*.webp$
+Allow: /*.mp4$
 
 User-agent: GPTBot
 Allow: /
@@ -31,6 +32,8 @@ Allow: /
 
 User-agent: ChatGPT-User
 Allow: /
+
+Clean-param: utm_source&utm_medium&utm_campaign&utm_term&utm_content&yclid&gclid&_openstat /
 
 Sitemap: https://sanitarnyeresheniya.ru/sitemap.xml
 Host: sanitarnyeresheniya.ru

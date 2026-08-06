@@ -22,6 +22,7 @@ import {
   buildLocalBusinessSchema,
 } from "@/lib/jsonld";
 import { buildCanonical } from "@/lib/seo";
+import { robotsMetaFor } from "@/lib/seoRobots";
 
 export const Route = createFileRoute("/cities/$citySlug")({
   loader: ({ params }): { city: City } => {
@@ -41,6 +42,7 @@ export const Route = createFileRoute("/cities/$citySlug")({
         { property: "og:title", content: c.metaTitle },
         { property: "og:description", content: c.metaDescription },
         { property: "og:url", content: canonical },
+        ...robotsMetaFor(path),
       ],
       links: [{ rel: "canonical", href: canonical }],
       scripts: [

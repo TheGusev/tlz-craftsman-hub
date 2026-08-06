@@ -10,11 +10,15 @@ import { writeFileSync, existsSync, mkdirSync, statSync, readFileSync } from "no
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { getAllRoutes } from "../src/lib/route-config";
+import { getAllRoutes, getIndexableRoutes } from "../src/lib/route-config";
+import { cities } from "../src/data/cities";
+import { services } from "../src/data/services";
 import { SITE_URL } from "../src/lib/site";
 import { blogPosts } from "../src/data/blog";
-import { hasServiceGallery, hasServiceVideo } from "../src/lib/mediaSchema";
+import { hasServiceGallery, hasServiceVideo, getServiceGallery } from "../src/lib/mediaSchema";
+import { getFloodVideo } from "../src/lib/floodGallery";
 import { probeFile } from "./media-probe";
+import { isIndexablePath } from "../src/lib/seoRobots";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -25,33 +29,109 @@ function routeToFsPath(route: string): string {
   return join(DIST, route.replace(/^\//, ""), "index.html");
 }
 
-function today(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function lastmodFor(path: string): string {
+/**
+ * lastmod указываем только там, где есть настоящая дата контента (посты блога).
+ * Подставлять дату сборки нельзя: иначе при каждом деплое «обновляются» все URL
+ * и поисковики перестают доверять этому полю.
+ */
+function lastmodFor(path: string): string | null {
   if (path.startsWith("/blog/")) {
     const slug = path.replace(/^\/blog\//, "");
     const post = blogPosts.find((p) => p.slug === slug);
     if (post?.publishedAt) return post.publishedAt;
   }
-  return today();
+  return null;
+}
+
+function xmlEscape(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+/** Разбирает путь и возвращает slug услуги и локатив города (если это город×услуга). */
+function mediaContextFor(path: string): { serviceSlug: string; cityLocative?: string } | null {
+  const svc = /^\/services\/([^/]+)$/.exec(path);
+  if (svc) return { serviceSlug: svc[1] };
+  const cs = /^\/cities\/([^/]+)\/([^/]+)$/.exec(path);
+  if (cs) {
+    const city = cities.find((c) => c.slug === cs[1]);
+    return { serviceSlug: cs[2], cityLocative: city?.nameLocative };
+  }
+  return null;
+}
+
+/** Блоки <image:image> и <video:video> для страницы (реальные файлы из public/media). */
+function mediaBlocksFor(path: string): string[] {
+  const ctx = mediaContextFor(path);
+  if (!ctx) return [];
+  const out: string[] = [];
+  const shortName = services.find((s) => s.slug === ctx.serviceSlug)?.shortName ?? "Санитарная обработка";
+  const title = `${shortName}${ctx.cityLocative ? ` ${ctx.cityLocative}` : ""} — видео с выезда бригады`;
+
+  if (hasServiceVideo(ctx.serviceSlug)) {
+    const v = getFloodVideo(ctx.cityLocative);
+    out.push(
+      [
+        `    <video:video>`,
+        `      <video:thumbnail_loc>${SITE_URL}${v.poster}</video:thumbnail_loc>`,
+        `      <video:title>${xmlEscape(title)}</video:title>`,
+        `      <video:description>${xmlEscape(v.caption)}</video:description>`,
+        `      <video:content_loc>${SITE_URL}${v.src}</video:content_loc>`,
+        `      <video:duration>${durationSeconds(v.duration)}</video:duration>`,
+        `      <video:family_friendly>yes</video:family_friendly>`,
+        `      <video:live>no</video:live>`,
+        `    </video:video>`,
+      ].join("\n"),
+    );
+  }
+
+  for (const photo of getServiceGallery(ctx.serviceSlug, ctx.cityLocative)) {
+    out.push(
+      [
+        `    <image:image>`,
+        `      <image:loc>${SITE_URL}${photo.src}</image:loc>`,
+        `      <image:caption>${xmlEscape(photo.alt)}</image:caption>`,
+        `    </image:image>`,
+      ].join("\n"),
+    );
+  }
+  return out;
+}
+
+/** ISO-8601 длительность (PT35S) → секунды для video:duration. */
+function durationSeconds(iso: string): number {
+  const m = /^PT(?:(\d+)M)?(?:(\d+)S)?$/.exec(iso);
+  if (!m) return 0;
+  return Number(m[1] ?? 0) * 60 + Number(m[2] ?? 0);
 }
 
 function buildSitemap(): string {
-  const entries = getAllRoutes();
+  const entries = getIndexableRoutes();
   const body = entries
     .map((e) => {
+      const lastmod = lastmodFor(e.path);
       const parts = [
         `    <loc>${SITE_URL}${e.path}</loc>`,
-        `    <lastmod>${lastmodFor(e.path)}</lastmod>`,
+        lastmod ? `    <lastmod>${lastmod}</lastmod>` : null,
         e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
         e.priority ? `    <priority>${e.priority}</priority>` : null,
+        ...mediaBlocksFor(e.path),
       ].filter(Boolean);
       return `  <url>\n${parts.join("\n")}\n  </url>`;
     })
     .join("\n");
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`;
+  return [
+    `<?xml version="1.0" encoding="UTF-8"?>`,
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"`,
+    `        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"`,
+    `        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">`,
+    body,
+    `</urlset>`,
+    ``,
+  ].join("\n");
 }
 
 function ensureDir(p: string) {
@@ -61,8 +141,13 @@ function ensureDir(p: string) {
 function generate() {
   ensureDir(DIST);
   writeFileSync(join(DIST, "sitemap.xml"), buildSitemap(), "utf8");
-  console.log(`[seo] sitemap.xml (${getAllRoutes().length} URLs, с lastmod) записан в dist/`);
+  const total = getAllRoutes().length;
+  const indexable = getIndexableRoutes().length;
+  console.log(
+    `[seo] sitemap.xml записан в dist/: ${indexable} индексируемых URL из ${total} собранных (медиа: image/video)`,
+  );
 }
+
 
 function verify() {
   const routes = getAllRoutes();
@@ -305,10 +390,15 @@ function verifyJsonLd() {
       errors.push(`${r.path}: canonical="${canonicals[0]}", ожидался "${expected}"`);
     }
 
-    // robots noindex — допустим на служебных/юридических страницах
+    // robots: индексируемые страницы обязаны быть без noindex,
+    // скрытые (города вне Москвы/МО, кейсы) — обязаны его иметь.
     const NOINDEX_ALLOWED = new Set(["/privacy", "/soglasie", "/thank-you"]);
-    if (!NOINDEX_ALLOWED.has(r.path) && hasNoindex(html)) {
-      errors.push(`${r.path}: <meta name="robots"> содержит noindex`);
+    const shouldIndex = isIndexablePath(r.path) && !NOINDEX_ALLOWED.has(r.path);
+    if (shouldIndex && hasNoindex(html)) {
+      errors.push(`${r.path}: <meta name="robots"> содержит noindex, хотя страница индексируемая`);
+    }
+    if (!isIndexablePath(r.path) && !hasNoindex(html)) {
+      errors.push(`${r.path}: скрытая страница без <meta name="robots" content="noindex,follow">`);
     }
 
     // JSON-LD
@@ -429,7 +519,59 @@ function verifyJsonLd() {
   console.log("[verify-jsonld] OK — canonical, robots, медиа (VideoObject/ImageObject) и JSON-LD корректны на всех маршрутах.");
 }
 
+/** Проверка sitemap.xml: состав URL и физическое наличие заявленных медиа. */
+function verifySitemap() {
+  const fp = join(DIST, "sitemap.xml");
+  if (!existsSync(fp)) {
+    console.error("[verify-sitemap] dist/sitemap.xml отсутствует");
+    process.exit(1);
+  }
+  const xml = readFileSync(fp, "utf8");
+  const errors: string[] = [];
+  const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  const expected = getIndexableRoutes().map((r) => `${SITE_URL}${r.path}`);
+
+  for (const loc of locs) {
+    const path = loc.slice(SITE_URL.length) || "/";
+    if (!isIndexablePath(path)) errors.push(`sitemap: ${path} не должен индексироваться`);
+    const html = routeToFsPath(path);
+    if (!existsSync(html)) {
+      errors.push(`sitemap: ${path} — нет HTML в dist`);
+      continue;
+    }
+    if (hasNoindex(readFileSync(html, "utf8")))
+      errors.push(`sitemap: ${path} отдаёт noindex, но заявлен в sitemap`);
+  }
+  for (const e of expected) {
+    if (!locs.includes(e)) errors.push(`sitemap: пропущен индексируемый URL ${e}`);
+  }
+
+  const media = [
+    ...[...xml.matchAll(/<image:loc>([^<]+)<\/image:loc>/g)].map((m) => m[1]),
+    ...[...xml.matchAll(/<video:content_loc>([^<]+)<\/video:content_loc>/g)].map((m) => m[1]),
+    ...[...xml.matchAll(/<video:thumbnail_loc>([^<]+)<\/video:thumbnail_loc>/g)].map((m) => m[1]),
+  ];
+  for (const u of media) {
+    if (!u.startsWith(SITE_URL)) {
+      errors.push(`sitemap: медиа-URL не абсолютный на нашем домене — ${u}`);
+      continue;
+    }
+    const rel = u.slice(SITE_URL.length).replace(/^\//, "");
+    if (!existsSync(join(DIST, rel))) errors.push(`sitemap: файла нет в dist — ${u}`);
+  }
+
+  if (errors.length) {
+    console.error(`[verify-sitemap] ОШИБКИ (${errors.length}):`);
+    errors.slice(0, 50).forEach((e) => console.error(`  - ${e}`));
+    process.exit(1);
+  }
+  console.log(
+    `[verify-sitemap] OK — ${locs.length} URL, ${media.length} медиа-ссылок, все файлы на месте.`,
+  );
+}
+
 const args = process.argv.slice(2);
-if (args.includes("--verify-jsonld")) verifyJsonLd();
+if (args.includes("--verify-sitemap")) verifySitemap();
+else if (args.includes("--verify-jsonld")) verifyJsonLd();
 else if (args.includes("--verify")) verify();
 else generate();
