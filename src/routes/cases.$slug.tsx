@@ -14,6 +14,7 @@ import {
   buildImageGallerySchema,
 } from "@/lib/jsonld";
 import { buildCanonical } from "@/lib/seo";
+import { robotsMetaFor } from "@/lib/seoRobots";
 
 export const Route = createFileRoute("/cases/$slug")({
   loader: ({ params }): { item: Case } => {
@@ -37,6 +38,7 @@ export const Route = createFileRoute("/cases/$slug")({
         { property: "og:description", content: description },
         { property: "og:type", content: "article" },
         { property: "og:url", content: canonical },
+        ...robotsMetaFor(path),
         ...(cover ? [{ property: "og:image", content: cover.startsWith("http") ? cover : `${canonical.split("/cases/")[0]}${cover}` }] : []),
       ],
       links: [{ rel: "canonical", href: canonical }],

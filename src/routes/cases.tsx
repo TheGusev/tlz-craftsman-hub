@@ -13,6 +13,7 @@ import {
   buildBreadcrumbSchema,
 } from "@/lib/jsonld";
 import { buildCanonical } from "@/lib/seo";
+import { robotsMetaFor } from "@/lib/seoRobots";
 
 export const Route = createFileRoute("/cases")({
   head: () => {
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/cases")({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:url", content: canonical },
+        ...robotsMetaFor(path),
       ],
       links: [{ rel: "canonical", href: canonical }],
       scripts: [
