@@ -172,8 +172,8 @@ function LandingPage() {
           <div className="mx-auto max-w-2xl">
             <PriceQuiz
               basePrice={service.priceFrom}
-              serviceName={service.slug}
-              cityName={city.slug}
+              serviceSlug={service.slug}
+              citySlug={city.slug}
             />
           </div>
         </section>

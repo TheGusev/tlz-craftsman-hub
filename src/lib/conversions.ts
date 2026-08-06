@@ -1,26 +1,18 @@
 import { trackGoal } from "./analytics";
+import { VISIBLE_CITY_SLUGS } from "@/data/cities";
+import { services } from "@/data/services";
 
 /**
  * Пары «город × услуга», для которых собираем составные цели в Метрике.
- * Цель: conversion_{city}_{service}. Не декартово произведение — только явные пары.
+ * Цель: conversion_{city}_{service}.
+ *
+ * Сейчас в UI показаны только Москва и Московская область, поэтому цели
+ * собираем по всем услугам в этих двух городах. Южные города скрыты —
+ * пары по ним не собираем (вернём, когда города снова появятся в UI).
  */
-const TRACKED_PAIRS = new Set<string>([
-  // Крым и Сочи — 3 города × 3 услуги
-  "simferopol:ochistka-uchastkov",
-  "simferopol:unichtozhenie-tarakanov",
-  "simferopol:posle-pozhara",
-  "sevastopol:ochistka-uchastkov",
-  "sevastopol:unichtozhenie-tarakanov",
-  "sevastopol:posle-pozhara",
-  "sochi:ochistka-uchastkov",
-  "sochi:unichtozhenie-tarakanov",
-  "sochi:posle-pozhara",
-  // Москва и МО — уборка после пожара и после смерти
-  "moskva:posle-pozhara",
-  "moskva:dezinfekciya-posle-smerti",
-  "moskovskaya-oblast:posle-pozhara",
-  "moskovskaya-oblast:dezinfekciya-posle-smerti",
-]);
+const TRACKED_PAIRS = new Set<string>(
+  VISIBLE_CITY_SLUGS.flatMap((city) => services.map((s) => `${city}:${s.slug}`)),
+);
 
 export type ConversionType = "form" | "messenger" | "phone" | "quiz";
 

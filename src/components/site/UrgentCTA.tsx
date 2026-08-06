@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Phone, Send, User, X, MessageCircle } from "lucide-react";
 import { trackGoal } from "@/lib/analytics";
+import { trackCityConversion, type ConversionType } from "@/lib/conversions";
 import { useActiveCity } from "@/lib/useActiveCity";
+import { useActiveService } from "@/lib/useActiveService";
 import { SITE_PHONE_RAW, SITE_TELEGRAM_URL, SITE_MAX_URL, SITE_WHATSAPP_URL } from "@/lib/site";
 
 type Action = {
@@ -11,19 +13,21 @@ type Action = {
   bg: string;
   external?: boolean;
   goal: string;
+  conversion: ConversionType;
 };
 
 const actions: Action[] = [
-  { label: "Позвонить", href: `tel:${SITE_PHONE_RAW}`, icon: Phone, bg: "bg-urgent text-urgent-foreground", goal: "lead_phone_click" },
-  { label: "WhatsApp", href: SITE_WHATSAPP_URL, icon: MessageCircle, bg: "bg-[#25D366] text-white", external: true, goal: "lead_whatsapp_click" },
-  { label: "MAX", href: SITE_MAX_URL, icon: User, bg: "bg-sky-500 text-white", external: true, goal: "lead_max_click" },
-  { label: "Telegram", href: SITE_TELEGRAM_URL, icon: Send, bg: "bg-sky-500 text-white", external: true, goal: "lead_telegram_click" },
+  { label: "Позвонить", href: `tel:${SITE_PHONE_RAW}`, icon: Phone, bg: "bg-urgent text-urgent-foreground", goal: "lead_phone_click", conversion: "phone" },
+  { label: "WhatsApp", href: SITE_WHATSAPP_URL, icon: MessageCircle, bg: "bg-[#25D366] text-white", external: true, goal: "lead_whatsapp_click", conversion: "messenger" },
+  { label: "MAX", href: SITE_MAX_URL, icon: User, bg: "bg-sky-500 text-white", external: true, goal: "lead_max_click", conversion: "messenger" },
+  { label: "Telegram", href: SITE_TELEGRAM_URL, icon: Send, bg: "bg-sky-500 text-white", external: true, goal: "lead_telegram_click", conversion: "messenger" },
 ];
 
 export function UrgentCTA() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const activeCity = useActiveCity();
+  const activeService = useActiveService();
 
   useEffect(() => {
     if (!open) return;
@@ -58,6 +62,10 @@ export function UrgentCTA() {
               aria-label={a.label}
               onClick={() => {
                 trackGoal(a.goal, { source: "urgent_cta", city: activeCity?.slug });
+                trackCityConversion(activeCity?.slug, activeService?.slug, a.conversion, {
+                  source: "urgent_cta",
+                  channel: a.label.toLowerCase(),
+                });
               }}
               tabIndex={open ? 0 : -1}
               style={{ transitionDelay: open ? `${i * 50}ms` : "0ms" }}
