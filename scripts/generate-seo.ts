@@ -13,6 +13,7 @@ import { fileURLToPath } from "node:url";
 import { getAllRoutes } from "../src/lib/route-config";
 import { SITE_URL } from "../src/lib/site";
 import { blogPosts } from "../src/data/blog";
+import { hasServiceGallery, hasServiceVideo } from "../src/lib/mediaSchema";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -142,6 +143,59 @@ function findType(nodes: JsonLdNode[], type: string): JsonLdNode | undefined {
   });
 }
 
+/** Проверяет, что URL абсолютный, ведёт на наш домен и файл реально есть в dist. */
+function checkMediaUrl(u: unknown, label: string, route: string, errors: string[]) {
+  if (typeof u !== "string" || !u.trim()) {
+    errors.push(`${route}: ${label} пустой или не строка`);
+    return;
+  }
+  if (!u.startsWith(SITE_URL)) {
+    errors.push(`${route}: ${label}="${u}" не абсолютный или не с домена ${SITE_URL}`);
+    return;
+  }
+  const rel = u.slice(SITE_URL.length).split("?")[0].split("#")[0];
+  const fp = join(DIST, rel.replace(/^\//, ""));
+  if (!existsSync(fp)) {
+    errors.push(`${route}: ${label}="${u}" — файла нет в dist (${fp})`);
+  }
+}
+
+function verifyMedia(route: string, serviceSlug: string, nodes: JsonLdNode[], errors: string[]) {
+  if (hasServiceVideo(serviceSlug)) {
+    const v = findType(nodes, "VideoObject");
+    if (!v) {
+      errors.push(`${route}: у услуги есть видео, но JSON-LD не содержит VideoObject`);
+    } else {
+      for (const f of ["name", "description", "uploadDate"]) {
+        if (typeof v[f] !== "string" || !(v[f] as string).trim()) {
+          errors.push(`${route}: VideoObject.${f} пустой`);
+        }
+      }
+      checkMediaUrl(v["contentUrl"], "VideoObject.contentUrl", route, errors);
+      const thumb = v["thumbnailUrl"];
+      const thumbUrl = Array.isArray(thumb) ? thumb[0] : thumb;
+      checkMediaUrl(thumbUrl, "VideoObject.thumbnailUrl", route, errors);
+    }
+  }
+
+  if (hasServiceGallery(serviceSlug)) {
+    const g = findType(nodes, "ImageGallery");
+    if (!g) {
+      errors.push(`${route}: у услуги есть фотогалерея, но JSON-LD не содержит ImageGallery`);
+    } else {
+      const imgs = Array.isArray(g["image"]) ? (g["image"] as JsonLdNode[]) : [];
+      if (imgs.length === 0) {
+        errors.push(`${route}: ImageGallery без ImageObject`);
+      }
+      imgs.forEach((img, i) => {
+        const t = img["@type"];
+        if (t !== "ImageObject") errors.push(`${route}: ImageGallery.image[${i}] не ImageObject`);
+        checkMediaUrl(img["contentUrl"], `ImageGallery.image[${i}].contentUrl`, route, errors);
+      });
+    }
+  }
+}
+
 function verifyJsonLd() {
   const routes = getAllRoutes();
   const errors: string[] = [];
@@ -210,6 +264,12 @@ function verifyJsonLd() {
       }
     }
 
+    // Медиа-разметка на страницах услуг и город×услуга
+    const svcMatch = /^\/services\/([^/]+)$/.exec(r.path);
+    const citySvcMatch = /^\/cities\/[^/]+\/([^/]+)$/.exec(r.path);
+    const mediaService = svcMatch?.[1] ?? citySvcMatch?.[1];
+    if (mediaService) verifyMedia(r.path, mediaService, nodes, errors);
+
     if (isBlogPost) {
       for (const req of ["BreadcrumbList", "Article"]) {
         if (!types.has(req)) errors.push(`${r.path}: JSON-LD не содержит ${req}`);
@@ -230,7 +290,7 @@ function verifyJsonLd() {
     if (errors.length > 50) console.error(`  ... и ещё ${errors.length - 50}`);
     process.exit(1);
   }
-  console.log("[verify-jsonld] OK — canonical, robots и JSON-LD корректны на всех маршрутах.");
+  console.log("[verify-jsonld] OK — canonical, robots, медиа (VideoObject/ImageObject) и JSON-LD корректны на всех маршрутах.");
 }
 
 const args = process.argv.slice(2);
