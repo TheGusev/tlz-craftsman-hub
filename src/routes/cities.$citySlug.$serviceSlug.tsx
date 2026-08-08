@@ -23,6 +23,7 @@ import { robotsMetaFor } from "@/lib/seoRobots";
 import { getServiceImage, getServiceImageSize } from "@/lib/serviceImages";
 import { PriceNote } from "@/components/site/PriceNote";
 import { PriceQuiz } from "@/components/site/PriceQuiz";
+import { getCityServicePrice } from "@/lib/cityPricing";
 import { buildCityServiceContent } from "@/lib/cityServiceContent";
 import { RelatedCityServices } from "@/components/site/RelatedCityServices";
 import { EquipmentStrip } from "@/components/site/EquipmentStrip";
