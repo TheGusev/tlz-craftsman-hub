@@ -185,6 +185,7 @@ function ServiceInCityPage() {
   const extraSections = buildCityServiceContent(city, service);
   const inlineGallery = getInlineGallery(service.slug);
   const isMoscow = city.slug === "moskva" || city.slug === "moskovskaya-oblast";
+  const quizBasePrice = getCityServicePrice(city.slug, service) ?? 2500;
   const heroActions = (city.phone || city.whatsapp) ? (
     <>
       {city.phone && (
