@@ -443,9 +443,14 @@ function ServiceInCityPage() {
           </section>
         </div>
 
-        <aside className="lg:sticky lg:top-24 lg:self-start">
-          <h2 className="mb-4 font-display text-xl font-bold">Заявка {city.nameLocative}</h2>
-          <LeadForm defaultCity={city.slug} defaultProblem={service.shortName} />
+        <aside className="space-y-8 lg:sticky lg:top-24 lg:self-start">
+          {service.priceFrom ? (
+            <PriceQuiz basePrice={service.priceFrom} serviceSlug={service.slug} citySlug={city.slug} />
+          ) : null}
+          <div>
+            <h2 className="mb-4 font-display text-xl font-bold">Заявка {city.nameLocative}</h2>
+            <LeadForm defaultCity={city.slug} defaultProblem={service.shortName} service={service.slug} />
+          </div>
         </aside>
       </div>
     </article>
