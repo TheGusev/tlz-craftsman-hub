@@ -22,6 +22,8 @@ import { buildCanonical } from "@/lib/seo";
 import { robotsMetaFor } from "@/lib/seoRobots";
 import { getServiceImage, getServiceImageSize } from "@/lib/serviceImages";
 import { PriceNote } from "@/components/site/PriceNote";
+import { PriceQuiz } from "@/components/site/PriceQuiz";
+import { getCityServicePrice } from "@/lib/cityPricing";
 import { buildCityServiceContent } from "@/lib/cityServiceContent";
 import { RelatedCityServices } from "@/components/site/RelatedCityServices";
 import { EquipmentStrip } from "@/components/site/EquipmentStrip";
@@ -184,6 +186,7 @@ function ServiceInCityPage() {
   const extraSections = buildCityServiceContent(city, service);
   const inlineGallery = getInlineGallery(service.slug);
   const isMoscow = city.slug === "moskva" || city.slug === "moskovskaya-oblast";
+  const quizBasePrice = getCityServicePrice(city.slug, service) ?? 2500;
   const heroActions = (city.phone || city.whatsapp) ? (
     <>
       {city.phone && (
@@ -443,9 +446,14 @@ function ServiceInCityPage() {
           </section>
         </div>
 
-        <aside className="lg:sticky lg:top-24 lg:self-start">
-          <h2 className="mb-4 font-display text-xl font-bold">Заявка {city.nameLocative}</h2>
-          <LeadForm defaultCity={city.slug} defaultProblem={service.shortName} />
+        <aside className="space-y-8 lg:sticky lg:top-24 lg:self-start">
+          {quizBasePrice ? (
+            <PriceQuiz basePrice={quizBasePrice} serviceSlug={service.slug} citySlug={city.slug} />
+          ) : null}
+          <div>
+            <h2 className="mb-4 font-display text-xl font-bold">Заявка {city.nameLocative}</h2>
+            <LeadForm defaultCity={city.slug} defaultProblem={service.shortName} service={service.slug} />
+          </div>
         </aside>
       </div>
     </article>

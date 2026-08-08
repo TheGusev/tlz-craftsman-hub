@@ -171,7 +171,7 @@ function LandingPage() {
             </div>
           </div>
           <div>
-            <LeadForm defaultCity={city.slug} defaultProblem={service.slug} />
+            <LeadForm defaultCity={city.slug} defaultProblem={service.slug} service={service.slug} />
           </div>
         </div>
       </section>
@@ -272,7 +272,7 @@ function LandingPage() {
         <div className="container mx-auto px-4 py-12">
           <h2 className="text-2xl font-bold md:text-3xl">Оставьте заявку — перезвоним за 15 минут</h2>
           <div className="mt-6 max-w-2xl">
-            <LeadForm defaultCity={city.slug} defaultProblem={service.slug} />
+            <LeadForm defaultCity={city.slug} defaultProblem={service.slug} service={service.slug} />
           </div>
         </div>
       </section>
